@@ -80,7 +80,7 @@
                     </div>
                     <div class="col-12 col-md-4 mb-3">
                         <div class="form-floating">
-                            <input class="form-control" placeholder="DNI/NIF/NIE" type="text" name="doc" id="doc" value="'.$datos["documento"].'" required>
+                            <input class="form-control" placeholder="DNI/NIF/NIE" type="text" name="doc" id="doc" value="'.$datos["documento"].'">
                             <label for="doc">DNI/NIF/NIE</label>
                         </div>
                     </div>
@@ -108,6 +108,14 @@
                     </div>
                 </div>
                 <div class="row">
+                    <div class="col-12 mb-3">
+                        <div class="form-floating">
+                            <input type="text" name="direccion" id="direccion" placeholder="Dirección" value="'.$datos["direccion"].'" class="form-control">
+                            <label for="direccion">Dirección</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
                     <div class="col-12 col-md-4 mb-3">
                         <div class="form-floating">
                             <input class="form-control" onblur="findTotal()" placeholder="Precio" type="number" step="0.01" name="precio" id="precio" value="'.$datos["precio"].'" required>
@@ -128,7 +136,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-12 mb-3">
+                    <div class="col-12 col-md-6 mb-3">
                         <div class="form-floating">
                             <select class="form-control form-select" name="local" id="local" required>
                                 <option value="'.$datos["local"].'" selected>Actual: '.$datos["local"].'</option>
@@ -139,8 +147,6 @@
                             <label for="local">Local</label>
                         </div>
                     </div>
-                </div>
-                <div class="row">
                     <div id="serv-razon" class="col-12 col-md-6 mb-3">
                         <div class="form-floating">
                         <select class="form-control" name="razon" id="razon" required>

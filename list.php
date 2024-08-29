@@ -78,6 +78,7 @@
                                     <p class="card-text"><b>Fecha (d/m/y):</b> '.$row["fecha"].'</p>
                                     <p class="card-text"><b>Servicio:</b> '.$row["servicio"].'</p>
                                     <p class="card-text"><b>Email:</b> '.$row["email"].'</p>
+                                    <p class="card-text"><b>Dirección:</b> '.$row["direccion"].'</p>
                                     <p class="card-text"><b>Teléfono:</b> <a href="https://wa.me//'.$row["telefono"].'" target="_blank">'.$row["telefono"].'<a></p>
                                     <p class="card-text"><b>Descripción:</b> '.$row["desc"].'</p>
                                     <p class="card-text"><b>Local:</b> '.$row["local"].'</p>
@@ -142,11 +143,12 @@
                 $stmt = $pdo->prepare("SELECT *, DATE_FORMAT(fecha, '%d/%m/%Y') as fecha FROM info_orden ORDER BY id DESC");
                 $stmt->execute();
             }else{
+                $pdo = connect();
                 echo '<p class="display-5 text-light">Resultados para <i>\''.$_GET["search"].'\'</i></p>';
-                $search = "%".strtoupper($_GET["search"])."%";
+                $search = "%".$_GET["search"]."%";
                 $stmt = $pdo->prepare("SELECT *, DATE_FORMAT(fecha, '%d/%m/%Y') as fecha FROM info_orden
-                WHERE `tipo` LIKE :search OR `id` LIKE :search OR `nombre` LIKE :search OR `servicio` LIKE :search
-                ORDER BY id DESC");
+                WHERE `tipo` LIKE :search OR `id` LIKE :search OR `nombre` LIKE :search OR `local` LIKE :search OR `servicio` LIKE :search
+                ORDER BY `id` DESC");
                 $stmt->bindParam(':search', $search);
                 $stmt->execute();
             }
@@ -183,6 +185,7 @@
                                 <p class="card-text"><b>Fecha (d/m/y):</b> '.$row["fecha"].'</p>
                                 <p class="card-text"><b>Servicio:</b> '.$row["servicio"].'</p>
                                 <p class="card-text"><b>Email:</b> '.$row["email"].'</p>
+                                <p class="card-text"><b>Dirección:</b> '.$row["direccion"].'</p>
                                 <p class="card-text"><b>Teléfono:</b> '.$row["telefono"].'</p>
                                 <p class="card-text"><b>Descripción:</b> '.$desc.'</p>
                             </div> 

@@ -116,7 +116,7 @@
                     </div>
                     <div class="col-12 col-md-4 mb-3">
                         <div class="form-floating">
-                            <input class="form-control" placeholder="DNI/NIF/NIE" type="text" name="doc" id="doc" required>
+                            <input class="form-control" placeholder="DNI/NIF/NIE" type="text" name="doc" id="doc">
                             <label for="doc">DNI/NIF/NIE</label>
                         </div>
                     </div>
@@ -139,6 +139,14 @@
                         <div class="form-floating">
                             <input class="form-control" placeholder="Email" type="email" name="email" id="email" required>
                             <label for="email">Email</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 mb-3">
+                        <div class="form-floating">
+                            <input type="text" name="direccion" id="direccion" placeholder="Dirección" class="form-control">
+                            <label for="direccion">Dirección</label>
                         </div>
                     </div>
                 </div>

@@ -36,14 +36,18 @@ function insertarBD($firma){
     }else{
         $servicio = "Venta";
     }
+    $doc="-";$dir="-";
+    if(isset($_POST["doc"])) $doc = $_POST["doc"];
+    if(isset($_POST["direccion"])) $dir = $_POST["direccion"];
     $pdo = connect();
     $stmt = $pdo->prepare("INSERT INTO info_orden VALUES 
-    (null, :nom, :tel, :doc, :ser, :email, :precio, :iva, :final, :descr, :loc, :fecha, :firma, :tipo, :razon, :dept)");
+    (null, :nom, :tel, :doc, :ser, :email, :direccion, :precio, :iva, :final, :descr, :loc, :fecha, :firma, :tipo, :razon, :dept)");
     $stmt->bindParam(':nom', $_POST["nombre"]);
     $stmt->bindParam(':tel', $tel);
-    $stmt->bindParam(':doc', $_POST["doc"]);
+    $stmt->bindParam(':doc', $doc);
     $stmt->bindParam(':ser', $servicio);
     $stmt->bindParam(':email', $_POST["email"]);
+    $stmt->bindParam(':direccion', $dir);
     $stmt->bindParam(':precio', $_POST["precio"]);
     $stmt->bindParam(':iva', $_POST["iva"]);
     $stmt->bindParam(':final', $_POST["precio-final"]);
@@ -148,7 +152,7 @@ function crearPDF($id){
     $pdf->Ln(1);
     $motivo = iconv('UTF-8', 'windows-1252', $datos["desc"]);
     $pdf->Cell($width/4, 5, iconv('UTF-8', 'windows-1252', 'Descripción'), 0, 0);
-    $pdf->Cell($width/1.5, 5, $datos["desc"], 1, 1);
+    $pdf->MultiCell($width/1.5, 5, $motivo, 1, 1);
     $pdf->Ln(1);
     $pdf->Cell($width/4, 5, 'Tipo', 0, 0);
     $ser = iconv('UTF-8', 'windows-1252', $datos["servicio"]);
@@ -332,14 +336,18 @@ function enviarCorreo($id){
 }
 
 function editarEntrada($id){
+    $doc="-";$dir="-";
+    if(isset($_POST["doc"])) $doc = $_POST["doc"];
+    if(isset($_POST["direccion"])) $dir = $_POST["direccion"];
     $pdo = connect();
-    $stmt = $pdo->prepare("UPDATE `info_orden` SET `nombre` = :nombre, `telefono` = :tel, `documento` = :doc, `servicio` = :servicio, `email` = :email, `precio` = :precio, `iva` = :iva, `precio-final` = :preciofinal, `desc` = :de, `local` = :loc, `razon` = :razon WHERE `info_orden`.`id` = :id");
+    $stmt = $pdo->prepare("UPDATE `info_orden` SET `nombre` = :nombre, `telefono` = :tel, `documento` = :doc, `servicio` = :servicio, `email` = :email, `direccion` = :direccion, `precio` = :precio, `iva` = :iva, `precio-final` = :preciofinal, `desc` = :de, `local` = :loc, `razon` = :razon WHERE `info_orden`.`id` = :id");
     $stmt->bindParam(':id', $id);
     $stmt->bindParam(':nombre', $_POST["nombre"]);
     $stmt->bindParam(':tel', $_POST["tel"]);
-    $stmt->bindParam(':doc', $_POST["doc"]);
+    $stmt->bindParam(':doc', $doc);
     $stmt->bindParam(':servicio', $_POST["servicio"]);
     $stmt->bindParam(':email', $_POST["email"]);
+    $stmt->bindParam(':direccion', $dir);
     $stmt->bindParam(':precio', $_POST["precio"]);
     $stmt->bindParam(':iva', $_POST["iva"]);
     $stmt->bindParam(':preciofinal', $_POST["precio-final"]);
