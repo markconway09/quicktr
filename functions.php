@@ -91,7 +91,7 @@ function selectBD($id=0){
     return $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
-function crearPDF($id){
+function crearPDF($id, $enviar=0){
     //---------------RECOGER DATOS---------------//
     $datos = selectBD($id);
     // DIRECCIÓN
@@ -261,6 +261,7 @@ function crearPDF($id){
     $pdf->Output('I', null, true);
     
     //---------------END CREAR PDF---------------//
+    if($enviar != 0) $pdf->Output('F', 'doc.pdf', true);
 }
 
 function enviarCorreo($id){
@@ -287,7 +288,8 @@ function enviarCorreo($id){
         $mail->setFrom('info@quicktr.com');
         $mail->addAddress('sistemas@dvagroup.es');
         $mail->addAddress($datos["email"]);
-        $mail->addAttachment('pdf/'.$id.'.pdf');
+        crearPDF($id, 1);
+        $mail->addAttachment('doc.pdf');
         if($datos["firma"]!=null){
             $mail->AddEmbeddedImage('upload/'.$datos["firma"], 'firma');
         }
