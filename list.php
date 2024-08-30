@@ -52,6 +52,7 @@
             <a class="navbar-brand mx-auto" href="https://quicktr.com/" target="_blank">
                 <img class="rounded" src="LOGO.png" alt="logo" height="90">
             </a>
+            <a href="venta.php" class="btn btn-success">Ticket Venta</a>
             <a href="index.php" class="btn btn-secondary mx-2">Formulario</a>
             <?php
             if(isset($_SESSION["login"])){
@@ -78,11 +79,11 @@
                                     <p class="card-text"><b>Fecha (d/m/y):</b> '.$row["fecha"].'</p>
                                     <p class="card-text"><b>Servicio:</b> '.$row["servicio"].'</p>
                                     <p class="card-text"><b>Email:</b> '.$row["email"].'</p>
-                                    <p class="card-text"><b>Dirección:</b> '.$row["direccion"].'</p>
+                                    <p class="card-text"><b>Dirección:</b> '.$row["direccion"]." - ".$row["cp"].'</p>
                                     <p class="card-text"><b>Teléfono:</b> <a href="https://wa.me//'.$row["telefono"].'" target="_blank">'.$row["telefono"].'<a></p>
                                     <p class="card-text"><b>Descripción:</b> '.$row["desc"].'</p>
                                     <p class="card-text"><b>Local:</b> '.$row["local"].'</p>
-                                    <p class="card-text"><b>Razón:</b> '.$row["razon"].'</p>
+                                    <p class="card-text"><b>Cómo nos encontró:</b> '.$row["razon"].'</p>
                                     <p class="card-text"><b>Departamento:</b> '.$row["dept"].'</p>
                                     ';
                                     if($row["tipo"] == "servicio") echo '<p class="card-text"><b>Firma:</b> <img src="upload/'.$row["firma"].'" alt="firma"></p>';
@@ -185,7 +186,7 @@
                                 <p class="card-text"><b>Fecha (d/m/y):</b> '.$row["fecha"].'</p>
                                 <p class="card-text"><b>Servicio:</b> '.$row["servicio"].'</p>
                                 <p class="card-text"><b>Email:</b> '.$row["email"].'</p>
-                                <p class="card-text"><b>Dirección:</b> '.$row["direccion"].'</p>
+                                <p class="card-text"><b>Dirección:</b> '.$row["direccion"]." - ".$row["cp"].'</p>
                                 <p class="card-text"><b>Teléfono:</b> '.$row["telefono"].'</p>
                                 <p class="card-text"><b>Descripción:</b> '.$desc.'</p>
                             </div> 

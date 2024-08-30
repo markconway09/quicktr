@@ -108,10 +108,16 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-12 mb-3">
+                    <div class="col-12 col-md-9 mb-3">
                         <div class="form-floating">
                             <input type="text" name="direccion" id="direccion" placeholder="Dirección" value="'.$datos["direccion"].'" class="form-control">
                             <label for="direccion">Dirección</label>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-3 mb-3">
+                        <div class="form-floating">
+                            <input type="text" name="cp" id="cp" placeholder="Código Postal" value="'.$datos["cp"].'" class="form-control">
+                            <label for="cp">Código Postal</label>
                         </div>
                     </div>
                 </div>

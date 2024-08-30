@@ -70,6 +70,7 @@
             <a class="navbar-brand mx-auto" href="https://quicktr.com/" target="_blank">
                 <img class="rounded" src="LOGO.png" alt="logo" height="90">
             </a>
+            <a href="venta.php" class="btn btn-success">Ticket Venta</a>
             <?php
             if(isset($_SESSION["login"])){
                 echo '<a href="list.php" class="btn btn-secondary mx-2">Lista</a>';
@@ -143,10 +144,16 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-12 mb-3">
+                    <div class="col-12 col-md-9 mb-3">
                         <div class="form-floating">
                             <input type="text" name="direccion" id="direccion" placeholder="Dirección" class="form-control">
                             <label for="direccion">Dirección</label>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-3 mb-3">
+                        <div class="form-floating">
+                            <input type="text" name="cp" id="cp" placeholder="Código Postal" class="form-control">
+                            <label for="cp">Código Postal</label>
                         </div>
                     </div>
                 </div>
