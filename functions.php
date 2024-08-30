@@ -30,7 +30,7 @@ function subirFirma(){
 }
 
 function insertarBD($firma){
-    $tel = $_POST["countryCode"] + $_POST["tel"];
+    $tel = $_POST["countryCode"] . $_POST["tel"];
     if($_POST["tipo"]=='servicio'){
         $servicio = $_POST["servicio"];
     }else{
