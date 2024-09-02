@@ -181,9 +181,9 @@
                     <div class="col-12 mb-3">
                         <div class="form-floating">
                             <select onchange="bgChange()" class="form-control form-select" name="local" id="local" required>
-                                <option class="text-bg-secondary" value="Barcelona">Barcelona</option>
-                                <option class="text-bg-success" value="Mataró">Mataró</option>
-                                <option class="text-bg-warning" value="Badalona">Badalona</option>
+                                <option class="text-primary" value="Barcelona">Barcelona</option>
+                                <option class="text-success" value="Mataró">Mataró</option>
+                                <option class="text-warning" value="Madrid">Madrid</option>
                             </select>
                             <label for="local">Local</label>
                         </div>

@@ -104,8 +104,8 @@ function crearPDF($id, $enviar=0){
         case 'Mataró':
             $direccion = 'Ronda O\'Donnell, 14-16, 08302 Mataró, Barcelona';
             break;
-        case 'Badalona':
-            $direccion = 'Badalona';
+        case 'Madrid':
+            $direccion = 'CL P.J. Maragall Num 1 16, 28020 Madrid, Madrid';
             break;
         default:
             $direccion = 'Carrer de Valencia, 235 P-1, 08007';

@@ -66,7 +66,7 @@
                 $id = $_GET["id"];
                 echo '<a href="list.php" class="btn btn-secondary mx-2 mt-3">Volver</a>';
                 $row = selectBD($id);
-                echo '<a href="execute.php?pdf=1&id='.$id.'" target="_blank" class="btn btn-danger mx-2 mt-3">Crear PDF</a>';
+                echo '<a href="execute.php?pdf=1&id='.$id.'" target="_blank" class="btn btn-danger mx-2 mt-3">Factura Simplificada</a>';
                 echo '<a href="execute.php?enviar=1&id='.$id.'" target="_blank" class="btn btn-success mx-2 mt-3">Enviar</a>';
                 echo '<a href="edit.php?id='.$id.'" class="btn btn-primary mx-2 mt-3">Editar</a>';
                 echo '<button type="button" class="btn btn-danger mx-2 mt-3" data-bs-toggle="modal" data-bs-target="#elimModal">Eliminar</button>';
