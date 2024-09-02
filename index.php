@@ -91,7 +91,7 @@
             <span class="text-center mb-2 text-white">¡Importante recargar página ANTES de introducir datos por si se ha expirado la sesión!</span>
                     <select class="form-control-lg col-12 col-md-4 text-center mx-auto" onchange="formChange()" name="tipo" id="tipo">
                             <option value="servicio" selected>ORDEN DE SERVICIO</option>
-                            <option value="venta">TICKET DE VENTA</option>
+                            <option value="venta">FACTURA DE VENTA</option>
                     </select>
                 </div>
                 <div class="row">
@@ -143,7 +143,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row" id="venta-dir">
                     <div class="col-12 col-md-9 mb-3">
                         <div class="form-floating">
                             <input type="text" name="direccion" id="direccion" placeholder="Dirección" class="form-control">
@@ -294,6 +294,7 @@
                     $('#servicio-change').removeClass('d-none');
                     $('#serv-dept').removeClass('d-none');
                     $('#venta-desc').addClass('d-none');
+                    $('#venta-dir').addClass('d-none');
                 } else if(t == 'venta'){
                     $('#serv-motivo').addClass('d-none');
                     $('#serv-firma').addClass('d-none');
@@ -304,6 +305,7 @@
                     $('#servicio-change').addClass('d-none');
                     $('#serv-dept').addClass('d-none');
                     $('#venta-desc').removeClass('d-none');
+                    $('#venta-dir').removeClass('d-none');
                 }
             }
 

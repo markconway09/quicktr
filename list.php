@@ -186,7 +186,6 @@
                                 <p class="card-text"><b>Fecha (d/m/y):</b> '.$row["fecha"].'</p>
                                 <p class="card-text"><b>Servicio:</b> '.$row["servicio"].'</p>
                                 <p class="card-text"><b>Email:</b> '.$row["email"].'</p>
-                                <p class="card-text"><b>Dirección:</b> '.$row["direccion"]." - ".$row["cp"].'</p>
                                 <p class="card-text"><b>Teléfono:</b> '.$row["telefono"].'</p>
                                 <p class="card-text"><b>Descripción:</b> '.$desc.'</p>
                             </div> 
