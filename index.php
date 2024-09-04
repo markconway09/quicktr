@@ -186,8 +186,8 @@
                 <div class="row">
                     <div id="serv-motivo" class="col-12 mb-3">
                         <div class="form-floating">
-                            <textarea rows="15" style="height:100%;" class="form-control" placeholder="Motivo" name="motivo" id="motivo"></textarea>
-                            <label for="motivo">Motivo</label>
+                            <textarea rows="5" style="height:100%;" class="form-control" placeholder="Descripción" name="motivo" id="motivo"></textarea>
+                            <label for="motivo">Descripción</label>
                         </div>
                     </div>
                     <div id="venta-desc" class="col-12 d-none mb-3">
