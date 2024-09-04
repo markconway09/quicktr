@@ -16,25 +16,17 @@ function connect(){
     }
 }
 
-function subirFirma(){
-    // SUBIR FIRMA
-    $folderPath = "upload/";
-    $image_parts = explode(";base64,", $_POST['sign']);
-    $image_type_aux = explode("image/", $image_parts[0]);
-    $image_type = $image_type_aux[1];
-    $image_base64 = base64_decode($image_parts[1]);
-    $image_id = uniqid() . '.'.$image_type;
-    $file = $folderPath . $image_id;
-    file_put_contents($file, $image_base64);
-    return $file;
-}
-
 function insertarBD($firma){
     $tel = $_POST["countryCode"] . $_POST["tel"];
+    $servicio="-";$desc="-";
     if($_POST["tipo"]=='servicio'){
         $servicio = $_POST["servicio"];
+        $desc = $_POST["motivo"];
+        $pV = "";
     }else{
         $servicio = "Venta";
+        $desc = $_POST["prod1"].",".$_POST["prod2"].",".$_POST["prod3"].",".$_POST["prod4"];
+        $pV = $_POST["prec1"].",".$_POST["prec2"].",".$_POST["prec3"].",".$_POST["prec4"];
     }
     $doc="-";$dir="-";$cp="-";
     if(isset($_POST["doc"])) $doc = $_POST["doc"];
@@ -42,7 +34,7 @@ function insertarBD($firma){
     if(isset($_POST["cp"])) $cp = $_POST["cp"];
     $pdo = connect();
     $stmt = $pdo->prepare("INSERT INTO info_orden VALUES 
-    (null, :nom, :tel, :doc, :ser, :email, :direccion, :cp, :precio, :iva, :final, :descr, :loc, :fecha, :firma, :tipo, :razon, :dept)");
+    (null, :nom, :tel, :doc, :ser, :email, :direccion, :cp, :preciosV, :precio, :iva, :final, :descr, :loc, :fecha, :tipo, :razon, :dept)");
     $stmt->bindParam(':nom', $_POST["nombre"]);
     $stmt->bindParam(':tel', $tel);
     $stmt->bindParam(':doc', $doc);
@@ -50,22 +42,14 @@ function insertarBD($firma){
     $stmt->bindParam(':email', $_POST["email"]);
     $stmt->bindParam(':direccion', $dir);
     $stmt->bindParam(':cp', $cp);
+    $stmt->bindParam(':preciosV', $pV);
     $stmt->bindParam(':precio', $_POST["precio"]);
     $stmt->bindParam(':iva', $_POST["iva"]);
     $stmt->bindParam(':final', $_POST["precio-final"]);
-    if($_POST["tipo"]=='servicio'){
-        $stmt->bindParam(':descr', $_POST["motivo"]);
-    }else{
-        $stmt->bindParam(':descr', $_POST["desc"]);
-    }
+    $stmt->bindParam(':descr', $desc);
     $stmt->bindParam(':loc', $_POST["local"]);
     $date = date('Y-m-d');
     $stmt->bindParam(':fecha', $date);
-    if($_POST["tipo"]=='servicio'){
-        $stmt->bindParam(':firma', explode("/", $firma)[1]);
-    }else{
-        $stmt->bindValue(':firma', null, PDO::PARAM_NULL);
-    }
     $stmt->bindParam(':tipo', $_POST["tipo"]);
     $stmt->bindParam(':razon', $_POST["razon"]);
     $stmt->bindParam(':dept', $_POST["dept"]);
@@ -94,6 +78,7 @@ function selectBD($id=0){
 }
 
 function crearPDF($id, $enviar=0){
+    // SERVICIO
     //---------------RECOGER DATOS---------------//
     $datos = selectBD($id);
     // DIRECCIÓN
@@ -132,12 +117,12 @@ function crearPDF($id, $enviar=0){
     $pdf->Cell($width, 5, iconv('UTF-8', 'windows-1252', $datos["local"]));
     $pdf->Ln(8);
     $pdf->SetFont('Arial','B',8);
-    $orden = $datos["tipo"] == 'servicio'?'TICKET DE SERVICIO':'FACTURA DE VENTA';
-    $pdf->Cell($width, 5, $orden . ' # ' . $id, 0, 1);
+    $pdf->Cell($width, 5, 'TICKET DE SERVICIO # ' . $id, 0, 1);
     $pdf->SetFont('Arial','',8);
     $pdf->Cell($width, 5, 'QUICK T&R, S.L.', 0, 1);
     $pdf->Cell($width, 5, iconv('UTF-8', 'windows-1252', $direccion), 0, 1);
-    $pdf->Cell($width, 5, 'Nro Telefono 933496389', 0, 1);
+    $pdf->Cell($width, 5, iconv('UTF-8', 'windows-1252', 'Nº Whatsapp: 612 259 631'), 0, 1);
+    $pdf->Cell($width, 5, iconv('UTF-8', 'windows-1252', 'Nº Telefono: 933 496 389'), 0, 1);
     $pdf->Ln();
     // DATOS CLIENTE
     $pdf->SetFont('Arial','B',8);
@@ -182,13 +167,6 @@ function crearPDF($id, $enviar=0){
     $pdf->Cell($width/4, 5, 'Precio Final', 0, 0);
     $pdf->Cell($width/1.5, 5, $datos["precio-final"], 1, 1);
     $pdf->Ln(1);
-    // FIRMA
-    if($datos["firma"]!=null){
-        $pdf->Cell($width/4, 5, 'Firma', 0, 0);
-        $pdf->Cell($width/1.5, 32, '', 1, 0);
-        $pdf->Ln(1);
-        $pdf->Image('upload/'.$datos["firma"], 20, null, $width/1.55);
-    }
 
     $pdf->Ln(5);
     $str = '¡¡¡¡¡NO PIERDAS TU TICKET
@@ -279,6 +257,131 @@ function crearPDF($id, $enviar=0){
     if($enviar != 0) $pdf->Output('F', 'doc.pdf', true);
 }
 
+function crearFactura($id, $enviar=0){
+    //---------------RECOGER DATOS---------------//
+    $datos = selectBD($id);
+    // DIRECCIÓN
+    switch($datos["local"]){
+        case 'Barcelona':
+            $direccion = 'Carrer de Valencia, 235 P-1, 08007';
+            break;
+        case 'Mataró':
+            $direccion = 'Ronda O\'Donnell, 14-16, 08302 Mataró, Barcelona';
+            break;
+        case 'Madrid':
+            $direccion = 'CL P.J. Maragall Num 1 16, 28020 Madrid, Madrid';
+            break;
+        default:
+            $direccion = 'Carrer de Valencia, 235 P-1, 08007';
+            break;
+    }
+
+    //---------------CREAR PDF---------------//
+
+    $pdf = new FPDF();
+    $width = $pdf->GetPageWidth();
+    $pdf->AddPage();
+    $pdf->SetMargins(2, 2, 2);
+    // LOGO
+    $pdf->Cell($width, 5);
+    $pdf->Ln(1);
+    $pdf->Image('LOGO.png', null, null, $width/3);
+    $pdf->Ln(1);
+    // DATOS QTR
+    $pdf->SetFont('Arial','',8);
+    $pdf->Cell($width/2, 5, 'Fecha: ' . date('d/m/Y'));
+    $pdf->Ln();
+    $pdf->Cell($width/2, 5, iconv('UTF-8', 'windows-1252', $datos["local"]));
+    $pdf->Ln(8);
+    $pdf->SetFont('Arial','B',8);
+    $pdf->Cell($width/2, 5, 'FACTURA DE VENTA # ' . $id, 0, 1);
+    $pdf->SetFont('Arial','',8);
+    $pdf->Cell($width/2, 5, 'QUICK T&R, S.L.', 0, 1);
+    $pdf->SetFont('Arial','B',8);
+    $pdf->Cell($width/2, 5, 'NIF: B19359082', 0, 1);
+    $pdf->SetFont('Arial','',8);
+    $pdf->Cell($width/2, 5, iconv('UTF-8', 'windows-1252', $direccion), 0, 1);
+    $pdf->Cell($width/2, 5, iconv('UTF-8', 'windows-1252', 'Nº Whatsapp: 612 259 631'), 0, 1);
+    $pdf->Cell($width/2, 5, iconv('UTF-8', 'windows-1252', 'Nº Telefono: 933 496 389'), 0, 1);
+    $pdf->Ln();
+
+    // DATOS CLIENTE
+    $pdf->SetXY($width/2, 20);
+    $pdf->SetFont('Arial','B',8);
+    $pdf->Cell($width/2, 5, 'DATOS DEL CLIENTE', 0, 1, 'C');
+    $pdf->SetXY($width/2, 25);
+    $pdf->SetFont('Arial','',8);
+    $pdf->Cell($width/8, 5, 'Nombre', 0, 0);
+    $pdf->Cell($width/4, 5, $datos["nombre"], 1, 1);
+    $pdf->Ln(1);
+    $pdf->SetXY($width/2, 30);
+    $pdf->Cell($width/8, 5, iconv('UTF-8', 'windows-1252', 'Teléfono'), 0, 0);
+    $pdf->Cell($width/4, 5, $datos["telefono"], 1, 1);
+    $pdf->Ln(1);
+    $pdf->SetXY($width/2, 35);
+    $pdf->Cell($width/8, 5, 'Dni/NIE', 0, 0);
+    $pdf->Cell($width/4, 5, $datos["documento"], 1, 1);
+    $pdf->Ln(1);
+    $pdf->SetXY($width/2, 40);
+    $pdf->Cell($width/8, 5, 'Email', 0, 0);
+    $pdf->Cell($width/4, 5, $datos["email"], 1, 1);
+    $pdf->Ln(1);
+    $pdf->SetXY($width/2, 45);
+    $pdf->Cell($width/8, 5, iconv('UTF-8', 'windows-1252', 'Dirección'), 0, 0);
+    $pdf->Cell($width/4, 5, $datos["direccion"], 1, 1);
+    $pdf->Ln(1);
+    $pdf->SetXY($width/2, 50);
+    $pdf->Cell($width/8, 5, iconv('UTF-8', 'windows-1252', 'C. Postal'), 0, 0);
+    $pdf->Cell($width/4, 5, $datos["cp"], 1, 1);
+
+    $pdf->Ln(30);
+
+    $pdf->Cell($width/2, 5, iconv('UTF-8', 'windows-1252', 'Descripción'), 1, 0);
+    $pdf->Cell($width/8.5, 5, iconv('UTF-8', 'windows-1252', 'IVA'), 1, 0);
+    $pdf->Cell($width/8.5, 5, iconv('UTF-8', 'windows-1252', 'P.U.'), 1, 0);
+    $pdf->Cell($width/8.5, 5, iconv('UTF-8', 'windows-1252', 'Cant.'), 1, 0);
+    $pdf->Cell($width/8.5, 5, iconv('UTF-8', 'windows-1252', 'Base Imp.'), 1, 1);
+
+    $pro = explode(",", $datos["desc"]);
+    $pre = explode(",", $datos["preciosVenta"]);
+    $total = 0;
+    for($i = 0;$i<count($pro);$i++){
+        if($pro[$i] == null) break;
+        $pdf->Cell($width/2, 5, iconv('UTF-8', 'windows-1252', $pro[$i]), 1, );
+        $pdf->Cell($width/8.5, 5, iconv('UTF-8', 'windows-1252', $datos["iva"]), 1, 0);
+        $pdf->Cell($width/8.5, 5, iconv('UTF-8', 'windows-1252',  $pre[$i]), 1, 0);
+        $pdf->Cell($width/8.5, 5, iconv('UTF-8', 'windows-1252', '1'), 1, 0);
+        $pdf->Cell($width/8.5, 5, iconv('UTF-8', 'windows-1252',  (/*CANTIDAD*/1*$pre[$i])), 1, 1);
+        $total += $pre[$i];
+    }
+    $iva = ($total * $datos["iva"])/100;
+    
+    $pdf->Ln(2);
+
+    $pdf->SetX($width/2+1);
+    $pdf->Cell($width/2.1, 5, iconv('UTF-8', 'windows-1252',  "Total (Base Imp.): ".$total." €"), 1, 1);
+    $pdf->SetX($width/2+1);
+    $pdf->Cell($width/2.1, 5, iconv('UTF-8', 'windows-1252',  "Total IVA: ".$iva." €"), 1, 1);
+    $pdf->SetX($width/2+1);
+    $pdf->Cell($width/2.1, 5, iconv('UTF-8', 'windows-1252',  "Total: ".($total + $iva)." €"), 1, 1);
+
+    $pdf->Ln(5);
+    $str = '¡¡¡¡¡NO PIERDAS TU TICKET
+    PARA RECLAMAR!!!!!
+        De acuerdo a nuestras politicas de
+        privacidad acepto las condiciones de
+        servicio descritas en el correo electronico
+        enviado con este ticket.';
+    $str = iconv('UTF-8', 'windows-1252', $str);
+    $pdf->MultiCell($width, 5, $str, null, 'C');
+
+    // ABRIR PDF
+    $pdf->Output('I', null, true);
+    
+    //---------------END CREAR PDF---------------//
+    if($enviar != 0) $pdf->Output('F', 'doc.pdf', true);
+}
+
 function crearTVenta(){
     //---------------RECOGER DATOS---------------//
     $n = $_POST["nombre"];
@@ -328,7 +431,8 @@ function crearTVenta(){
     $pdf->SetFont('Arial','',8);
     $pdf->Cell($width, 5, 'QUICK T&R, S.L.', 0, 1);
     $pdf->Cell($width, 5, iconv('UTF-8', 'windows-1252', $direccion), 0, 1);
-    $pdf->Cell($width, 5, 'Nro Telefono 933496389', 0, 1);
+    $pdf->Cell($width, 5, iconv('UTF-8', 'windows-1252', 'Nº Whatsapp: 612 259 631'), 0, 1);
+    $pdf->Cell($width, 5, iconv('UTF-8', 'windows-1252', 'Nº Telefono: 933 496 389'), 0, 1);
     $pdf->Ln();
     // DATOS CLIENTE
     $pdf->SetFont('Arial','B',8);

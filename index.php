@@ -40,8 +40,6 @@
         <!-- BOOTSTRAP -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-        <!-- SIGNATURE CSS -->
-        <link href="css/jquery.signature.css" rel="stylesheet">
         <style>
         .kbw-signature { width: 300px; height: 200px; }
         </style>
@@ -49,18 +47,9 @@
         <script src="jquery-3.7.1.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-        <!-- SIGNATURE JS -->
-        <script src="js/jquery.signature.js"></script>
         <style>
             body{
                 font-family: "comfortaa";
-            }
-            .material-symbols-outlined {
-              font-variation-settings:
-              'FILL' 0,
-              'wght' 400,
-              'GRAD' 0,
-              'opsz' 24
             }
         </style>
     </head>
@@ -158,26 +147,6 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-12 col-md-4 mb-3">
-                        <div class="form-floating">
-                            <input class="form-control" onblur="findTotal()" placeholder="Precio" type="number" step="0.01" name="precio" id="precio" required>
-                            <label for="precio">Precio €</label>
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-4 mb-3">
-                        <div class="form-floating">
-                            <input class="form-control" onblur="findTotal()" placeholder="Iva 21%" type="number" step="0.1" value=21 name="iva" id="iva" required>
-                            <label for="iva">Iva 21%</label>
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-4 mb-3">
-                        <div class="form-floating">
-                            <input class="form-control" onblur="findPrecio()" placeholder="Precio Final" step="0.01" type="number" name="precio-final" id="precio-final" required>
-                            <label for="precio-final">Precio Final €</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
                     <div class="col-12 mb-3">
                         <div class="form-floating">
                             <select onchange="bgChange()" class="form-control form-select" name="local" id="local" required>
@@ -205,41 +174,98 @@
                     </div>
                     <div id="serv-dept" class="col-12 col-md-6 mb-3">
                         <div class="form-floating">
-                            <div class="form-floating">
-                                <select class="form-control" name="dept" id="dept" required>
-                                    <option value="hardware">Hardware</option>
-                                    <option value="web">Web</option>
-                                    <option value="redes">Redes</option>
-                                </select>
-                                <label for="dept">Departamento</label>
-                            </div>
+                            <select class="form-control" name="dept" id="dept" required>
+                                <option value="hardware">Hardware</option>
+                                <option value="web">Web</option>
+                                <option value="redes">Redes</option>
+                            </select>
+                            <label for="dept">Departamento</label>
                         </div>
                     </div>
                 </div>
                 <div class="row">
-                    <div id="serv-motivo" class="col-12 col-md-6 mb-3">
+                    <div id="serv-motivo" class="col-12 mb-3">
                         <div class="form-floating">
                             <textarea rows="15" style="height:100%;" class="form-control" placeholder="Motivo" name="motivo" id="motivo"></textarea>
                             <label for="motivo">Motivo</label>
                         </div>
                     </div>
                     <div id="venta-desc" class="col-12 d-none mb-3">
-                        <div class="form-floating">
-                            <textarea rows="15" style="height:100%;" class="form-control" placeholder="Descripción" name="desc" id="desc"></textarea>
-                            <label for="desc">Descripción del producto</label>
+                        <div class="row">
+                            <div class="col-8 mb-1">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" placeholder="Descripción" name="prod1" id="prod1">
+                                    <label for="prod1">Descripción del producto</label>
+                                </div>
+                            </div>
+                            <div class="col-4 mb-3">
+                                <div class="form-floating">
+                                    <input type="number" step="0.01" onblur="findPrecioTotal()" class="form-control" placeholder="Precio" name="prec1" id="prec1">
+                                    <label for="prec1">Precio</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-8 mb-1">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" placeholder="Descripción" name="prod2" id="prod2">
+                                    <label for="prod2">Descripción del producto</label>
+                                </div>
+                            </div>
+                            <div class="col-4 mb-3">
+                                <div class="form-floating">
+                                    <input type="number" step="0.01" onblur="findPrecioTotal()" class="form-control" placeholder="Precio" name="prec2" id="prec2">
+                                    <label for="prec2">Precio</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-8 mb-1">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" placeholder="Descripción" name="prod3" id="prod3">
+                                    <label for="prod3">Descripción del producto</label>
+                                </div>
+                            </div>
+                            <div class="col-4 mb-3">
+                                <div class="form-floating">
+                                    <input type="number" step="0.01" onblur="findPrecioTotal()" class="form-control" placeholder="Precio" name="prec3" id="prec3">
+                                    <label for="prec3">Precio</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-8 mb-1">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" placeholder="Descripción" name="prod4" id="prod4">
+                                    <label for="prod4">Descripción del producto</label>
+                                </div>
+                            </div>
+                            <div class="col-4 mb-3">
+                                <div class="form-floating">
+                                    <input type="number" step="0.01" onblur="findPrecioTotal()" class="form-control" placeholder="Precio" name="prec4" id="prec4">
+                                    <label for="prec4">Precio</label>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div id="serv-firma" class="col-12 col-md-6 mb-3">
-                        <div class="form-control">
-                            <p>Firma</p>
-                            <div id="sig"></div>
-                            <p style="clear: both;">
-                                <button class="btn btn-secondary" id="clear">
-                                    <span class="material-symbols-outlined pt-1">delete</span>
-                                </button>
-                                <span class="d-none fw-bold" id="borrar">Borrar</span>
-                            </p>
-                            <textarea name="sign" id="sign" style="display: none"></textarea>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-md-4 mb-3">
+                        <div class="form-floating">
+                            <input class="form-control" onblur="findTotal()" placeholder="Precio" type="number" step="0.01" name="precio" id="precio" required>
+                            <label for="precio">Precio €</label>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4 mb-3">
+                        <div class="form-floating">
+                            <input class="form-control" onblur="findTotal()" placeholder="Iva 21%" type="number" step="0.1" value=21 name="iva" id="iva" required>
+                            <label for="iva">Iva 21%</label>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4 mb-3">
+                        <div class="form-floating">
+                            <input class="form-control" onblur="findPrecio()" placeholder="Precio Final" step="0.01" type="number" name="precio-final" id="precio-final" required>
+                            <label for="precio-final">Precio Final €</label>
                         </div>
                     </div>
                 </div>
@@ -249,23 +275,6 @@
             </form>
         </div>
         <script type="text/javascript">
-            // SCRIPT FIRMA
-            var sig = $('#sig').signature({syncField: '#sign', syncFormat: 'PNG'});
-            $('#clear').click(function(e) {
-                e.preventDefault();
-                sig.signature('clear');
-                $("#sign").val('');
-            });
-            $('#clear').hover(
-                function() {
-                    $('#clear').removeClass('btn-secondary').addClass('btn-danger');
-                    $('#borrar').removeClass('d-none');
-                },
-                function() {
-                    $('#clear').removeClass('btn-danger').addClass('btn-secondary');
-                    $('#borrar').addClass('d-none');
-                }
-            );
             // CÁLCULOS IVA
             function findTotal() {
                 var precio = parseFloat(document.getElementById('precio').value);
@@ -281,12 +290,28 @@
                 let calc = (final/(100+iva))*100;
                 document.getElementById('precio').value = calc.toFixed(2);
             }
+            function findPrecioTotal(){
+                var p1 = document.getElementById('prec1').value;
+                var p2 = document.getElementById('prec2').value;
+                var p3 = document.getElementById('prec3').value;
+                var p4 = document.getElementById('prec4').value;
+                var precio = parseFloat(document.getElementById('precio').value);
+                if(isNaN(precio)) precio = 0;
+                if(p1=="") p1 = 0;
+                if(p2=="") p2 = 0;
+                if(p3=="") p3 = 0;
+                if(p4=="") p4 = 0;
+                let total = parseFloat(p1)+parseFloat(p2)+parseFloat(p3)+parseFloat(p4);
+                if(!isNaN(total)){
+                    document.getElementById('precio').value = total.toFixed(2);
+                }
+                findTotal();
+            }
             // CAMBIO DE FORMULARIO
             function formChange() {
                 var t = document.getElementById('tipo').value;
                 if(t == 'servicio'){
                     $('#serv-motivo').removeClass('d-none');
-                    $('#serv-firma').removeClass('d-none');
                     $('#serv-razon').removeClass('col-md-12');
                     $('#serv-razon').addClass('col-md-6');
                     $('#email-change').removeClass('col-md-12');
@@ -297,7 +322,6 @@
                     $('#venta-dir').addClass('d-none');
                 } else if(t == 'venta'){
                     $('#serv-motivo').addClass('d-none');
-                    $('#serv-firma').addClass('d-none');
                     $('#serv-razon').removeClass('col-md-6');
                     $('#serv-razon').addClass('col-md-12');
                     $('#email-change').removeClass('col-md-6');

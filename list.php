@@ -66,7 +66,23 @@
                 $id = $_GET["id"];
                 echo '<a href="list.php" class="btn btn-secondary mx-2 mt-3">Volver</a>';
                 $row = selectBD($id);
-                echo '<a href="execute.php?pdf=1&id='.$id.'" target="_blank" class="btn btn-danger mx-2 mt-3">Factura Simplificada</a>';
+                if($row["tipo"]=="venta"){
+                    $d = explode(",", $row["desc"]);
+                    $desc = '<b>Producto(s):</b> '.$d[0];
+                    if($d[1]!=null) $desc.= ", " . $d[1];
+                    if($d[2]!=null) $desc.= ", " . $d[2];
+                    if($d[3]!=null) $desc.= ", " . $d[3];
+                    $p = explode(",", $row["preciosVenta"]);
+                    $precios = '<p class="card-text"><b>Precio(s):</b> '.$p[0].'€';
+                    if($p[1]!=null) $precios.= ", " . $p[1].'€';
+                    if($p[2]!=null) $precios.= ", " . $p[2].'€';
+                    if($p[3]!=null) $precios.= ", " . $p[3].'€';
+                    $precios.= "</p>";
+                } else{
+                    $desc = '<b>Descripción:</b> '.$row["desc"];
+                    $precios = "";
+                }
+                echo '<a href="execute.php?'.$row["tipo"].'=1&id='.$id.'" target="_blank" class="btn btn-danger mx-2 mt-3">Factura/Ticket</a>';
                 echo '<a href="execute.php?enviar=1&id='.$id.'" target="_blank" class="btn btn-success mx-2 mt-3">Enviar</a>';
                 echo '<a href="edit.php?id='.$id.'" class="btn btn-primary mx-2 mt-3">Editar</a>';
                 echo '<button type="button" class="btn btn-danger mx-2 mt-3" data-bs-toggle="modal" data-bs-target="#elimModal">Eliminar</button>';
@@ -81,15 +97,17 @@
                                     <p class="card-text"><b>Email:</b> '.$row["email"].'</p>
                                     <p class="card-text"><b>Dirección:</b> '.$row["direccion"]." - ".$row["cp"].'</p>
                                     <p class="card-text"><b>Teléfono:</b> <a href="https://wa.me//'.$row["telefono"].'" target="_blank">'.$row["telefono"].'<a></p>
-                                    <p class="card-text"><b>Descripción:</b> '.$row["desc"].'</p>
+                                    <hr>
+                                    <p class="card-text">'.$desc.'</p>
+                                    '.$precios.'
                                     <p class="card-text"><b>Local:</b> '.$row["local"].'</p>
                                     <p class="card-text"><b>Cómo nos encontró:</b> '.$row["razon"].'</p>
                                     <p class="card-text"><b>Departamento:</b> '.$row["dept"].'</p>
                                     ';
-                                    if($row["tipo"] == "servicio") echo '<p class="card-text"><b>Firma:</b> <img src="upload/'.$row["firma"].'" alt="firma"></p>';
                                     echo'
-                                </div> 
-                                <ul class="list-group list-group-flush">
+                                </div>
+                                <hr> 
+                                <ul class="list-group list-group-flush mb-3">
                                     <li class="list-group-item"><b>Precio:</b> '.$row["precio"].'€ (+ IVA '.$row["iva"].'%) = <b>'.$row["precio-final"].'€</b></li>
                                 </ul>
                             </div>

@@ -1,5 +1,5 @@
 <input list="countryCode" name="countryCode" class="form-control" placeholder="">
-<label for="countryCode">Código de país</label>
+<label for="countryCode">(+Código)</label>
 <datalist id="countryCode" class="form-control d-none" required>
         <option data-countryCode="DZ" value="+213">Algeria (+213)</option>
         <option data-countryCode="AD" value="+376">Andorra (+376)</option>
