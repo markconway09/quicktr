@@ -58,6 +58,7 @@
         <nav class="navbar navbar-light" style="background-color:rgb(43,45,46);">
             <a class="navbar-brand mx-auto" href="https://quicktr.com/" target="_blank">
                 <img class="rounded" src="LOGO.png" alt="logo" height="90">
+                <span class="badge badge-pill bg-danger">1.74</span>
             </a>
             <a href="venta.php" class="btn btn-success">Ticket Venta</a>
             <?php
