@@ -3,7 +3,7 @@
 require_once "functions.php";
 
 if(isset($_POST["guardar"])){
-    $id = insertarBD($firma);
+    $id = insertarBD();
     header('Location: list.php?id='.$id);
 }
 if(isset($_GET["enviar"])) enviarCorreo($_GET["id"]);

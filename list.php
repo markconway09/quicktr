@@ -67,17 +67,35 @@
                 echo '<a href="list.php" class="btn btn-secondary mx-2 mt-3">Volver</a>';
                 $row = selectBD($id);
                 if($row["tipo"]=="venta"){
-                    $d = explode(",", $row["desc"]);
-                    $desc = '<b>Producto(s):</b> '.$d[0];
-                    if($d[1]!=null) $desc.= ", " . $d[1];
-                    if($d[2]!=null) $desc.= ", " . $d[2];
-                    if($d[3]!=null) $desc.= ", " . $d[3];
-                    $p = explode(",", $row["preciosVenta"]);
-                    $precios = '<p class="card-text"><b>Precio(s):</b> '.$p[0].'€';
-                    if($p[1]!=null) $precios.= ", " . $p[1].'€';
-                    if($p[2]!=null) $precios.= ", " . $p[2].'€';
-                    if($p[3]!=null) $precios.= ", " . $p[3].'€';
+                    $d = explode(";", $row["desc"]);
+                    $desc = '<b>Producto(s):</b> ';
+                    for($k = 0; $k<count($d);){
+                        $desc .= $d[$k];
+                        $k++;
+                        if(isset($d[$k])){
+                            $desc .= ", ";
+                        }
+                    }
+                    $p = explode(";", $row["preciosVenta"]);
+                    $precios = '<p class="card-text"><b>Precio(s):</b> ';
+                    for($k = 0; $k<count($p);){
+                        $precios .= $p[$k];
+                        $k++;
+                        if(isset($p[$k])){
+                            $precios .= ", ";
+                        }
+                    }
                     $precios.= "</p>";
+                    $c = explode(";", $row["cantidadVenta"]);
+                    $cant = '<p class="card-text"><b>Cantidad(es):</b> ';
+                    for($k = 0; $k<count($c);){
+                        $cant .= $c[$k];
+                        $k++;
+                        if(isset($c[$k])){
+                            $cant .= ", ";
+                        }
+                    }
+                    $cant.= "</p>";
                 } else{
                     $desc = '<b>Descripción:</b> '.$row["desc"];
                     $precios = "";
@@ -99,7 +117,7 @@
                                     <p class="card-text"><b>Teléfono:</b> <a href="https://wa.me//'.$row["telefono"].'" target="_blank">'.$row["telefono"].'<a></p>
                                     <hr>
                                     <p class="card-text">'.$desc.'</p>
-                                    '.$precios.'
+                                    '.$precios.$cant.'
                                     <p class="card-text"><b>Local:</b> '.$row["local"].'</p>
                                     <p class="card-text"><b>Cómo nos encontró:</b> '.$row["razon"].'</p>
                                     <p class="card-text"><b>Departamento:</b> '.$row["dept"].'</p>

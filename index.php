@@ -149,10 +149,9 @@
                 <div class="row">
                     <div class="col-12 mb-3">
                         <div class="form-floating">
-                            <select onchange="bgChange()" class="form-control form-select" name="local" id="local" required>
+                            <select class="form-control form-select" name="local" id="local" required>
                                 <option class="text-primary" value="Barcelona">Barcelona</option>
                                 <option class="text-success" value="Mataró">Mataró</option>
-                                <option class="text-warning" value="Madrid">Madrid</option>
                             </select>
                             <label for="local">Local</label>
                         </div>
@@ -162,14 +161,23 @@
                     <div id="serv-razon" class="col-12 col-md-6 mb-3">
                         <div class="form-floating">
                         <select class="form-control" name="razon" id="razon" required>
-                                <option value="sin especificar" selected>-</option>
-                                <option value="web">Página Web</option>
-                                <option value="maps">Google/Apple Maps</option>
-                                <option value="flyer">Flyer</option>
-                                <option value="retorno">Retorno de cliente</option>
-                                <option value="otro">Otro</option>
+                                <option value="Sin especificar" selected>-</option>
+                                <option value="Marketing/RSS">Marketing/Redes Sociales</option>
+                                <option value="Maps">Google/Apple Maps</option>
+                                <option value="Flyer">Flyer</option>
+                                <option value="Retorno">Retorno de cliente</option>
+                                <option value="Otro">Otro</option>
                             </select>
                             <label for="razon">Como nos encontró</label>
+                        </div>
+                    </div>
+                    <div id="metodo" class="col-12 col-md-6 mb-3 d-none">
+                        <div class="form-floating">
+                        <select class="form-control" name="metodo" id="metodo" required>
+                                <option value="Tarjeta">Tarjeta/Bizum</option>
+                                <option value="Efectivo">Efectivo</option>
+                            </select>
+                            <label for="metodo">Método de pago</label>
                         </div>
                     </div>
                     <div id="serv-dept" class="col-12 col-md-6 mb-3">
@@ -183,70 +191,33 @@
                         </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div id="serv-motivo" class="col-12 mb-3">
-                        <div class="form-floating">
+                <div class="row mb-3">
+                    <div id="serv-motivo" class="col-12">
+                        <div class="form-floating mb-3">
                             <textarea rows="5" style="height:100%;" class="form-control" placeholder="Descripción" name="motivo" id="motivo"></textarea>
                             <label for="motivo">Descripción</label>
                         </div>
                     </div>
-                    <div id="venta-desc" class="col-12 d-none mb-3">
-                        <div class="row">
-                            <div class="col-8 mb-1">
-                                <div class="form-floating">
-                                    <input type="text" class="form-control" placeholder="Descripción" name="prod1" id="prod1">
-                                    <label for="prod1">Descripción del producto</label>
-                                </div>
+                    <div id="venta-desc" class="col-12 d-none">
+                        <div class="input-group mb-3" id="input-prod">
+                            <div class="form-floating w-50">
+                                <input type="text" class="form-control" placeholder="Descripción" name="prod1" id="prod1">
+                                <label for="prod1">Descripción del producto</label>
                             </div>
-                            <div class="col-4 mb-3">
-                                <div class="form-floating">
-                                    <input type="number" step="0.01" onblur="findPrecioTotal()" class="form-control" placeholder="Precio" name="prec1" id="prec1">
-                                    <label for="prec1">Precio</label>
-                                </div>
+                            <div class="form-floating w-25">
+                                <input type="number" step="0.01" onblur="findPrecioTotal()" class="form-control" placeholder="Precio" name="prec1" id="prec1">
+                                <label for="prec1">Precio</label>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-8 mb-1">
-                                <div class="form-floating">
-                                    <input type="text" class="form-control" placeholder="Descripción" name="prod2" id="prod2">
-                                    <label for="prod2">Descripción del producto</label>
-                                </div>
-                            </div>
-                            <div class="col-4 mb-3">
-                                <div class="form-floating">
-                                    <input type="number" step="0.01" onblur="findPrecioTotal()" class="form-control" placeholder="Precio" name="prec2" id="prec2">
-                                    <label for="prec2">Precio</label>
-                                </div>
+                            <div class="form-floating w-25">
+                                <input type="number" onblur="findPrecioTotal()" class="form-control" placeholder="Cantidad" value=1 name="cant1" id="cant1">
+                                <label for="cant1">Cantidad</label>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-8 mb-1">
-                                <div class="form-floating">
-                                    <input type="text" class="form-control" placeholder="Descripción" name="prod3" id="prod3">
-                                    <label for="prod3">Descripción del producto</label>
-                                </div>
-                            </div>
-                            <div class="col-4 mb-3">
-                                <div class="form-floating">
-                                    <input type="number" step="0.01" onblur="findPrecioTotal()" class="form-control" placeholder="Precio" name="prec3" id="prec3">
-                                    <label for="prec3">Precio</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-8 mb-1">
-                                <div class="form-floating">
-                                    <input type="text" class="form-control" placeholder="Descripción" name="prod4" id="prod4">
-                                    <label for="prod4">Descripción del producto</label>
-                                </div>
-                            </div>
-                            <div class="col-4 mb-3">
-                                <div class="form-floating">
-                                    <input type="number" step="0.01" onblur="findPrecioTotal()" class="form-control" placeholder="Precio" name="prec4" id="prec4">
-                                    <label for="prec4">Precio</label>
-                                </div>
-                            </div>
-                        </div>
+                    </div>
+                </div>
+                <div id="btn-prod" class="row d-none">
+                    <div class="col-12 mx-auto mb-3">
+                        <button type="button" class="btn btn-secondary" onclick="addProd()">+ Añadir Producto</button>
                     </div>
                 </div>
                 <div class="row">
@@ -291,17 +262,22 @@
                 document.getElementById('precio').value = calc.toFixed(2);
             }
             function findPrecioTotal(){
-                var p1 = document.getElementById('prec1').value;
-                var p2 = document.getElementById('prec2').value;
-                var p3 = document.getElementById('prec3').value;
-                var p4 = document.getElementById('prec4').value;
+                var productos = document.getElementById("venta-desc");
+                var children = productos.children;
+
+                let total = parseFloat(0);
+
                 var precio = parseFloat(document.getElementById('precio').value);
                 if(isNaN(precio)) precio = 0;
-                if(p1=="") p1 = 0;
-                if(p2=="") p2 = 0;
-                if(p3=="") p3 = 0;
-                if(p4=="") p4 = 0;
-                let total = parseFloat(p1)+parseFloat(p2)+parseFloat(p3)+parseFloat(p4);
+
+                for(let i=1;i<=children.length;i++){
+                    let pre = document.getElementById("prec"+i).value;
+                    let can = document.getElementById("cant"+i).value;
+                    if(pre=="")pre = 0;
+                    if(can=="")can = 0;
+                    total += (parseFloat(pre)*can);
+                }
+                
                 if(!isNaN(total)){
                     document.getElementById('precio').value = total.toFixed(2);
                 }
@@ -312,52 +288,45 @@
                 var t = document.getElementById('tipo').value;
                 if(t == 'servicio'){
                     $('#serv-motivo').removeClass('d-none');
-                    $('#serv-razon').removeClass('col-md-12');
-                    $('#serv-razon').addClass('col-md-6');
                     $('#email-change').removeClass('col-md-12');
                     $('#email-change').addClass('col-md-6');
                     $('#servicio-change').removeClass('d-none');
                     $('#serv-dept').removeClass('d-none');
                     $('#venta-desc').addClass('d-none');
                     $('#venta-dir').addClass('d-none');
+                    $('#btn-prod').addClass('d-none');
+                    $('#metodo').addClass('d-none');
                 } else if(t == 'venta'){
                     $('#serv-motivo').addClass('d-none');
-                    $('#serv-razon').removeClass('col-md-6');
-                    $('#serv-razon').addClass('col-md-12');
                     $('#email-change').removeClass('col-md-6');
                     $('#email-change').addClass('col-md-12');
                     $('#servicio-change').addClass('d-none');
                     $('#serv-dept').addClass('d-none');
                     $('#venta-desc').removeClass('d-none');
                     $('#venta-dir').removeClass('d-none');
+                    $('#btn-prod').removeClass('d-none');
+                    $('#metodo').removeClass('d-none');
                 }
             }
 
-            // CAMBIO COLOR SELECT LOCAL
-            $(document).ready(bgChange());
-            function bgChange() {
-                var sel = document.getElementById("local");
-                var ind = sel.selectedIndex;
-                var opt = sel.options;
-
-                switch(opt[ind].value){
-                    case "Barcelona":
-                        $('#local').addClass("text-primary");
-                        $('#local').removeClass("text-success");
-                        $('#local').removeClass("text-warning");
-                        break;
-                    case "Mataró":
-                        $('#local').removeClass("text-primary");
-                        $('#local').addClass("text-success");
-                        $('#local').removeClass("text-warning");
-                        break;
-                    case "Badalona":
-                        $('#local').removeClass("text-primary");
-                        $('#local').removeClass("text-success");
-                        $('#local').addClass("text-warning");
-                        break;
-                }
-
+            var i = 1;
+            function addProd(){
+                var prod = document.getElementById("venta-desc");
+                var clone = document.getElementById("input-prod").cloneNode(true);
+                i++;
+                clone.innerHTML='<div class="form-floating w-50">'+
+                                    '<input type="text" class="form-control" placeholder="Descripción" name="prod'+i+'" id="prod'+i+'">'+
+                                    '<label for="prod'+i+'">Descripción del producto</label>'+
+                                '</div>'+
+                                '<div class="form-floating w-25">'+
+                                    '<input type="number" step="0.01" onblur="findPrecioTotal()" class="form-control" placeholder="Precio" name="prec'+i+'" id="prec'+i+'">'+
+                                    '<label for="prec'+i+'">Precio</label>'+
+                                '</div>'+
+                                '<div class="form-floating w-25">'+
+                                    '<input type="number" onblur="findPrecioTotal()" class="form-control" placeholder="Cantidad" value=1 name="cant'+i+'" id="cant'+i+'">'+
+                                    '<label for="cant'+i+'">Cantidad</label>'+
+                                '</div>';
+                prod.appendChild(clone);
             }
         </script>
     </body>

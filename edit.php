@@ -148,7 +148,6 @@
                                 <option value="'.$datos["local"].'" selected>Actual: '.$datos["local"].'</option>
                                 <option class="text-bg-secondary" value="Barcelona">Barcelona</option>
                                 <option class="text-bg-success" value="Mataró">Mataró</option>
-                                <option class="text-bg-warning" value="Badalona">Badalona</option>
                             </select>
                             <label for="local">Local</label>
                         </div>
@@ -157,12 +156,12 @@
                         <div class="form-floating">
                         <select class="form-control" name="razon" id="razon" required>
                                 <option value="'.$datos["razon"].'" selected>Actual: '.ucfirst($datos["razon"]).'</option>
-                                <option value="sin especificar">-</option>
-                                <option value="web">Página Web</option>
-                                <option value="maps">Google/Apple Maps</option>
-                                <option value="flyer">Flyer</option>
-                                <option value="retorno">Retorno de cliente</option>
-                                <option value="otro">Otro</option>
+                                <option value="Sin especificar">-</option>
+                                <option value="Marketing/RSS">Marketing/Redes Sociales</option>
+                                <option value="Maps">Google/Apple Maps</option>
+                                <option value="Flyer">Flyer</option>
+                                <option value="Retorno">Retorno de cliente</option>
+                                <option value="Otro">Otro</option>
                             </select>
                             <label for="razon">Como nos encontró</label>
                         </div>
@@ -171,10 +170,24 @@
                 <div class="row">';
                 echo '<div class="col-12 mb-3">
                         <div class="form-floating">
-                            <textarea rows="15" style="height:100%;" class="form-control" placeholder="Descripción" name="desc" id="desc">'.$datos["desc"].'</textarea>
+                            <textarea rows="2" style="height:100%;" class="form-control" name="desc" id="desc">'.$datos["desc"].'</textarea>
                             <label for="desc">Descripción del producto</label>
                         </div>
                     </div>';
+                    if($datos["tipo"]=="venta"){
+                        echo '<div class="col-12 mb-3">
+                                <div class="form-floating">
+                                    <textarea rows="1" style="height:100%;" class="form-control" name="prec" id="prec">'.$datos["preciosVenta"].'</textarea>
+                                    <label for="prec">Precio del producto</label>
+                                </div>
+                            </div>';
+                        echo '<div class="col-12 mb-3">
+                                <div class="form-floating">
+                                    <textarea rows="1" style="height:100%;" class="form-control" name="cant" id="cant">'.$datos["cantidadVenta"].'</textarea>
+                                    <label for="cant">Cantidad del producto</label>
+                                </div>
+                            </div>';
+                    }
                 echo'
                 </div>
                 <div class="row">

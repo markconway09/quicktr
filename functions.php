@@ -16,17 +16,31 @@ function connect(){
     }
 }
 
-function insertarBD($firma){
+function insertarBD(){
     $tel = $_POST["countryCode"] . $_POST["tel"];
     $servicio="-";$desc="-";
     if($_POST["tipo"]=='servicio'){
         $servicio = $_POST["servicio"];
         $desc = $_POST["motivo"];
         $pV = "";
+        $cV = "";
     }else{
         $servicio = "Venta";
-        $desc = $_POST["prod1"].",".$_POST["prod2"].",".$_POST["prod3"].",".$_POST["prod4"];
-        $pV = $_POST["prec1"].",".$_POST["prec2"].",".$_POST["prec3"].",".$_POST["prec4"];
+        $k = 1;
+        $desc = "";
+        $pV = "";
+        $cV = "";
+        while(isset($_POST["prod".$k])){
+            $desc .= $_POST["prod".$k];
+            $pV .= $_POST["prec".$k];
+            $cV .= $_POST["cant".$k];
+            $k++;
+            if(isset($_POST["prod".$k])){
+                $desc .= ";";
+                $pV .= ";";
+                $cV .= ";";
+            }
+        }
     }
     $doc="-";$dir="-";$cp="-";
     if(isset($_POST["doc"])) $doc = $_POST["doc"];
@@ -34,7 +48,7 @@ function insertarBD($firma){
     if(isset($_POST["cp"])) $cp = $_POST["cp"];
     $pdo = connect();
     $stmt = $pdo->prepare("INSERT INTO info_orden VALUES 
-    (null, :nom, :tel, :doc, :ser, :email, :direccion, :cp, :preciosV, :precio, :iva, :final, :descr, :loc, :fecha, :tipo, :razon, :dept)");
+    (null, :nom, :tel, :doc, :ser, :email, :direccion, :cp, :preciosV, :cantV, :precio, :iva, :final, :metodo, :descr, :loc, :fecha, :tipo, :razon, :dept)");
     $stmt->bindParam(':nom', $_POST["nombre"]);
     $stmt->bindParam(':tel', $tel);
     $stmt->bindParam(':doc', $doc);
@@ -43,9 +57,11 @@ function insertarBD($firma){
     $stmt->bindParam(':direccion', $dir);
     $stmt->bindParam(':cp', $cp);
     $stmt->bindParam(':preciosV', $pV);
+    $stmt->bindParam(':cantV', $cV);
     $stmt->bindParam(':precio', $_POST["precio"]);
     $stmt->bindParam(':iva', $_POST["iva"]);
     $stmt->bindParam(':final', $_POST["precio-final"]);
+    $stmt->bindParam(':metodo', $_POST["metodo"]);
     $stmt->bindParam(':descr', $desc);
     $stmt->bindParam(':loc', $_POST["local"]);
     $date = date('Y-m-d');
@@ -56,7 +72,8 @@ function insertarBD($firma){
     try {
         $stmt->execute();
     } catch(PDOException $e){
-        echo $e->getMessage();
+        echo $e->getMessage()."<br>";
+        $stmt->debugDumpParams();
     }
     return $pdo->lastInsertId();
 }
@@ -88,9 +105,6 @@ function crearPDF($id, $enviar=0){
             break;
         case 'Mataró':
             $direccion = 'Ronda O\'Donnell, 14-16, 08302 Mataró, Barcelona';
-            break;
-        case 'Madrid':
-            $direccion = 'CL P.J. Maragall Num 1 16, 28020 Madrid, Madrid';
             break;
         default:
             $direccion = 'Carrer de Valencia, 235 P-1, 08007';
@@ -261,27 +275,14 @@ function crearFactura($id, $enviar=0){
     //---------------RECOGER DATOS---------------//
     $datos = selectBD($id);
     // DIRECCIÓN
-    switch($datos["local"]){
-        case 'Barcelona':
-            $direccion = 'Carrer de Valencia, 235 P-1, 08007';
-            break;
-        case 'Mataró':
-            $direccion = 'Ronda O\'Donnell, 14-16, 08302 Mataró, Barcelona';
-            break;
-        case 'Madrid':
-            $direccion = 'CL P.J. Maragall Num 1 16, 28020 Madrid, Madrid';
-            break;
-        default:
-            $direccion = 'Carrer de Valencia, 235 P-1, 08007';
-            break;
-    }
+    $direccion = 'CL P.J. Maragall Num 1 16, 28020 Madrid, Madrid';
 
     //---------------CREAR PDF---------------//
 
     $pdf = new FPDF();
     $width = $pdf->GetPageWidth();
     $pdf->AddPage();
-    $pdf->SetMargins(2, 2, 2);
+    $pdf->SetMargins(10, 10, 10);
     // LOGO
     $pdf->Cell($width, 5);
     $pdf->Ln(1);
@@ -337,43 +338,43 @@ function crearFactura($id, $enviar=0){
     $pdf->Ln(30);
 
     $pdf->Cell($width/2, 5, iconv('UTF-8', 'windows-1252', 'Descripción'), 1, 0);
-    $pdf->Cell($width/8.5, 5, iconv('UTF-8', 'windows-1252', 'IVA'), 1, 0);
-    $pdf->Cell($width/8.5, 5, iconv('UTF-8', 'windows-1252', 'P.U.'), 1, 0);
-    $pdf->Cell($width/8.5, 5, iconv('UTF-8', 'windows-1252', 'Cant.'), 1, 0);
-    $pdf->Cell($width/8.5, 5, iconv('UTF-8', 'windows-1252', 'Base Imp.'), 1, 1);
+    $pdf->Cell($width/10, 5, iconv('UTF-8', 'windows-1252', 'IVA'), 1, 0);
+    $pdf->Cell($width/10, 5, iconv('UTF-8', 'windows-1252', 'P.U.'), 1, 0);
+    $pdf->Cell($width/10, 5, iconv('UTF-8', 'windows-1252', 'Cant.'), 1, 0);
+    $pdf->Cell($width/10, 5, iconv('UTF-8', 'windows-1252', 'Base Imp.'), 1, 1);
 
-    $pro = explode(",", $datos["desc"]);
-    $pre = explode(",", $datos["preciosVenta"]);
+    $pro = explode(";", $datos["desc"]);
+    $pre = explode(";", $datos["preciosVenta"]);
+    $can = explode(";", $datos["cantidadVenta"]);
     $total = 0;
     for($i = 0;$i<count($pro);$i++){
         if($pro[$i] == null) break;
-        $pdf->Cell($width/2, 5, iconv('UTF-8', 'windows-1252', $pro[$i]), 1, );
-        $pdf->Cell($width/8.5, 5, iconv('UTF-8', 'windows-1252', $datos["iva"]), 1, 0);
-        $pdf->Cell($width/8.5, 5, iconv('UTF-8', 'windows-1252',  $pre[$i]), 1, 0);
-        $pdf->Cell($width/8.5, 5, iconv('UTF-8', 'windows-1252', '1'), 1, 0);
-        $pdf->Cell($width/8.5, 5, iconv('UTF-8', 'windows-1252',  (/*CANTIDAD*/1*$pre[$i])), 1, 1);
-        $total += $pre[$i];
+        $pdf->Cell($width/2, 5, iconv('UTF-8', 'windows-1252', $pro[$i]), 1, 0);
+        $pdf->Cell($width/10, 5, iconv('UTF-8', 'windows-1252', $datos["iva"]), 1, 0);
+        $pdf->Cell($width/10, 5, iconv('UTF-8', 'windows-1252',  $pre[$i]), 1, 0);
+        $pdf->Cell($width/10, 5, iconv('UTF-8', 'windows-1252', $can[$i]), 1, 0);
+        $pdf->Cell($width/10, 5, iconv('UTF-8', 'windows-1252',  ($can[$i]*$pre[$i])), 1, 1);
+        $total += ($pre[$i]*$can[$i]);
     }
     $iva = ($total * $datos["iva"])/100;
     
     $pdf->Ln(2);
 
-    $pdf->SetX($width/2+1);
-    $pdf->Cell($width/2.1, 5, iconv('UTF-8', 'windows-1252',  "Total (Base Imp.): ".$total." €"), 1, 1);
-    $pdf->SetX($width/2+1);
-    $pdf->Cell($width/2.1, 5, iconv('UTF-8', 'windows-1252',  "Total IVA: ".$iva." €"), 1, 1);
-    $pdf->SetX($width/2+1);
-    $pdf->Cell($width/2.1, 5, iconv('UTF-8', 'windows-1252',  "Total: ".($total + $iva)." €"), 1, 1);
+    $pdf->SetX($width/1.72);
+    $pdf->Cell($width/6, 5, iconv('UTF-8', 'windows-1252',  "Total (Base Imp.): "), 1, 0);
+    $pdf->Cell($width/5, 5, iconv('UTF-8', 'windows-1252',  $total." €"), 1, 1);
+    $pdf->SetX($width/1.72);
+    $pdf->Cell($width/6, 5, iconv('UTF-8', 'windows-1252',  "Total IVA: "), 1, 0);
+    $pdf->Cell($width/5, 5, iconv('UTF-8', 'windows-1252',  $iva." €"), 1, 1);
+    $pdf->SetX($width/1.72);
+    $pdf->Cell($width/6, 5, iconv('UTF-8', 'windows-1252',  "Total: "), 1, 0);
+    $pdf->Cell($width/5, 5, iconv('UTF-8', 'windows-1252',  ($total + $iva)." €"), 1, 1);
 
     $pdf->Ln(5);
-    $str = '¡¡¡¡¡NO PIERDAS TU TICKET
-    PARA RECLAMAR!!!!!
-        De acuerdo a nuestras politicas de
-        privacidad acepto las condiciones de
-        servicio descritas en el correo electronico
-        enviado con este ticket.';
-    $str = iconv('UTF-8', 'windows-1252', $str);
-    $pdf->MultiCell($width, 5, $str, null, 'C');
+    $metodo = $datos["metodo"];
+    $pdf->SetX($width/1.8);
+    $str = iconv('UTF-8', 'windows-1252', 'Método de pago: '.$metodo);
+    $pdf->MultiCell($width/5, 5, $str, null, 'C');
 
     // ABRIR PDF
     $pdf->Output('I', null, true);
@@ -570,9 +571,6 @@ function enviarCorreo($id){
         $mail->addAddress($datos["email"]);
         crearPDF($id, 1);
         $mail->addAttachment('doc.pdf');
-        if($datos["firma"]!=null){
-            $mail->AddEmbeddedImage('upload/'.$datos["firma"], 'firma');
-        }
 
         //Content
         $mail->isHTML(true);
@@ -606,10 +604,7 @@ function enviarCorreo($id){
             <p>
             Observaciones: '.$datos["desc"].'
             </p>
-            <p>
-            Firma
-            </p>
-            <img src="cid:firma"></body></html>';
+            </body></html>';
 
         $mail->send();
     } catch (Exception $e) {
@@ -623,7 +618,7 @@ function editarEntrada($id){
     if(isset($_POST["direccion"])) $dir = $_POST["direccion"];
     if(isset($_POST["cp"])) $cp = $_POST["cp"];
     $pdo = connect();
-    $stmt = $pdo->prepare("UPDATE `info_orden` SET `nombre` = :nombre, `telefono` = :tel, `documento` = :doc, `servicio` = :servicio, `email` = :email, `direccion` = :direccion, `cp` = :cp, `precio` = :precio, `iva` = :iva, `precio-final` = :preciofinal, `desc` = :de, `local` = :loc, `razon` = :razon WHERE `info_orden`.`id` = :id");
+    $stmt = $pdo->prepare("UPDATE `info_orden` SET `nombre` = :nombre, `telefono` = :tel, `documento` = :doc, `servicio` = :servicio, `email` = :email, `direccion` = :direccion, `cp` = :cp, `preciosVenta`=:pV, `cantidadVenta`=:cV, `precio` = :precio, `iva` = :iva, `precio-final` = :preciofinal, `desc` = :de, `local` = :loc, `razon` = :razon WHERE `info_orden`.`id` = :id");
     $stmt->bindParam(':id', $id);
     $stmt->bindParam(':nombre', $_POST["nombre"]);
     $stmt->bindParam(':tel', $_POST["tel"]);
@@ -632,6 +627,8 @@ function editarEntrada($id){
     $stmt->bindParam(':email', $_POST["email"]);
     $stmt->bindParam(':direccion', $dir);
     $stmt->bindParam(':cp', $cp);
+    $stmt->bindParam(':pV', $_POST["prec"]);
+    $stmt->bindParam(':cV', $_POST["cant"]);
     $stmt->bindParam(':precio', $_POST["precio"]);
     $stmt->bindParam(':iva', $_POST["iva"]);
     $stmt->bindParam(':preciofinal', $_POST["precio-final"]);
