@@ -40,9 +40,7 @@
         <!-- BOOTSTRAP -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-        <style>
-        .kbw-signature { width: 300px; height: 200px; }
-        </style>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
         <!-- JQUERY -->
         <script src="jquery-3.7.1.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
@@ -60,11 +58,10 @@
                 <img class="rounded" src="LOGO.png" alt="logo" height="90">
                 <span class="badge badge-pill bg-danger">1.74</span>
             </a>
-            <a href="venta.php" class="btn btn-success">Ticket Venta</a>
             <?php
             if(isset($_SESSION["login"])){
-                echo '<a href="list.php" class="btn btn-secondary mx-2">Lista</a>';
-                echo '<a href="index.php?logout=true" class="btn btn-danger mx-2">Log Out</a>';
+                echo '<a href="list.php" class="btn btn-secondary mx-2"><i class="bi bi-columns-gap"></i> Lista</a>';
+                echo '<a href="index.php?logout=true" class="btn btn-danger mx-2"><i class="bi bi-box-arrow-in-left"></i> Log Out</a>';
             }
             ?>
         </nav>
@@ -133,7 +130,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="row" id="venta-dir">
+                <div class="row">
                     <div class="col-12 col-md-9 mb-3">
                         <div class="form-floating">
                             <input type="text" name="direccion" id="direccion" placeholder="Dirección" class="form-control">
@@ -148,13 +145,22 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-12 mb-3">
+                    <div class="col-12 col-md-6 mb-3">
                         <div class="form-floating">
                             <select class="form-control form-select" name="local" id="local" required>
                                 <option class="text-primary" value="Barcelona">Barcelona</option>
                                 <option class="text-success" value="Mataró">Mataró</option>
                             </select>
                             <label for="local">Local</label>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 mb-3">
+                        <div class="form-floating">
+                            <select class="form-control" name="metodo" id="metodo" required>
+                                <option value="Tarjeta">Tarjeta/Bizum</option>
+                                <option value="Efectivo">Efectivo</option>
+                            </select>
+                            <label for="metodo">Método de pago</label>
                         </div>
                     </div>
                 </div>
@@ -170,15 +176,6 @@
                                 <option value="Otro">Otro</option>
                             </select>
                             <label for="razon">Como nos encontró</label>
-                        </div>
-                    </div>
-                    <div id="metodo" class="col-12 col-md-6 mb-3 d-none">
-                        <div class="form-floating">
-                        <select class="form-control" name="metodo" id="metodo" required>
-                                <option value="Tarjeta">Tarjeta/Bizum</option>
-                                <option value="Efectivo">Efectivo</option>
-                            </select>
-                            <label for="metodo">Método de pago</label>
                         </div>
                     </div>
                     <div id="serv-dept" class="col-12 col-md-6 mb-3">
@@ -294,9 +291,7 @@
                     $('#servicio-change').removeClass('d-none');
                     $('#serv-dept').removeClass('d-none');
                     $('#venta-desc').addClass('d-none');
-                    $('#venta-dir').addClass('d-none');
                     $('#btn-prod').addClass('d-none');
-                    $('#metodo').addClass('d-none');
                 } else if(t == 'venta'){
                     $('#serv-motivo').addClass('d-none');
                     $('#email-change').removeClass('col-md-6');
@@ -304,9 +299,7 @@
                     $('#servicio-change').addClass('d-none');
                     $('#serv-dept').addClass('d-none');
                     $('#venta-desc').removeClass('d-none');
-                    $('#venta-dir').removeClass('d-none');
                     $('#btn-prod').removeClass('d-none');
-                    $('#metodo').removeClass('d-none');
                 }
             }
 

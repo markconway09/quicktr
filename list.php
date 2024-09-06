@@ -22,17 +22,11 @@
         <!-- BOOTSTRAP -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-        <!-- SIGNATURE CSS -->
-        <link href="css/jquery.signature.css" rel="stylesheet">
-        <style>
-        .kbw-signature { width: 300px; height: 200px; }
-        </style>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
         <!-- JQUERY -->
         <script src="jquery-3.7.1.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-        <!-- SIGNATURE JS -->
-        <script src="js/jquery.signature.js"></script>
         <style>
             body{
                 font-family: "comfortaa";
@@ -52,11 +46,10 @@
             <a class="navbar-brand mx-auto" href="https://quicktr.com/" target="_blank">
                 <img class="rounded" src="LOGO.png" alt="logo" height="90">
             </a>
-            <a href="venta.php" class="btn btn-success">Ticket Venta</a>
-            <a href="index.php" class="btn btn-secondary mx-2">Formulario</a>
+            <a href="index.php" class="btn btn-secondary mx-2"><i class="bi bi-ui-checks"></i> Formulario</a>
             <?php
             if(isset($_SESSION["login"])){
-                echo '<a href="index.php?logout=true" class="btn btn-danger mx-2">Log Out</a>';
+                echo '<a href="index.php?logout=true" class="btn btn-danger mx-2"><i class="bi bi-box-arrow-in-left"></i> Log Out</a>';
             }
             ?>
         </nav>
@@ -64,7 +57,7 @@
             <?php
             if(isset($_GET["id"])){
                 $id = $_GET["id"];
-                echo '<a href="list.php" class="btn btn-secondary mx-2 mt-3">Volver</a>';
+                echo '<a href="list.php" class="btn btn-secondary mx-2 mt-3"><i class="bi bi-arrow-left"></i> Volver</a>';
                 $row = selectBD($id);
                 if($row["tipo"]=="venta"){
                     $d = explode(";", $row["desc"]);
@@ -99,11 +92,20 @@
                 } else{
                     $desc = '<b>Descripción:</b> '.$row["desc"];
                     $precios = "";
+                    $cant = "";
                 }
-                echo '<a href="execute.php?'.$row["tipo"].'=1&id='.$id.'" target="_blank" class="btn btn-danger mx-2 mt-3">Factura/Ticket</a>';
-                echo '<a href="execute.php?enviar=1&id='.$id.'" target="_blank" class="btn btn-success mx-2 mt-3">Enviar</a>';
-                echo '<a href="edit.php?id='.$id.'" class="btn btn-primary mx-2 mt-3">Editar</a>';
-                echo '<button type="button" class="btn btn-danger mx-2 mt-3" data-bs-toggle="modal" data-bs-target="#elimModal">Eliminar</button>';
+                if($row["tipo"]=="venta"){
+                    echo '<a href="execute.php?ticketventa=1&id='.$id.'" target="_blank" class="btn btn-primary mx-2 mt-3"><i class="bi bi-ticket-detailed"></i> Ticket</a>';
+                    echo '<a href="execute.php?venta=1&id='.$id.'" target="_blank" class="btn btn-primary mx-2 mt-3"><i class="bi bi-receipt-cutoff"></i> Factura</a>';
+                    echo '<a href="execute.php?ventasimp=1&id='.$id.'" target="_blank" class="btn btn-primary mx-2 mt-3"><i class="bi bi-receipt"></i> Factura Simplificada</a>';
+                }else{
+                    echo '<a href="execute.php?ticketservicio=1&id='.$id.'" target="_blank" class="btn btn-primary mx-2 mt-3"><i class="bi bi-ticket-detailed"></i> Ticket</a>';
+                    echo '<a href="execute.php?servicio=1&id='.$id.'" target="_blank" class="btn btn-primary mx-2 mt-3"><i class="bi bi-receipt-cutoff"></i> Factura</a>';
+                    echo '<a href="execute.php?servsimp=1&id='.$id.'" target="_blank" class="btn btn-primary mx-2 mt-3"><i class="bi bi-receipt"></i> Factura Simplificada</a>';
+                }
+                echo '<a href="execute.php?enviar=1&id='.$id.'" target="_blank" class="btn btn-success mx-2 mt-3"><i class="bi bi-send"></i> Enviar</a>';
+                echo '<a href="edit.php?id='.$id.'" class="btn btn-success mx-2 mt-3"><i class="bi bi-pencil-square"></i> Editar</a>';
+                echo '<button type="button" class="btn btn-danger mx-2 mt-3" data-bs-toggle="modal" data-bs-target="#elimModal"><i class="bi bi-trash"></i> Eliminar</button>';
                 echo '<div class="col-12">
                             <div class="card my-3">
                                 <h5 class="card-header py-3">'.ucfirst($row["tipo"]).' # '.$row["id"].'</h5>
@@ -161,7 +163,7 @@
                                 </div>
                             </div>
                             <div class="col-12 col-md-3">
-                                <button type="submit" id="submit" class="btn btn-primary btn-block p-3 my-2">Buscar</button>
+                                <button type="submit" id="submit" class="btn btn-primary btn-block p-3 my-2"><i class="bi bi-search"></i> Buscar</button>
                                 <?php
                                 if(isset($_GET["search"])){
                                     echo '<a href="list.php" class="btn btn-secondary btn-block p-3">Quitar filtro</a>';
@@ -229,7 +231,7 @@
                                 <li class="list-group-item '.$bg.'"><b>Precio:</b> '.$row["precio"].'€ (+ IVA '.$row["iva"].'%) = <b>'.$row["precio-final"].'€</b></li>
                             </ul>
                             <div class="card-body">
-                                <a href="list.php?id='.$row["id"].'" class="btn btn-primary">Más Info &gt;<i class="bi bi-caret-right-fill"></i></a>
+                                <a href="list.php?id='.$row["id"].'" class="btn btn-primary">Más Info <i class="bi bi-caret-right-fill"></i></a>
                             </div>
                         </div>
                     </div>';
