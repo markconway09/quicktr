@@ -16,36 +16,18 @@ function connect(){
     }
 }
 
-function insertarBD(){
+function insertarBDS(){
     $tel = $_POST["countryCode"] . $_POST["tel"];
-    $servicio="-";$desc="-";
-    if($_POST["tipo"]=='servicio'){
-        $servicio = $_POST["servicio"];
-        $desc = $_POST["motivo"];
-        $pV = "";
-        $cV = "";
-    }else{
-        $servicio = "Venta";
-        $k = 1;
-        $desc = "";
-        $pV = "";
-        $cV = "";
-        while(isset($_POST["prod".$k])){
-            $desc .= $_POST["prod".$k];
-            $pV .= $_POST["prec".$k];
-            $cV .= $_POST["cant".$k];
-            $k++;
-            if(isset($_POST["prod".$k])){
-                $desc .= ";";
-                $pV .= ";";
-                $cV .= ";";
-            }
-        }
-    }
+    $servicio = $_POST["servicio"];
+    $tipo = "Servicio";
+    $desc = $_POST["motivo"];
+    $pV = "";
+    $cV = "";
     $doc="-";$dir="-";$cp="-";
     if(isset($_POST["doc"])) $doc = $_POST["doc"];
     if(isset($_POST["direccion"])) $dir = $_POST["direccion"];
     if(isset($_POST["cp"])) $cp = $_POST["cp"];
+
     $pdo = connect();
     $stmt = $pdo->prepare("INSERT INTO info_orden VALUES 
     (null, :nom, :tel, :doc, :ser, :email, :direccion, :cp, :preciosV, :cantV, :precio, :iva, :final, :metodo, :descr, :loc, :fecha, :tipo, :razon, :dept)");
@@ -66,9 +48,62 @@ function insertarBD(){
     $stmt->bindParam(':loc', $_POST["local"]);
     $date = date('Y-m-d');
     $stmt->bindParam(':fecha', $date);
-    $stmt->bindParam(':tipo', $_POST["tipo"]);
+    $stmt->bindParam(':tipo', $tipo);
     $stmt->bindParam(':razon', $_POST["razon"]);
     $stmt->bindParam(':dept', $_POST["dept"]);
+    try {
+        $stmt->execute();
+    } catch(PDOException $e){
+        echo $e->getMessage()."<br>";
+        $stmt->debugDumpParams();
+    }
+    return $pdo->lastInsertId();
+}
+
+function insertarBDV(){
+    $servicio = "Venta";
+    $tipo = "Venta";
+    $k = 1;
+    $desc = "";
+    $pV = "";
+    $cV = "";
+    while(isset($_POST["prod".$k]) && $_POST["prod".$k] != ""){
+        $desc .= $_POST["prod".$k];
+        $pV .= $_POST["prec".$k];
+        $cV .= $_POST["cant".$k];
+        $k++;
+        if(isset($_POST["prod".$k]) && $_POST["prod".$k] != ""){
+            $desc .= ";";
+            $pV .= ";";
+            $cV .= ";";
+        }
+    }
+    
+    $nombre="-";$tel="-";$email="-";$doc="-";$dir="-";$cp="-";$razon="-";$dept="-";
+
+    $pdo = connect();
+    $stmt = $pdo->prepare("INSERT INTO info_orden VALUES 
+    (null, :nom, :tel, :doc, :ser, :email, :direccion, :cp, :preciosV, :cantV, :precio, :iva, :final, :metodo, :descr, :loc, :fecha, :tipo, :razon, :dept)");
+    $stmt->bindParam(':nom', $nombre);
+    $stmt->bindParam(':tel', $tel);
+    $stmt->bindParam(':doc', $doc);
+    $stmt->bindParam(':ser', $servicio);
+    $stmt->bindParam(':email', $email);
+    $stmt->bindParam(':direccion', $dir);
+    $stmt->bindParam(':cp', $cp);
+    $stmt->bindParam(':preciosV', $pV);
+    $stmt->bindParam(':cantV', $cV);
+    $stmt->bindParam(':precio', $_POST["precio"]);
+    $stmt->bindParam(':iva', $_POST["iva"]);
+    $stmt->bindParam(':final', $_POST["precio-final"]);
+    $stmt->bindParam(':metodo', $_POST["metodo"]);
+    $stmt->bindParam(':descr', $desc);
+    $stmt->bindParam(':loc', $_POST["local"]);
+    $date = date('Y-m-d');
+    $stmt->bindParam(':fecha', $date);
+    $stmt->bindParam(':tipo', $tipo);
+    $stmt->bindParam(':razon', $razon);
+    $stmt->bindParam(':dept', $dept);
     try {
         $stmt->execute();
     } catch(PDOException $e){
@@ -797,58 +832,6 @@ function eliminarEntrada($id){
     $stmt->bindParam(":num", $id);
     $stmt->execute();
     header('Location: list.php');
-}
-
-function totalVentas(){
-    $pdo = connect();
-    $stmt = $pdo->prepare("SELECT * FROM `info_orden` WHERE `tipo` = 'venta'");
-    try {
-        $stmt->execute();
-    } catch(PDOException $e){
-        echo $e->getMessage();
-    }
-    $stmt2 = $pdo->prepare("SELECT round(sum(`precio-final`),2) as total FROM `info_orden` WHERE `tipo` = 'venta'");
-    try {
-        $stmt2->execute();
-    } catch(PDOException $e){
-        echo $e->getMessage();
-    }
-    $total=$stmt2->fetch(PDO::FETCH_ASSOC);
-
-    $pdf = new FPDF();
-    $width = $pdf->GetPageWidth();
-    $pdf->AddPage();
-    $pdf->SetMargins(2, 2, 2);
-    // LOGO
-    $pdf->Cell($width, 5);
-    $pdf->Ln(1);
-    $pdf->Image('LOGO.png', null, null, $width/1.1);
-    $pdf->Ln(5);
-    // DATOS
-    while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
-        $pdf->SetFont('Arial','B',8);
-        $pdf->Cell($width/6, 5, iconv('UTF-8', 'windows-1252', 'Producto'), 0, 0);
-        $pdf->Cell($width/1.3, 5, iconv('UTF-8', 'windows-1252', $row["desc"]), 1, 1);
-        $pdf->Ln(1);
-        $pdf->SetFont('Arial','B',8);
-        $pdf->Cell($width/6, 5, iconv('UTF-8', 'windows-1252', 'Fecha'), 0, 0);
-        $pdf->Cell($width/1.3, 5, $row["fecha"], 1, 1);
-        $pdf->Ln(1);
-        $pdf->SetFont('Arial','B',8);
-        $pdf->Cell($width/6, 5, iconv('UTF-8', 'windows-1252', 'Precio'), 0, 0);
-        $pdf->Cell($width/1.3, 5, $row["precio"], 1, 1);
-        $pdf->Ln(1);
-        $pdf->SetFont('Arial','B',8);
-        $pdf->Cell($width/6, 5, iconv('UTF-8', 'windows-1252', 'Precio Final'), 0, 0);
-        $pdf->Cell($width/1.3, 5, $row["precio-final"], 1, 1);
-        $pdf->Ln(5);
-    }
-    $pdf->SetFont('Arial','B',8);
-    $pdf->Ln(5);
-    $pdf->Cell($width/6, 5, iconv('UTF-8', 'windows-1252', 'TOTAL'), 0, 0);
-    $pdf->Cell($width/1.3, 5, $total["total"], 1, 1);
-    // ABRIR PDF
-    $pdf->Output('I', null, true);
 }
 
 ?>

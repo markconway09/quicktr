@@ -42,7 +42,6 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
         <!-- JQUERY -->
-        <script src="jquery-3.7.1.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
         <style>
@@ -51,12 +50,12 @@
             }
         </style>
     </head>
-    <body class="bg-secondary" onload="formChange()">
+    <body class="bg-secondary">
         <!-- NAVBAR -->
         <nav class="navbar navbar-light" style="background-color:rgb(43,45,46);">
-            <a class="navbar-brand mx-auto" href="https://quicktr.com/" target="_blank">
+            <a class="navbar-brand mx-auto" href="index.php">
                 <img class="rounded" src="LOGO.png" alt="logo" height="90">
-                <span class="badge badge-pill bg-danger">1.75</span>
+                <span class="badge badge-pill bg-danger">1.76</span>
             </a>
             <?php
             if(isset($_SESSION["login"])){
@@ -72,176 +71,18 @@
         }
         ?>
         <!-- FORM -->
+        <div class="container p-2 mx-auto my-4 rounded text-center" style="background-color: rgb(43,45,46);box-shadow: 0px 0px 15px black;">
+            <a class="btn btn-primary my-2" href="?pag=servicio">Servicio</a>
+            <a class="btn btn-primary my-2" href="?pag=venta">Venta</a>
+        </div>
         <div class="container my-4">
-            <form action="execute.php" target="_blank" method="POST" class="form-control p-4 bg-dark">
-                <div class="row mb-5">
-            <span class="text-center mb-2 text-white">¡Importante recargar página ANTES de introducir datos por si se ha expirado la sesión!</span>
-                    <select class="form-control-lg col-12 col-md-4 text-center mx-auto" onchange="formChange()" name="tipo" id="tipo">
-                            <option value="servicio" selected>ORDEN DE SERVICIO</option>
-                            <option value="venta">FACTURA DE VENTA</option>
-                    </select>
-                </div>
-                <div class="row">
-                    <div class="col-12 col-md-4 mb-3">
-                        <div class="form-floating">
-                            <input class="form-control" placeholder="Nombre" type="text" name="nombre" id="nombre" required>
-                            <label for="nombre">Nombre</label>
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-4 mb-3">
-                        <div class="input-group">
-                            <div class="form-floating">
-                            <?php
-                            include 'countrycodes.php';
-                            ?>
-                            </div>
-                            
-                            <div class="form-floating">
-                                <input class="form-control" placeholder="Teléfono" type="tel" name="tel" id="tel" required>
-                                <label for="tel">Teléfono</label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-4 mb-3">
-                        <div class="form-floating">
-                            <input class="form-control" placeholder="DNI/NIF/NIE" type="text" name="doc" id="doc">
-                            <label for="doc">DNI/NIF/NIE</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div id="servicio-change" class="col-12 col-md-6 mb-3">
-                        <div class="form-floating">
-                            <select class="form-control" name="servicio" id="servicio" required>
-                                <option value="Reparación Móvil" selected>Reparación Móvil</option>
-                                <option value="Reparación Ordenador">Reparación Ordenador</option>
-                                <option value="Reparación Consola">Reparación Consola</option>
-                                <option value="Reparación Tablet">Reparación Tablet</option>
-                                <option value="Mantenimiento Otros">Mantenimiento Otros</option>
-                                <option value="Servicio Desarrollo Web">Servicio Desarrollo Web</option>
-                            </select>
-                            <label for="servicio">Servicio</label>
-                        </div>
-                    </div>
-                    <div id="email-change" class="col-12 col-md-6 mb-3">
-                        <div class="form-floating">
-                            <input class="form-control" placeholder="Email" type="email" name="email" id="email" required>
-                            <label for="email">Email</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-12 col-md-9 mb-3">
-                        <div class="form-floating">
-                            <input type="text" name="direccion" id="direccion" placeholder="Dirección" class="form-control">
-                            <label for="direccion">Dirección</label>
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-3 mb-3">
-                        <div class="form-floating">
-                            <input type="text" name="cp" id="cp" placeholder="Código Postal" class="form-control">
-                            <label for="cp">Código Postal</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-12 col-md-6 mb-3">
-                        <div class="form-floating">
-                            <select class="form-control form-select" name="local" id="local" required>
-                                <option class="text-primary" value="Barcelona">Barcelona</option>
-                                <option class="text-success" value="Mataró">Mataró</option>
-                            </select>
-                            <label for="local">Local</label>
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-6 mb-3">
-                        <div class="form-floating">
-                            <select class="form-control" name="metodo" id="metodo" required>
-                                <option value="Tarjeta">Tarjeta/Bizum</option>
-                                <option value="Efectivo">Efectivo</option>
-                            </select>
-                            <label for="metodo">Método de pago</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div id="serv-razon" class="col-12 col-md-6 mb-3">
-                        <div class="form-floating">
-                        <select class="form-control" name="razon" id="razon" required>
-                                <option value="Sin especificar" selected>-</option>
-                                <option value="Marketing/RSS">Marketing/Redes Sociales</option>
-                                <option value="Maps">Google/Apple Maps</option>
-                                <option value="Flyer">Flyer</option>
-                                <option value="Retorno">Retorno de cliente</option>
-                                <option value="Otro">Otro</option>
-                            </select>
-                            <label for="razon">Como nos encontró</label>
-                        </div>
-                    </div>
-                    <div id="serv-dept" class="col-12 col-md-6 mb-3">
-                        <div class="form-floating">
-                            <select class="form-control" name="dept" id="dept" required>
-                                <option value="hardware">Hardware</option>
-                                <option value="web">Web</option>
-                                <option value="redes">Redes</option>
-                            </select>
-                            <label for="dept">Departamento</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="row mb-3">
-                    <div id="serv-motivo" class="col-12">
-                        <div class="form-floating mb-3">
-                            <textarea rows="5" style="height:100%;" class="form-control" placeholder="Descripción" name="motivo" id="motivo"></textarea>
-                            <label for="motivo">Descripción</label>
-                        </div>
-                    </div>
-                    <div id="venta-desc" class="col-12 d-none">
-                        <div class="input-group mb-3" id="input-prod">
-                            <div class="form-floating w-50">
-                                <input type="text" class="form-control" placeholder="Descripción" name="prod1" id="prod1">
-                                <label for="prod1">Descripción del producto</label>
-                            </div>
-                            <div class="form-floating w-25">
-                                <input type="number" step="0.01" onblur="findPrecioTotal()" class="form-control" placeholder="Precio" name="prec1" id="prec1">
-                                <label for="prec1">Precio</label>
-                            </div>
-                            <div class="form-floating w-25">
-                                <input type="number" onblur="findPrecioTotal()" class="form-control" placeholder="Cantidad" value=1 name="cant1" id="cant1">
-                                <label for="cant1">Cantidad</label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div id="btn-prod" class="row d-none">
-                    <div class="col-12 mx-auto mb-3">
-                        <button type="button" class="btn btn-secondary" onclick="addProd()">+ Añadir Producto</button>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-12 col-md-4 mb-3">
-                        <div class="form-floating">
-                            <input class="form-control" onblur="findTotal()" placeholder="Precio" type="number" step="0.01" name="precio" id="precio" required>
-                            <label for="precio">Precio €</label>
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-4 mb-3">
-                        <div class="form-floating">
-                            <input class="form-control" onblur="findTotal()" placeholder="Iva 21%" type="number" step="0.1" value=21 name="iva" id="iva" required>
-                            <label for="iva">Iva 21%</label>
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-4 mb-3">
-                        <div class="form-floating">
-                            <input class="form-control" onblur="findPrecio()" placeholder="Precio Final" step="0.01" type="number" name="precio-final" id="precio-final" required>
-                            <label for="precio-final">Precio Final €</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <input type="submit" name="guardar" class="btn btn-success col-5 mx-auto" value="Guardar">
-                </div>
-            </form>
+            <?php
+                if(isset($_GET["pag"])){
+                    include_once 'form-'.$_GET["pag"].'.php';
+                } else {
+                    include_once 'form-servicio.php';
+                }
+            ?>
         </div>
         <script type="text/javascript">
             // CÁLCULOS IVA
@@ -280,27 +121,6 @@
                     document.getElementById('precio').value = total.toFixed(2);
                 }
                 findTotal();
-            }
-            // CAMBIO DE FORMULARIO
-            function formChange() {
-                var t = document.getElementById('tipo').value;
-                if(t == 'servicio'){
-                    $('#serv-motivo').removeClass('d-none');
-                    $('#email-change').removeClass('col-md-12');
-                    $('#email-change').addClass('col-md-6');
-                    $('#servicio-change').removeClass('d-none');
-                    $('#serv-dept').removeClass('d-none');
-                    $('#venta-desc').addClass('d-none');
-                    $('#btn-prod').addClass('d-none');
-                } else if(t == 'venta'){
-                    $('#serv-motivo').addClass('d-none');
-                    $('#email-change').removeClass('col-md-6');
-                    $('#email-change').addClass('col-md-12');
-                    $('#servicio-change').addClass('d-none');
-                    $('#serv-dept').addClass('d-none');
-                    $('#venta-desc').removeClass('d-none');
-                    $('#btn-prod').removeClass('d-none');
-                }
             }
 
             var i = 1;

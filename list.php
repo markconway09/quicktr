@@ -43,7 +43,7 @@
     <body class="bg-secondary">
         <!-- NAVBAR -->
         <nav class="navbar navbar-light" style="background-color:rgb(43,45,46);">
-            <a class="navbar-brand mx-auto" href="https://quicktr.com/" target="_blank">
+            <a class="navbar-brand mx-auto" href="index.php">
                 <img class="rounded" src="LOGO.png" alt="logo" height="90">
             </a>
             <a href="index.php" class="btn btn-secondary mx-2"><i class="bi bi-ui-checks"></i> Formulario</a>
@@ -168,7 +168,7 @@
                                 if(isset($_GET["search"])){
                                     echo '<a href="list.php" class="btn btn-secondary btn-block p-3">Quitar filtro</a>';
                                 }else{
-                                    echo '<a href="execute.php?ventas=1" target="_blank" class="btn btn-success btn-block p-3">Total Ventas</a>';
+                                    echo '<a href="totalventas.php" target="_blank" class="btn btn-success btn-block p-3">Total Ventas</a>';
                                 }
                                 ?>
                             </div>
