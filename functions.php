@@ -68,7 +68,8 @@ function insertarBDV(){
     $pV = "";
     $cV = "";
     while(isset($_POST["prod".$k]) && $_POST["prod".$k] != ""){
-        $desc .= $_POST["prod".$k];
+        $p = explode(": ",$_POST["prod".$k])[1];
+        $desc .= $p;
         $pV .= $_POST["prec".$k];
         $cV .= $_POST["cant".$k];
         $k++;
