@@ -2,6 +2,9 @@
     session_start();
     // IMPORT FUNCTIONS
     require_once "functions.php";
+    if(isset($_POST["editar-factura"])){
+        editarEntrada($_GET["id"]);
+    }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -58,17 +61,19 @@
         <!-- FORM -->
         <div class="container my-4">
         <?php
-        echo '<form action="execute.php?edit=1&id='.$datos["id"].'" method="POST" class="form-control p-4 bg-dark">
+        require_once 'functions.php';
+        echo '<form action="" method="POST" class="form-control p-4 bg-dark">
+                <a href="list.php?id='.$datos["id"].'" class="btn btn-secondary mb-4">Volver</a>
                 <div class="row">
                     <div class="col-12 col-md-4 mb-3">
                         <div class="form-floating">
-                            <input class="form-control" placeholder="Nombre" type="text" name="nombre" id="nombre" value="'.$datos["nombre"].'" required>
+                            <input class="form-control" placeholder="Nombre" type="text" name="nombre" id="nombre" value="'.$datos["nombre"].'">
                             <label for="nombre">Nombre</label>
                         </div>
                     </div>
                     <div class="col-12 col-md-4 mb-3">
                         <div class="form-floating">
-                            <input class="form-control" placeholder="Teléfono" type="tel" name="tel" id="tel" value="'.$datos["telefono"].'" required>
+                            <input class="form-control" placeholder="Teléfono" type="tel" name="tel" id="tel" value="'.$datos["telefono"].'">
                             <label for="tel">Teléfono</label>
                         </div>
                     </div>
@@ -96,7 +101,7 @@
                     </div>
                     <div class="col-12 col-md-6 mb-3">
                         <div class="form-floating">
-                            <input class="form-control" placeholder="Email" type="email" name="email" id="email" value="'.$datos["email"].'" required>
+                            <input class="form-control" placeholder="Email" type="text" name="email" id="email" value="'.$datos["email"].'">
                             <label for="email">Email</label>
                         </div>
                     </div>
@@ -112,26 +117,6 @@
                         <div class="form-floating">
                             <input type="text" name="cp" id="cp" placeholder="Código Postal" value="'.$datos["cp"].'" class="form-control">
                             <label for="cp">Código Postal</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-12 col-md-4 mb-3">
-                        <div class="form-floating">
-                            <input class="form-control" onblur="findTotal()" placeholder="Precio" type="number" step="0.01" name="precio" id="precio" value="'.$datos["precio"].'" required>
-                            <label for="precio">Precio €</label>
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-4 mb-3">
-                        <div class="form-floating">
-                            <input class="form-control" onblur="findTotal()" placeholder="Iva 21%" type="number" step="0.1" value=21 name="iva" id="iva" value="'.$datos["iva"].'" required>
-                            <label for="iva">Iva 21%</label>
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-4 mb-3">
-                        <div class="form-floating">
-                            <input class="form-control" onblur="findPrecio()" placeholder="Precio Final" step="0.01" type="number" name="precio-final" id="precio-final" value="'.$datos["precio-final"].'" required>
-                            <label for="precio-final">Precio Final €</label>
                         </div>
                     </div>
                 </div>
@@ -161,28 +146,62 @@
                         </div>
                     </div>
                 </div>
-                <div class="row">';
-                echo '<div class="col-12 mb-3">
-                        <div class="form-floating">
-                            <textarea rows="2" style="height:100%;" class="form-control" name="desc" id="desc">'.$datos["desc"].'</textarea>
-                            <label for="desc">Descripción del producto</label>
-                        </div>
-                    </div>';
+                    <h3 class="display-6 text-light text-center">Producto(s)</h3>';
                     if($datos["tipo"]=="venta"){
-                        echo '<div class="col-12 mb-3">
-                                <div class="form-floating">
-                                    <textarea rows="1" style="height:100%;" class="form-control" name="prec" id="prec">'.$datos["preciosVenta"].'</textarea>
-                                    <label for="prec">Precio del producto</label>
+                        $prod = explode(";", $datos["desc"]);
+                        $prec = explode(";", $datos["preciosVenta"]);
+                        $cant = explode(";", $datos["cantidadVenta"]);
+                        $i=1;
+                        while($i<=count($prod)){
+                            $k = $i-1;
+                            echo '<div class="row" id="productos">
+                                <div class="col-12 mb-3" id="col-input">
+                                    <div class="input-group">
+                                        <div class="form-floating w-50 p-input">
+                                            <input type="text" id="prod'.$i.'" onkeyup="addPrice(this.value,'.$i.')" name="prod'.$i.'" class="form-control" value="'.$prod[$k].'" placeholder="">
+                                        </div>
+                                        <div class="form-floating w-25">
+                                            <input type="number" step="0.01" onblur="findPrecioTotal()" class="form-control" value="'.$prec[$k].'" placeholder="Precio" name="prec'.$i.'" id="prec'.$i.'">
+                                            <label for="prec1">Precio</label>
+                                        </div>
+                                        <div class="form-floating w-25">
+                                            <input type="number" onblur="findPrecioTotal()" class="form-control" value="'.$cant[$k].'" placeholder="Cantidad" name="cant'.$i.'" id="cant'.$i.'">
+                                            <label for="cant1">Cantidad</label>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>';
-                        echo '<div class="col-12 mb-3">
-                                <div class="form-floating">
-                                    <textarea rows="1" style="height:100%;" class="form-control" name="cant" id="cant">'.$datos["cantidadVenta"].'</textarea>
-                                    <label for="cant">Cantidad del producto</label>
-                                </div>
-                            </div>';
+                            $i++;
+                        }
+                    } else {
+                        echo '<div class="row">
+                        <div class="col-12 mb-3">
+                            <div class="form-floating">
+                                <textarea rows="2" style="height:100%;" class="form-control" name="desc" id="desc">'.$datos["desc"].'</textarea>
+                                <label for="desc">Descripción del producto</label>
+                            </div>
+                        </div>';
                     }
                 echo'
+                <div class="row">
+                    <div class="col-12 col-md-4 mb-3">
+                        <div class="form-floating">
+                            <input class="form-control" onblur="findTotal()" placeholder="Precio" type="number" step="0.01" name="precio" id="precio" value="'.$datos["precio"].'" required>
+                            <label for="precio">Precio €</label>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4 mb-3">
+                        <div class="form-floating">
+                            <input class="form-control" onblur="findTotal()" placeholder="Iva 21%" type="number" step="0.1" value=21 name="iva" id="iva" value="'.$datos["iva"].'" required>
+                            <label for="iva">Iva 21%</label>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4 mb-3">
+                        <div class="form-floating">
+                            <input class="form-control" onblur="findPrecio()" placeholder="Precio Final" step="0.01" type="number" name="precio-final" id="precio-final" value="'.$datos["precio-final"].'" required>
+                            <label for="precio-final">Precio Final €</label>
+                        </div>
+                    </div>
                 </div>
                 <div class="row">
                     <input type="submit" name="editar-factura" class="btn btn-primary col-11 mx-auto" value="Guardar Cambios">
@@ -191,6 +210,17 @@
             ?>
         </div>
         <script type="text/javascript">
+            function addPrice(prod, num){
+                $.ajax({
+                    data: {"id": prod},
+                    url: 'ajax_productos.php',
+                    dataType: 'json',
+                    success: function(data){
+                        document.getElementById("prec"+num).value = data[0]["precio_venta"];
+                        findPrecioTotal();
+                    }
+                });
+            }
             // CÁLCULOS IVA
             function findTotal() {
                 var precio = parseFloat(document.getElementById('precio').value);
@@ -205,6 +235,27 @@
                 var final = parseFloat(document.getElementById('precio-final').value);
                 let calc = (final/(100+iva))*100;
                 document.getElementById('precio').value = calc.toFixed(2);
+            }
+            function findPrecioTotal(){
+                var productos = document.getElementsByClassName("p-input");
+
+                let total = parseFloat(0);
+
+                var precio = parseFloat(document.getElementById('precio').value);
+                if(isNaN(precio)) precio = 0;
+
+                for(let i=1;i<=productos.length;i++){
+                    let pre = document.getElementById("prec"+i).value;
+                    let can = document.getElementById("cant"+i).value;
+                    if(pre=="")pre = 0;
+                    if(can=="")can = 0;
+                    total += (parseFloat(pre)*can);
+                }
+                
+                if(!isNaN(total)){
+                    document.getElementById('precio').value = total.toFixed(2);
+                }
+                findTotal();
             }
         </script>
     </body>

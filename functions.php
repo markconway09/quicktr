@@ -800,6 +800,25 @@ function editarEntrada($id){
     if(isset($_POST["doc"])) $doc = $_POST["doc"];
     if(isset($_POST["direccion"])) $dir = $_POST["direccion"];
     if(isset($_POST["cp"])) $cp = $_POST["cp"];
+
+    $k = 1;
+    $desc = "";
+    $pV = "";
+    $cV = "";
+    while(isset($_POST["prod".$k]) && $_POST["prod".$k] != ""){
+        //$p = explode(": ",$_POST["prod".$k])[1];
+        //$desc .= $p;
+        $desc .= $_POST["prod".$k];
+        $pV .= $_POST["prec".$k];
+        $cV .= $_POST["cant".$k];
+        $k++;
+        if(isset($_POST["prod".$k]) && $_POST["prod".$k] != ""){
+            $desc .= ";";
+            $pV .= ";";
+            $cV .= ";";
+        }
+    }
+
     $pdo = connect();
     $stmt = $pdo->prepare("UPDATE `info_orden` SET `nombre` = :nombre, `telefono` = :tel, `documento` = :doc, `servicio` = :servicio, `email` = :email, `direccion` = :direccion, `cp` = :cp, `preciosVenta`=:pV, `cantidadVenta`=:cV, `precio` = :precio, `iva` = :iva, `precio-final` = :preciofinal, `desc` = :de, `local` = :loc, `razon` = :razon WHERE `info_orden`.`id` = :id");
     $stmt->bindParam(':id', $id);
@@ -810,12 +829,12 @@ function editarEntrada($id){
     $stmt->bindParam(':email', $_POST["email"]);
     $stmt->bindParam(':direccion', $dir);
     $stmt->bindParam(':cp', $cp);
-    $stmt->bindParam(':pV', $_POST["prec"]);
-    $stmt->bindParam(':cV', $_POST["cant"]);
+    $stmt->bindParam(':pV', $pV);
+    $stmt->bindParam(':cV', $cV);
     $stmt->bindParam(':precio', $_POST["precio"]);
     $stmt->bindParam(':iva', $_POST["iva"]);
     $stmt->bindParam(':preciofinal', $_POST["precio-final"]);
-    $stmt->bindParam(':de', $_POST["desc"]);
+    $stmt->bindParam(':de', $desc);
     $stmt->bindParam(':loc', $_POST["local"]);
     $stmt->bindParam(':razon', $_POST["razon"]);
     try {
