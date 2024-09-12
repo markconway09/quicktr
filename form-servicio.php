@@ -50,20 +50,6 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-12 col-md-9 mb-3">
-                        <div class="form-floating">
-                            <input type="text" name="direccion" id="direccion" placeholder="Dirección" class="form-control">
-                            <label for="direccion">Dirección</label>
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-3 mb-3">
-                        <div class="form-floating">
-                            <input type="text" name="cp" id="cp" placeholder="Código Postal" class="form-control">
-                            <label for="cp">Código Postal</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
                     <div class="col-12 col-md-6 mb-3">
                         <div class="form-floating">
                             <select class="form-control form-select" name="local" id="local" required>

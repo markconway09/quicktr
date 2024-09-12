@@ -156,19 +156,20 @@
                 <div class="col-12 mt-2">
                     <form action="" method="GET">
                         <div class="row">
-                            <div class="col-12 col-md-9">
+                            <div class="col-12 col-md-8">
                                 <div class="form-floating">
                                     <input type="text" placeholder="Buscar... (Tipo, Nombre, Servicio, Id...)" name="search" id="search" class="form-control my-2">
                                     <label for="search">Buscar... (Tipo, Nombre, Id...)</label>
                                 </div>
                             </div>
-                            <div class="col-12 col-md-3">
+                            <div class="col-12 col-md-4">
                                 <button type="submit" id="submit" class="btn btn-primary btn-block p-3 my-2"><i class="bi bi-search"></i> Buscar</button>
                                 <?php
                                 if(isset($_GET["search"])){
                                     echo '<a href="list.php" class="btn btn-secondary btn-block p-3">Quitar filtro</a>';
                                 }else{
-                                    echo '<a href="totalventas.php" target="_blank" class="btn btn-success btn-block p-3">Total Ventas</a>';
+                                    echo '<a href="totalventas.php?total=mes" target="_blank" class="btn btn-success btn-block p-3 mx-2">Ventas/Mes</a>';
+                                    echo '<a href="totalventas.php?total=dia" target="_blank" class="btn btn-success btn-block p-3">Ventas/Día</a>';
                                 }
                                 ?>
                             </div>

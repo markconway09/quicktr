@@ -191,23 +191,6 @@
             ?>
         </div>
         <script type="text/javascript">
-            // SCRIPT FIRMA
-            var sig = $('#sig').signature({syncField: '#sign', syncFormat: 'PNG'});
-            $('#clear').click(function(e) {
-                e.preventDefault();
-                sig.signature('clear');
-                $("#sign").val('');
-            });
-            $('#clear').hover(
-                function() {
-                    $('#clear').removeClass('btn-secondary').addClass('btn-danger');
-                    $('#borrar').removeClass('d-none');
-                },
-                function() {
-                    $('#clear').removeClass('btn-danger').addClass('btn-secondary');
-                    $('#borrar').addClass('d-none');
-                }
-            );
             // CÁLCULOS IVA
             function findTotal() {
                 var precio = parseFloat(document.getElementById('precio').value);

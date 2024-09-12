@@ -1,25 +1,27 @@
 <?php
 require_once 'functions.php';
 
-$pdo = connect();
+if(isset($_GET["total"])){
+    $pdo = connect();
+    if($_GET["total"] == "mes"){
+        $stmt = $pdo->prepare("SELECT * FROM `info_orden` WHERE MONTH(`fecha`) = :m AND YEAR(`fecha`) = :y");
+        $m = date('m');
+        $y = date('Y');
+        $stmt->bindParam(':m', $m);
+        $stmt->bindParam(':y', $y);
+        $date = date('m-Y');
+    } else {
+        $stmt = $pdo->prepare("SELECT * FROM `info_orden` WHERE `fecha` = :fecha");
+        $date = date('d-m-Y');
+        $stmt->bindParam(':fecha', $date);
+    }
+} else {exit;}
 
-$stmt = $pdo->prepare("SELECT * FROM `info_orden` WHERE `fecha` = :fecha");
-$date = date('Y-m-d');
-$stmt->bindParam(':fecha', $date);
 try {
     $stmt->execute();
 } catch(PDOException $e){
     echo $e->getMessage();
 }
-
-$stmt2 = $pdo->prepare("SELECT round(sum(`precio-final`),2) as total, round(sum(`precio`),2) as base FROM `info_orden` WHERE `fecha` = :fecha");
-$stmt2->bindParam(':fecha', $date);
-try {
-    $stmt2->execute();
-} catch(PDOException $e){
-    echo $e->getMessage();
-}
-$t=$stmt2->fetch(PDO::FETCH_ASSOC);
 
 // CREAR PDF
 $pdf = new FPDF();
@@ -45,6 +47,7 @@ $pdf->Cell($width/10, 5, iconv('UTF-8', 'windows-1252', 'Cant.'), 1, 0);
 $pdf->Cell($width/10, 5, iconv('UTF-8', 'windows-1252', 'Base Imp.'), 1, 1);
 $pdf->SetFont('Arial','',8);
 
+$tot = 0;
 $iv = 0;
 while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
     if($row["tipo"] == "servicio"){
@@ -56,6 +59,7 @@ while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
         $pdf->Cell($width/10, 5, iconv('UTF-8', 'windows-1252',  $row["precio"]." €"), 1, 1);
         $iva = round(($row["precio"] * $row["iva"])/100, 2);
         $iv+=$iva;
+        $tot+=doubleval($row["precio"]);
     }else{
         $pro = explode(";", $row["desc"]);
         $pre = explode(";", $row["preciosVenta"]);
@@ -70,11 +74,12 @@ while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
             $pdf->Cell(20, 5, iconv('UTF-8', 'windows-1252', $row["id"]), 1, 0);
             $pdf->Cell($width/2-20, 5, iconv('UTF-8', 'windows-1252', $pro[$i]), 1, 0);
             $pdf->Cell($width/10, 5, iconv('UTF-8', 'windows-1252', $row["iva"]), 1, 0);
-            $pdf->Cell($width/10, 5, iconv('UTF-8', 'windows-1252',  $p." €"), 1, 0);
+            $pdf->Cell($width/10, 5, iconv('UTF-8', 'windows-1252',  doubleval($p)." €"), 1, 0);
             $pdf->Cell($width/10, 5, iconv('UTF-8', 'windows-1252', $c), 1, 0);
-            $pdf->Cell($width/10, 5, iconv('UTF-8', 'windows-1252',  ($c*$p)." €"), 1, 1);
-            $total += ($p*$c);
+            $pdf->Cell($width/10, 5, iconv('UTF-8', 'windows-1252',  (intval($c)*doubleval($p))." €"), 1, 1);
+            $total += (doubleval($p)*intval($c));
         }
+        $tot+=$total;
         $iva = round(($total * $row["iva"])/100, 2);
         $iv+=$iva;
     }
@@ -85,12 +90,13 @@ $pdf->Ln(2);
 
 $pdf->SetX($width/1.73);
 $pdf->Cell($width/6, 5, iconv('UTF-8', 'windows-1252',  "Total (Base Imp.): "), 1, 0);
-$pdf->Cell($width/5, 5, iconv('UTF-8', 'windows-1252',  $t["base"]." €"), 1, 1);
+$pdf->Cell($width/5, 5, iconv('UTF-8', 'windows-1252',  $tot." €"), 1, 1);
 $pdf->SetX($width/1.73);
 $pdf->Cell($width/6, 5, iconv('UTF-8', 'windows-1252',  "Total IVA: "), 1, 0);
 $pdf->Cell($width/5, 5, iconv('UTF-8', 'windows-1252',  $iv." €"), 1, 1);
 $pdf->SetX($width/1.73);
 $pdf->Cell($width/6, 5, iconv('UTF-8', 'windows-1252',  "Total: "), 1, 0);
-$pdf->Cell($width/5, 5, iconv('UTF-8', 'windows-1252',  ($t["total"])." €"), 1, 1);
+$pdf->Cell($width/5, 5, iconv('UTF-8', 'windows-1252',  ($tot+$iv)." €"), 1, 1);
+
 // ABRIR PDF
 $pdf->Output('I', null, true);
