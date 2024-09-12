@@ -61,34 +61,16 @@
                 $row = selectBD($id);
                 if($row["tipo"]=="venta"){
                     $d = explode(";", $row["desc"]);
+                    $p = explode(";", $row["preciosVenta"]);
+                    $c = explode(";", $row["cantidadVenta"]);
                     $desc = '<b>Producto(s):</b> ';
                     for($k = 0; $k<count($d);){
-                        $desc .= $d[$k];
+                        $desc .= $d[$k] . " (".(isset($p[$k])?$p[$k]."€":"?")." x ".(isset($c[$k])?$c[$k]:"?").")";
                         $k++;
                         if(isset($d[$k])){
                             $desc .= ", ";
                         }
                     }
-                    $p = explode(";", $row["preciosVenta"]);
-                    $precios = '<p class="card-text"><b>Precio(s):</b> ';
-                    for($k = 0; $k<count($p);){
-                        $precios .= $p[$k];
-                        $k++;
-                        if(isset($p[$k])){
-                            $precios .= ", ";
-                        }
-                    }
-                    $precios.= "</p>";
-                    $c = explode(";", $row["cantidadVenta"]);
-                    $cant = '<p class="card-text"><b>Cantidad(es):</b> ';
-                    for($k = 0; $k<count($c);){
-                        $cant .= $c[$k];
-                        $k++;
-                        if(isset($c[$k])){
-                            $cant .= ", ";
-                        }
-                    }
-                    $cant.= "</p>";
                 } else{
                     $desc = '<b>Descripción:</b> '.$row["desc"];
                     $precios = "";
@@ -119,7 +101,6 @@
                                     <p class="card-text"><b>Teléfono:</b> <a href="https://wa.me//'.$row["telefono"].'" target="_blank">'.$row["telefono"].'<a></p>
                                     <hr>
                                     <p class="card-text">'.$desc.'</p>
-                                    '.$precios.$cant.'
                                     <p class="card-text"><b>Local:</b> '.$row["local"].'</p>
                                     <p class="card-text"><b>Cómo nos encontró:</b> '.$row["razon"].'</p>
                                     <p class="card-text"><b>Departamento:</b> '.$row["dept"].'</p>
