@@ -67,13 +67,20 @@ function insertarBDV(){
     $desc = "";
     $pV = "";
     $cV = "";
+    $id_prod = "";
     while(isset($_POST["prod".$k]) && $_POST["prod".$k] != ""){
-        $p = explode(": ",$_POST["prod".$k])[1];
-        $desc .= $p;
+        if(strpos($_POST["prod".$k], ": ")){
+            $p = explode(": ",$_POST["prod".$k]);
+            $id_prod .= $p[0];
+            $desc .= $p[1];
+        } else {
+            $desc .= $_POST["prod".$k];
+        }
         $pV .= $_POST["prec".$k];
         $cV .= $_POST["cant".$k];
         $k++;
         if(isset($_POST["prod".$k]) && $_POST["prod".$k] != ""){
+            $id_prod .=";";
             $desc .= ";";
             $pV .= ";";
             $cV .= ";";
@@ -111,7 +118,35 @@ function insertarBDV(){
         echo $e->getMessage()."<br>";
         $stmt->debugDumpParams();
     }
-    return $pdo->lastInsertId();
+    $id = $pdo->lastInsertId();
+    if($id_prod!=""){
+        $pdo = connect();
+        if(strpos($id_prod, ";")){
+            $prods = explode(";", $id_prod);
+            $cants = explode(";", $cV);
+            for($i=0;$i<count($prods);$i++){
+                $cc = isset($cants[$i])&$cants>0 ? $cants[$i] : 1;
+                $stmt = $pdo->prepare("UPDATE `producto` SET `stock` = (`stock` - :num) WHERE `producto`.`id` = :id;");
+                $stmt->bindParam(':id', $prods[$i]);
+                $stmt->bindParam(':num', $cc);
+                try {
+                    $stmt->execute();
+                } catch(PDOException $e){
+                    echo $e->getMessage();
+                }
+            }
+        } else {
+            $stmt = $pdo->prepare("UPDATE `producto` SET `stock` = (`stock` - :num) WHERE `producto`.`id` = :id;");
+            $stmt->bindParam(':id', $id_prod);
+            $stmt->bindParam(':num', $cV);
+            try {
+                $stmt->execute();
+            } catch(PDOException $e){
+                echo $e->getMessage();
+            }
+        }
+    }
+    return $id;
 }
 
 function selectBD($id=0){

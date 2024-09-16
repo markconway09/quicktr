@@ -55,7 +55,7 @@
         <nav class="navbar navbar-light" style="background-color:rgb(43,45,46);">
             <a class="navbar-brand mx-auto" href="index.php">
                 <img class="rounded" src="LOGO.png" alt="logo" height="90">
-                <span class="badge badge-pill bg-danger">1.78</span>
+                <span class="badge badge-pill bg-danger">1.79</span>
             </a>
             <?php
             if(isset($_SESSION["login"])){
@@ -73,7 +73,8 @@
         <!-- FORM -->
         <div class="container p-2 mx-auto my-4 rounded text-center" style="background-color: rgb(43,45,46);box-shadow: 0px 0px 15px black;">
             <a class="btn btn-primary my-2" href="?pag=servicio">Servicio</a>
-            <a class="btn btn-primary my-2" href="?pag=venta2">Venta</a>
+            <a class="btn btn-primary my-2" href="?pag=venta">Venta</a>
+            <a class="btn btn-success my-2" href="/almacen">Almacen</a>
         </div>
         <div class="container my-4">
             <?php
