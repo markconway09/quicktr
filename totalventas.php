@@ -11,9 +11,14 @@ if(isset($_GET["total"])){
         $stmt->bindParam(':y', $y);
         $date = date('m-Y');
     } else {
-        $stmt = $pdo->prepare("SELECT * FROM `info_orden` WHERE `fecha` = :fecha");
+        $stmt = $pdo->prepare("SELECT * FROM `info_orden` WHERE DAY(`fecha`) = :d AND MONTH(`fecha`) = :m AND YEAR(`fecha`) = :y");
+        $d = date('d');
+        $m = date('m');
+        $y = date('Y');
+        $stmt->bindParam(':d', $d);
+        $stmt->bindParam(':m', $m);
+        $stmt->bindParam(':y', $y);
         $date = date('d-m-Y');
-        $stmt->bindParam(':fecha', $date);
     }
 } else {exit;}
 
