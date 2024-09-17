@@ -23,7 +23,7 @@ function insertarBDS(){
     $desc = $_POST["motivo"];
     $pV = "";
     $cV = "";
-    $doc="-";$dir="-";$cp="-";
+    $doc="";$dir="";$cp="";
     if(isset($_POST["doc"])) $doc = $_POST["doc"];
     if(isset($_POST["direccion"])) $dir = $_POST["direccion"];
     if(isset($_POST["cp"])) $cp = $_POST["cp"];
@@ -87,7 +87,7 @@ function insertarBDV(){
         }
     }
     
-    $nombre="-";$tel="-";$email="-";$doc="-";$dir="-";$cp="-";$razon="-";$dept="-";
+    $nombre="";$tel="";$email="";$doc="";$dir="";$cp="";$razon="";$dept="";
 
     $pdo = connect();
     $stmt = $pdo->prepare("INSERT INTO info_orden VALUES 

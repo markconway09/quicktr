@@ -123,7 +123,7 @@
                 <div class="row">
                     <div class="col-12 col-md-6 mb-3">
                         <div class="form-floating">
-                            <select class="form-control form-select" name="local" id="local" required>
+                            <select class="form-control form-select" name="local" id="local">
                                 <option value="'.$datos["local"].'" selected>Actual: '.$datos["local"].'</option>
                                 <option class="text-bg-secondary" value="Barcelona">Barcelona</option>
                                 <option class="text-bg-success" value="Mataró">Mataró</option>
@@ -133,7 +133,7 @@
                     </div>
                     <div id="serv-razon" class="col-12 col-md-6 mb-3">
                         <div class="form-floating">
-                        <select class="form-control" name="razon" id="razon" required>
+                        <select class="form-control" name="razon" id="razon">
                                 <option value="'.$datos["razon"].'" selected>Actual: '.ucfirst($datos["razon"]).'</option>
                                 <option value="Sin especificar">-</option>
                                 <option value="Marketing/RSS">Marketing/Redes Sociales</option>
