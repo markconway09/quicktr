@@ -44,8 +44,8 @@ $pdf->Ln(5);
 // DATOS
 
 $pdf->SetFont('Arial','B',8);
-$pdf->Cell(20, 5, iconv('UTF-8', 'windows-1252', 'ID'), 1, 0);
-$pdf->Cell($width/2-20, 5, iconv('UTF-8', 'windows-1252', 'Descripción'), 1, 0);
+$pdf->Cell(30, 5, iconv('UTF-8', 'windows-1252', 'ID'), 1, 0);
+$pdf->Cell($width/2-30, 5, iconv('UTF-8', 'windows-1252', 'Descripción'), 1, 0);
 $pdf->Cell($width/10, 5, iconv('UTF-8', 'windows-1252', 'IVA'), 1, 0);
 $pdf->Cell($width/10, 5, iconv('UTF-8', 'windows-1252', 'P.U.'), 1, 0);
 $pdf->Cell($width/10, 5, iconv('UTF-8', 'windows-1252', 'Cant.'), 1, 0);
@@ -56,8 +56,8 @@ $tot = 0;
 $iv = 0;
 while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
     if($row["tipo"] == "servicio"){
-        $pdf->Cell(20, 5, iconv('UTF-8', 'windows-1252', $row["id"]), 1, 0);
-        $pdf->Cell($width/2-20, 5, iconv('UTF-8', 'windows-1252', $row["servicio"]), 1, 0);
+        $pdf->Cell(30, 5, iconv('UTF-8', 'windows-1252', $row["id"]." - ".$row["tipo"]), 1, 0);
+        $pdf->Cell($width/2-30, 5, iconv('UTF-8', 'windows-1252', $row["servicio"]), 1, 0);
         $pdf->Cell($width/10, 5, iconv('UTF-8', 'windows-1252', $row["iva"]), 1, 0);
         $pdf->Cell($width/10, 5, iconv('UTF-8', 'windows-1252',  $row["precio"]." €"), 1, 0);
         $pdf->Cell($width/10, 5, iconv('UTF-8', 'windows-1252', 1), 1, 0);
@@ -76,8 +76,8 @@ while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
             $p = isset($pre[$i]) ? $pre[$i] : 0;
             $c = isset($can[$i]) ? $can[$i] : 1;
     
-            $pdf->Cell(20, 5, iconv('UTF-8', 'windows-1252', $row["id"]), 1, 0);
-            $pdf->Cell($width/2-20, 5, iconv('UTF-8', 'windows-1252', $pro[$i]), 1, 0);
+            $pdf->Cell(30, 5, iconv('UTF-8', 'windows-1252', $row["id"]." - ".$row["tipo"]), 1, 0);
+            $pdf->Cell($width/2-30, 5, iconv('UTF-8', 'windows-1252', $pro[$i]), 1, 0);
             $pdf->Cell($width/10, 5, iconv('UTF-8', 'windows-1252', $row["iva"]), 1, 0);
             $pdf->Cell($width/10, 5, iconv('UTF-8', 'windows-1252',  doubleval($p)." €"), 1, 0);
             $pdf->Cell($width/10, 5, iconv('UTF-8', 'windows-1252', $c), 1, 0);
