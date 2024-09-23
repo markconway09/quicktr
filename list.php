@@ -87,7 +87,9 @@
                 }
                 echo '<a href="execute.php?enviar=1&id='.$id.'" target="_blank" class="btn btn-success mx-2 mt-3"><i class="bi bi-send"></i> Enviar</a>';
                 echo '<a href="edit.php?id='.$id.'" class="btn btn-success mx-2 mt-3"><i class="bi bi-pencil-square"></i> Editar</a>';
-                echo '<button type="button" class="btn btn-danger mx-2 mt-3" data-bs-toggle="modal" data-bs-target="#elimModal"><i class="bi bi-trash"></i> Eliminar</button>';
+                if($_SESSION["login"] == "admin"){
+                    echo '<button type="button" class="btn btn-danger mx-2 mt-3" data-bs-toggle="modal" data-bs-target="#elimModal"><i class="bi bi-trash"></i> Eliminar</button>';
+                }                
                 echo '<div class="col-12">
                             <div class="card my-3">
                                 <h5 class="card-header py-3">'.ucfirst($row["tipo"]).' # '.$row["id"].'</h5>
@@ -149,8 +151,9 @@
                                 if(isset($_GET["search"])){
                                     echo '<a href="list.php" class="btn btn-secondary btn-block p-3">Quitar filtro</a>';
                                 }else{
-                                    echo '<a href="totalventas.php?total=mes" target="_blank" class="btn btn-success btn-block p-3 mx-2">Ventas/Mes</a>';
-                                    echo '<a href="totalventas.php?total=dia" target="_blank" class="btn btn-success btn-block p-3">Ventas/Día</a>';
+                                    if($_SESSION["login"]=="admin"){
+                                        echo '<a href="index.php?pag=totalventas" class="btn btn-success btn-block p-3 mx-2">Total Ventas</a>';
+                                    }
                                 }
                                 ?>
                             </div>
@@ -211,6 +214,7 @@
                             </div> 
                             <ul class="list-group list-group-flush">
                                 <li class="list-group-item '.$bg.'"><b>Precio:</b> '.$row["precio"].'€ (+ IVA '.$row["iva"].'%) = <b>'.$row["precio-final"].'€</b></li>
+                                <li class="list-group-item '.$bg.'"><b>Descuento:</b> '.$row["descuento"].'%</b></li>
                             </ul>
                             <div class="card-body">
                                 <a href="list.php?id='.$row["id"].'" class="btn btn-primary">Más Info <i class="bi bi-caret-right-fill"></i></a>

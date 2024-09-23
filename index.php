@@ -14,7 +14,7 @@
             $pass = $_POST["pass"];
             $verify = password_verify($pass, $hash);
             if ($verify) { 
-                $_SESSION["login"]="login";
+                $_SESSION["login"]=$row["admin"]==1?"admin":"user";
             } else { 
                 echo '<script>alert("Contraseña incorrecta")</script>'; 
             }
@@ -55,7 +55,7 @@
         <nav class="navbar navbar-light" style="background-color:rgb(43,45,46);">
             <a class="navbar-brand mx-auto" href="index.php">
                 <img class="rounded" src="LOGO.png" alt="logo" height="90">
-                <span class="badge badge-pill bg-danger">1.79</span>
+                <span class="badge badge-pill bg-danger">1.8</span>
             </a>
             <?php
             if(isset($_SESSION["login"])){
@@ -72,14 +72,20 @@
         ?>
         <!-- FORM -->
         <div class="container p-2 mx-auto my-4 rounded text-center" style="background-color: rgb(43,45,46);box-shadow: 0px 0px 15px black;">
-            <a class="btn btn-primary my-2" href="?pag=servicio">Servicio</a>
-            <a class="btn btn-primary my-2" href="?pag=venta">Venta</a>
+            <a class="btn btn-primary my-2" href="?pag=form-servicio">Servicio</a>
+            <a class="btn btn-primary my-2" href="?pag=form-venta">Venta</a>
+            <?php
+            if(!empty($_SESSION["login"]) && $_SESSION["login"]=="admin"){?>
+            <a class="btn btn-secondary my-2" href="?pag=totalventas">Total Ventas</a>
             <a class="btn btn-success my-2" href="/almacen">Almacen</a>
+            <?php
+            }
+            ?>
         </div>
         <div class="container my-4">
             <?php
                 if(isset($_GET["pag"])){
-                    include_once 'form-'.$_GET["pag"].'.php';
+                    include_once $_GET["pag"].'.php';
                 } else {
                     include_once 'form-servicio.php';
                 }
@@ -91,7 +97,9 @@
                 var precio = parseFloat(document.getElementById('precio').value);
                 var iva = parseFloat(document.getElementById('iva').value);
                 var final = parseFloat(document.getElementById('precio-final').value);
-                let calc = precio + (precio*(iva/100));
+                var descuento = parseFloat(document.getElementById('descuento').value);
+                let calc = precio - ((precio*descuento)/100);
+                calc = calc + (calc*(iva/100));
                 document.getElementById('precio-final').value = calc.toFixed(2);
             }
             function findPrecio() {

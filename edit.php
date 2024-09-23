@@ -121,7 +121,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-12 col-md-6 mb-3">
+                    <div class="col-12 col-md-4 mb-3">
                         <div class="form-floating">
                             <select class="form-control form-select" name="local" id="local">
                                 <option value="'.$datos["local"].'" selected>Actual: '.$datos["local"].'</option>
@@ -131,7 +131,7 @@
                             <label for="local">Local</label>
                         </div>
                     </div>
-                    <div id="serv-razon" class="col-12 col-md-6 mb-3">
+                    <div class="col-12 col-md-4 mb-3">
                         <div class="form-floating">
                         <select class="form-control" name="razon" id="razon">
                                 <option value="'.$datos["razon"].'" selected>Actual: '.ucfirst($datos["razon"]).'</option>
@@ -143,6 +143,16 @@
                                 <option value="Otro">Otro</option>
                             </select>
                             <label for="razon">Como nos encontró</label>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4 mb-3">
+                        <div class="form-floating">
+                            <select class="form-control" name="metodo" id="metodo">
+                                <option value="'.$datos["metodo"].'" selected>Actual: '.ucfirst($datos["metodo"]).'</option>
+                                <option value="Tarjeta">Tarjeta/Bizum</option>
+                                <option value="Efectivo">Efectivo</option>
+                            </select>
+                            <label for="metodo">Metodo de pago</label>
                         </div>
                     </div>
                 </div>

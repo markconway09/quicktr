@@ -31,7 +31,7 @@
                 <div class="row">
                     <div id="servicio-change" class="col-12 col-md-6 mb-3">
                         <div class="form-floating">
-                            <select class="form-control" name="servicio" id="servicio" required>
+                            <select class="form-control form-select" name="servicio" id="servicio">
                                 <option value="Reparación Móvil" selected>Reparación Móvil</option>
                                 <option value="Reparación Ordenador">Reparación Ordenador</option>
                                 <option value="Reparación Consola">Reparación Consola</option>
@@ -52,7 +52,7 @@
                 <div class="row">
                     <div class="col-12 col-md-6 mb-3">
                         <div class="form-floating">
-                            <select class="form-control form-select" name="local" id="local" required>
+                            <select class="form-control form-select" name="local" id="local">
                                 <option class="text-primary" value="Barcelona">Barcelona</option>
                                 <option class="text-success" value="Mataró">Mataró</option>
                             </select>
@@ -61,7 +61,7 @@
                     </div>
                     <div class="col-12 col-md-6 mb-3">
                         <div class="form-floating">
-                            <select class="form-control" name="metodo" id="metodo" required>
+                            <select class="form-control form-select" name="metodo" id="metodo">
                                 <option value="Tarjeta">Tarjeta/Bizum</option>
                                 <option value="Efectivo">Efectivo</option>
                             </select>
@@ -72,7 +72,7 @@
                 <div class="row">
                     <div class="col-12 col-md-6 mb-3">
                         <div class="form-floating">
-                        <select class="form-control" name="razon" id="razon" required>
+                        <select class="form-control form-select" name="razon" id="razon">
                                 <option value="Sin especificar" selected>-</option>
                                 <option value="Marketing/RSS">Marketing/Redes Sociales</option>
                                 <option value="Maps">Google/Apple Maps</option>
@@ -85,7 +85,7 @@
                     </div>
                     <div class="col-12 col-md-6 mb-3">
                         <div class="form-floating">
-                            <select class="form-control" name="dept" id="dept" required>
+                            <select class="form-control form-select" name="dept" id="dept">
                                 <option value="hardware">Hardware</option>
                                 <option value="web">Web</option>
                                 <option value="redes">Redes</option>
@@ -105,19 +105,25 @@
                 <div class="row">
                     <div class="col-12 col-md-4 mb-3">
                         <div class="form-floating">
-                            <input class="form-control" onblur="findTotal()" placeholder="Precio" type="number" step="0.01" name="precio" id="precio" required>
+                            <input class="form-control" onkeyup="findTotal()" placeholder="Precio" type="number" step="0.01" name="precio" id="precio" required>
                             <label for="precio">Precio €</label>
                         </div>
                     </div>
-                    <div class="col-12 col-md-4 mb-3">
+                    <div class="col-12 col-md-2 mb-3">
                         <div class="form-floating">
-                            <input class="form-control" onblur="findTotal()" placeholder="Iva 21%" type="number" step="0.1" value=21 name="iva" id="iva" required>
+                            <input class="form-control" onkeyup="findTotal()" placeholder="Descuento" type="number" step="0.1" value=0 name="descuento" id="descuento">
+                            <label for="descuento">Descuento</label>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-2 mb-3">
+                        <div class="form-floating">
+                            <input class="form-control" onkeyup="findTotal()" placeholder="Iva 21%" type="number" step="0.1" value=21 name="iva" id="iva" required>
                             <label for="iva">Iva 21%</label>
                         </div>
                     </div>
                     <div class="col-12 col-md-4 mb-3">
                         <div class="form-floating">
-                            <input class="form-control" onblur="findPrecio()" placeholder="Precio Final" step="0.01" type="number" name="precio-final" id="precio-final" required>
+                            <input class="form-control" onkeyup="findPrecio()" placeholder="Precio Final" step="0.01" type="number" name="precio-final" id="precio-final" required>
                             <label for="precio-final">Precio Final €</label>
                         </div>
                     </div>
