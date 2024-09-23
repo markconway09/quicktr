@@ -254,6 +254,11 @@ function crearPDF($id, $factura=0 , $enviar=0){
     $pdf->Cell($width/4, 5, 'Precio', 0, 0);
     $pdf->Cell($width/1.5, 5, iconv('UTF-8', 'windows-1252', $datos["precio"]." €"), 1, 1);
     $pdf->Ln(1);
+    if($datos["descuento"]>0){
+        $pdf->Cell($width/4, 5, 'Descuento', 0, 0);
+        $pdf->Cell($width/1.5, 5, $datos["descuento"] . '%', 1, 1);
+        $pdf->Ln(1);
+    }
     $pdf->Cell($width/4, 5, 'IVA', 0, 0);
     $pdf->Cell($width/1.5, 5, $datos["iva"] . '%', 1, 1);
     $pdf->Ln(1);
@@ -434,10 +439,10 @@ function crearFServicio($id, $enviar=0){
     $pdf->Cell($width/10, 5, iconv('UTF-8', 'windows-1252', 'Base Imp.'), 1, 1);
 
     $pdf->Cell($width/2, 5, iconv('UTF-8', 'windows-1252', $datos["desc"]), 1, 0);
-    $pdf->Cell($width/10, 5, iconv('UTF-8', 'windows-1252', $datos["iva"]), 1, 0);
+    $pdf->Cell($width/10, 5, iconv('UTF-8', 'windows-1252', $datos["iva"]."%"), 1, 0);
     $pdf->Cell($width/10, 5, iconv('UTF-8', 'windows-1252',  $datos["precio"]." €"), 1, 0);
     $pdf->Cell($width/10, 5, iconv('UTF-8', 'windows-1252', 1), 1, 0);
-    $pdf->Cell($width/10, 5, iconv('UTF-8', 'windows-1252',  $datos["precio-final"]." €"), 1, 1);
+    $pdf->Cell($width/10, 5, iconv('UTF-8', 'windows-1252',  $datos["precio"]." €"), 1, 1);
     $iva = round(($datos["precio"] * $datos["iva"])/100, 2);
     
     $pdf->Ln(2);
@@ -448,9 +453,14 @@ function crearFServicio($id, $enviar=0){
     $pdf->SetX($width/1.72);
     $pdf->Cell($width/6, 5, iconv('UTF-8', 'windows-1252',  "Total IVA: "), 1, 0);
     $pdf->Cell($width/5, 5, iconv('UTF-8', 'windows-1252',  $iva." €"), 1, 1);
+    if($datos["descuento"]>0){
+        $pdf->SetX($width/1.72);
+        $pdf->Cell($width/6, 5, iconv('UTF-8', 'windows-1252',  "Descuento: "), 1, 0);
+        $pdf->Cell($width/5, 5, iconv('UTF-8', 'windows-1252',  $datos["descuento"]." %"), 1, 1);
+    }
     $pdf->SetX($width/1.72);
     $pdf->Cell($width/6, 5, iconv('UTF-8', 'windows-1252',  "Total: "), 1, 0);
-    $pdf->Cell($width/5, 5, iconv('UTF-8', 'windows-1252',  ($datos["precio"] + $iva)." €"), 1, 1);
+    $pdf->Cell($width/5, 5, iconv('UTF-8', 'windows-1252',  ($datos["precio"] + $iva)-((($datos["precio"] + $iva)*$datos["descuento"])/100)." €"), 1, 1);
 
     $pdf->Ln(5);
     $metodo = $datos["metodo"];
@@ -574,9 +584,14 @@ function crearFactura($id, $enviar=0){
     $pdf->SetX($width/1.72);
     $pdf->Cell($width/6, 5, iconv('UTF-8', 'windows-1252',  "Total IVA: "), 1, 0);
     $pdf->Cell($width/5, 5, iconv('UTF-8', 'windows-1252',  $iva." €"), 1, 1);
+    if($datos["descuento"]>0){
+        $pdf->SetX($width/1.72);
+        $pdf->Cell($width/6, 5, iconv('UTF-8', 'windows-1252',  "Descuento: "), 1, 0);
+        $pdf->Cell($width/5, 5, iconv('UTF-8', 'windows-1252',  $datos["descuento"]." %"), 1, 1);
+    }
     $pdf->SetX($width/1.72);
     $pdf->Cell($width/6, 5, iconv('UTF-8', 'windows-1252',  "Total: "), 1, 0);
-    $pdf->Cell($width/5, 5, iconv('UTF-8', 'windows-1252',  ($total + $iva)." €"), 1, 1);
+    $pdf->Cell($width/5, 5, iconv('UTF-8', 'windows-1252',  ($total + $iva)-((($total+$iva)*$datos["descuento"])/100)." €"), 1, 1);
 
     $pdf->Ln(5);
     $metodo = $datos["metodo"];
@@ -663,6 +678,11 @@ function crearTVenta($id, $factura=0, $enviar=0){
     $pdf->Cell($width/4, 5, 'Total', 0, 0);
     $pdf->Cell($width/1.5, 5, iconv('UTF-8', 'windows-1252', $datos["precio"]." €"), 1, 1);
     $pdf->Ln(1);
+    if($datos["descuento"]>0){
+        $pdf->Cell($width/4, 5, 'Descuento', 0, 0);
+        $pdf->Cell($width/1.5, 5, $datos["descuento"] . '%', 1, 1);
+        $pdf->Ln(1);
+    }
     $pdf->Cell($width/4, 5, 'IVA', 0, 0);
     $pdf->Cell($width/1.5, 5, $datos["iva"] . '%', 1, 1);
     $pdf->Ln(1);
