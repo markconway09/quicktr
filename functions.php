@@ -781,6 +781,24 @@ function crearTVenta($id, $factura=0, $enviar=0){
     if($enviar != 0) $pdf->Output('F', 'doc.pdf', true);
 }
 
+function insertFactura($id, $simp = 0){
+    if($simp === 0){
+        $tipo = "factura";
+    } else {
+        $tipo = "factura simplificada";
+    }
+    $pdo = connect();
+    $stmt = $pdo->prepare("INSERT INTO factura VALUES (null, :id, :tipo)");
+    $stmt->bindParam(':id', $id);
+    $stmt->bindParam(':tipo', $tipo);
+    try {
+        $stmt->execute();
+    } catch(PDOException $e){
+        echo $e->getMessage()."<br>";
+        $stmt->debugDumpParams();
+    }
+}
+
 function enviarCorreo($id){
     //---------------RECOGER DATOS---------------//
     $datos = selectBD($id);
@@ -917,8 +935,8 @@ function totalVentas($d=0, $m, $y, $local=0){
     $date = $d==0?$m."/".$y:$d."/".$m."/".$y;
     $pdo = connect();
     if($d == 0){
-        if($local == 0){
-            $stmt = $pdo->prepare("SELECT * FROM `info_orden` WHERE MONTH(`fecha`) = :m AND YEAR(`fecha`) = :y");
+        if($local === 0){
+            $stmt = $pdo->prepare("SELECT * FROM `factura` f INNER JOIN `info_orden` o ON (f.id_orden = o.id) WHERE MONTH(`fecha`) = :m AND YEAR(`fecha`) = :y");
         } else {
             $stmt = $pdo->prepare("SELECT * FROM `info_orden` WHERE MONTH(`fecha`) = :m AND YEAR(`fecha`) = :y AND `local` = :loc");
             $stmt->bindParam(':loc', $local);
@@ -926,7 +944,7 @@ function totalVentas($d=0, $m, $y, $local=0){
         $stmt->bindParam(':m', $m);
         $stmt->bindParam(':y', $y);
     } else {
-        if($local == 0){
+        if($local === 0){
             $stmt = $pdo->prepare("SELECT * FROM `info_orden` WHERE DAY(`fecha`) = :d AND MONTH(`fecha`) = :m AND YEAR(`fecha`) = :y");
         } else {
             $stmt = $pdo->prepare("SELECT * FROM `info_orden` WHERE DAY(`fecha`) = :d AND MONTH(`fecha`) = :m AND YEAR(`fecha`) = :y AND `local` = :loc");
@@ -959,8 +977,8 @@ function totalVentas($d=0, $m, $y, $local=0){
     // DATOS
     
     $pdf->SetFont('Arial','B',8);
-    $pdf->Cell(25, 5, iconv('UTF-8', 'windows-1252', 'ID'), 1, 0);
-    $pdf->Cell($width/2-45, 5, iconv('UTF-8', 'windows-1252', 'Descripción'), 1, 0);
+    $pdf->Cell(28, 5, iconv('UTF-8', 'windows-1252', 'ID - Fecha'), 1, 0);
+    $pdf->Cell($width/2-48, 5, iconv('UTF-8', 'windows-1252', 'Descripción'), 1, 0);
     $pdf->Cell(17, 5, iconv('UTF-8', 'windows-1252', 'Local'), 1, 0);
     $pdf->Cell(15, 5, iconv('UTF-8', 'windows-1252', 'Método'), 1, 0);
     $pdf->Cell(10, 5, iconv('UTF-8', 'windows-1252', '- %'), 1, 0);
@@ -978,8 +996,8 @@ function totalVentas($d=0, $m, $y, $local=0){
     $iva_tarjeta = 0;
     while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
         if($row["tipo"] == "servicio"){
-            $pdf->Cell(25, 5, iconv('UTF-8', 'windows-1252', $row["id"]." - ".$row["tipo"]), 1, 0);
-            $pdf->Cell($width/2-45, 5, iconv('UTF-8', 'windows-1252', $row["servicio"]), 1, 0);
+            $pdf->Cell(28, 5, iconv('UTF-8', 'windows-1252', $row["id"]." - ".$row["fecha"]), 1, 0);
+            $pdf->Cell($width/2-48, 5, iconv('UTF-8', 'windows-1252', ucfirst($row["tipo"]) .": ". $row["servicio"]), 1, 0);
             $pdf->Cell(17, 5, iconv('UTF-8', 'windows-1252', $row["local"]), 1, 0);
             $pdf->Cell(15, 5, iconv('UTF-8', 'windows-1252', $row["metodo"]), 1, 0);
             $pdf->Cell(10, 5, iconv('UTF-8', 'windows-1252', $row["descuento"]."%"), 1, 0);
@@ -1009,8 +1027,8 @@ function totalVentas($d=0, $m, $y, $local=0){
                 $p = isset($pre[$i]) ? $pre[$i] : 0;
                 $c = isset($can[$i]) ? $can[$i] : 1;
         
-                $pdf->Cell(25, 5, iconv('UTF-8', 'windows-1252', $row["id"]." - ".$row["tipo"]), 1, 0);
-                $pdf->Cell($width/2-45, 5, iconv('UTF-8', 'windows-1252', $pro[$i]), 1, 0);
+                $pdf->Cell(28, 5, iconv('UTF-8', 'windows-1252', $row["id"]." - ".$row["fecha"]), 1, 0);
+                $pdf->Cell($width/2-48, 5, iconv('UTF-8', 'windows-1252', ucfirst($row["tipo"]) . ": ". $pro[$i]), 1, 0);
                 $pdf->Cell(17, 5, iconv('UTF-8', 'windows-1252', $row["local"]), 1, 0);
                 $pdf->Cell(15, 5, iconv('UTF-8', 'windows-1252', $row["metodo"]), 1, 0);
                 $pdf->Cell(10, 5, iconv('UTF-8', 'windows-1252', $row["descuento"]."%"), 1, 0);

@@ -55,7 +55,7 @@
         <nav class="navbar navbar-light" style="background-color:rgb(43,45,46);">
             <a class="navbar-brand mx-auto" href="index.php">
                 <img class="rounded" src="LOGO.png" alt="logo" height="90">
-                <span class="badge badge-pill bg-danger">1.8</span>
+                <span class="badge badge-pill bg-danger">1.81</span>
             </a>
             <?php
             if(isset($_SESSION["login"])){
