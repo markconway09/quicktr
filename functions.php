@@ -782,15 +782,34 @@ function crearTVenta($id, $factura=0, $enviar=0){
 }
 
 function insertFactura($id, $simp = 0){
-    if($simp === 0){
-        $tipo = "factura";
-    } else {
-        $tipo = "factura simplificada";
-    }
+    
     $pdo = connect();
-    $stmt = $pdo->prepare("INSERT INTO factura VALUES (null, :id, :tipo)");
-    $stmt->bindParam(':id', $id);
-    $stmt->bindParam(':tipo', $tipo);
+
+    $check = $pdo->prepare("SELECT * FROM factura WHERE `id_orden` = :id");
+    $check->bindParam(':id', $id);
+    $check->execute();
+    $row = $check->fetch(PDO::FETCH_ASSOC);
+    if(!empty($row["id"])){
+        // SI YA EXISTE ESA ORDEN EN LA TABLA SOLO ACTUALIZAMOS
+        if($simp === 0){
+            $stmt = $pdo->prepare("UPDATE factura SET `factura`.`factura` = '1' WHERE `id` = :id");
+        } else {
+            $stmt = $pdo->prepare("UPDATE factura SET `simplificada` = '1' WHERE `id` = :id");
+        }
+        $stmt->bindParam(':id', $row["id"]);
+    } else {
+        // SINO INSERTAMOS
+        $fac=0;
+        if($simp === 0){
+            $fac = 1;
+        } else {
+            $simp = 1;
+        }
+        $stmt = $pdo->prepare("INSERT INTO factura VALUES (null, :id, :fac, :simp)");
+        $stmt->bindParam(':id', $id);
+        $stmt->bindParam(':fac', $fac);
+        $stmt->bindParam(':simp', $simp);
+    }
     try {
         $stmt->execute();
     } catch(PDOException $e){
@@ -936,18 +955,18 @@ function totalVentas($d=0, $m, $y, $local=0){
     $pdo = connect();
     if($d == 0){
         if($local === 0){
-            $stmt = $pdo->prepare("SELECT * FROM `factura` f INNER JOIN `info_orden` o ON (f.id_orden = o.id) WHERE MONTH(`fecha`) = :m AND YEAR(`fecha`) = :y");
+            $stmt = $pdo->prepare("SELECT *, f.id as fid FROM `factura` f INNER JOIN `info_orden` o ON (f.id_orden = o.id) WHERE MONTH(`fecha`) = :m AND YEAR(`fecha`) = :y");
         } else {
-            $stmt = $pdo->prepare("SELECT * FROM `info_orden` WHERE MONTH(`fecha`) = :m AND YEAR(`fecha`) = :y AND `local` = :loc");
+            $stmt = $pdo->prepare("SELECT *, f.id as fid FROM `factura` f INNER JOIN `info_orden` o ON (f.id_orden = o.id) WHERE MONTH(`fecha`) = :m AND YEAR(`fecha`) = :y AND `local` = :loc");
             $stmt->bindParam(':loc', $local);
         }
         $stmt->bindParam(':m', $m);
         $stmt->bindParam(':y', $y);
     } else {
         if($local === 0){
-            $stmt = $pdo->prepare("SELECT * FROM `info_orden` WHERE DAY(`fecha`) = :d AND MONTH(`fecha`) = :m AND YEAR(`fecha`) = :y");
+            $stmt = $pdo->prepare("SELECT *, f.id as fid FROM `factura` f INNER JOIN `info_orden` o ON (f.id_orden = o.id) WHERE DAY(`fecha`) = :d AND MONTH(`fecha`) = :m AND YEAR(`fecha`) = :y");
         } else {
-            $stmt = $pdo->prepare("SELECT * FROM `info_orden` WHERE DAY(`fecha`) = :d AND MONTH(`fecha`) = :m AND YEAR(`fecha`) = :y AND `local` = :loc");
+            $stmt = $pdo->prepare("SELECT *, f.id as fid FROM `factura` f INNER JOIN `info_orden` o ON (f.id_orden = o.id) WHERE DAY(`fecha`) = :d AND MONTH(`fecha`) = :m AND YEAR(`fecha`) = :y AND `local` = :loc");
             $stmt->bindParam(':loc', $local);
         }
         $stmt->bindParam(':d', $d);
@@ -978,7 +997,9 @@ function totalVentas($d=0, $m, $y, $local=0){
     
     $pdf->SetFont('Arial','B',8);
     $pdf->Cell(28, 5, iconv('UTF-8', 'windows-1252', 'ID - Fecha'), 1, 0);
-    $pdf->Cell($width/2-48, 5, iconv('UTF-8', 'windows-1252', 'Descripción'), 1, 0);
+    $pdf->Cell($width/2-56, 5, iconv('UTF-8', 'windows-1252', 'Descripción'), 1, 0);
+    $pdf->Cell(4, 5, iconv('UTF-8', 'windows-1252', 'F'), 1, 0);
+    $pdf->Cell(4, 5, iconv('UTF-8', 'windows-1252', 'S'), 1, 0);
     $pdf->Cell(17, 5, iconv('UTF-8', 'windows-1252', 'Local'), 1, 0);
     $pdf->Cell(15, 5, iconv('UTF-8', 'windows-1252', 'Método'), 1, 0);
     $pdf->Cell(10, 5, iconv('UTF-8', 'windows-1252', '- %'), 1, 0);
@@ -996,8 +1017,10 @@ function totalVentas($d=0, $m, $y, $local=0){
     $iva_tarjeta = 0;
     while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
         if($row["tipo"] == "servicio"){
-            $pdf->Cell(28, 5, iconv('UTF-8', 'windows-1252', $row["id"]." - ".$row["fecha"]), 1, 0);
-            $pdf->Cell($width/2-48, 5, iconv('UTF-8', 'windows-1252', ucfirst($row["tipo"]) .": ". $row["servicio"]), 1, 0);
+            $pdf->Cell(28, 5, iconv('UTF-8', 'windows-1252', $row["fid"]." - ".$row["fecha"]), 1, 0);
+            $pdf->Cell($width/2-56, 5, iconv('UTF-8', 'windows-1252', ucfirst($row["tipo"]) .": ". $row["servicio"]), 1, 0);
+            $pdf->Cell(4, 5, iconv('UTF-8', 'windows-1252', $row["factura"]?"X":""), 1, 0);
+            $pdf->Cell(4, 5, iconv('UTF-8', 'windows-1252', $row["simplificada"]?"X":""), 1, 0);
             $pdf->Cell(17, 5, iconv('UTF-8', 'windows-1252', $row["local"]), 1, 0);
             $pdf->Cell(15, 5, iconv('UTF-8', 'windows-1252', $row["metodo"]), 1, 0);
             $pdf->Cell(10, 5, iconv('UTF-8', 'windows-1252', $row["descuento"]."%"), 1, 0);
@@ -1027,8 +1050,10 @@ function totalVentas($d=0, $m, $y, $local=0){
                 $p = isset($pre[$i]) ? $pre[$i] : 0;
                 $c = isset($can[$i]) ? $can[$i] : 1;
         
-                $pdf->Cell(28, 5, iconv('UTF-8', 'windows-1252', $row["id"]." - ".$row["fecha"]), 1, 0);
-                $pdf->Cell($width/2-48, 5, iconv('UTF-8', 'windows-1252', ucfirst($row["tipo"]) . ": ". $pro[$i]), 1, 0);
+                $pdf->Cell(28, 5, iconv('UTF-8', 'windows-1252', $row["fid"]." - ".$row["fecha"]), 1, 0);
+                $pdf->Cell($width/2-56, 5, iconv('UTF-8', 'windows-1252', ucfirst($row["tipo"]) . ": ". $pro[$i]), 1, 0);
+                $pdf->Cell(4, 5, iconv('UTF-8', 'windows-1252', $row["factura"]?"X":""), 1, 0);
+                $pdf->Cell(4, 5, iconv('UTF-8', 'windows-1252', $row["simplificada"]?"X":""), 1, 0);
                 $pdf->Cell(17, 5, iconv('UTF-8', 'windows-1252', $row["local"]), 1, 0);
                 $pdf->Cell(15, 5, iconv('UTF-8', 'windows-1252', $row["metodo"]), 1, 0);
                 $pdf->Cell(10, 5, iconv('UTF-8', 'windows-1252', $row["descuento"]."%"), 1, 0);
