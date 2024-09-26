@@ -86,7 +86,11 @@
                 }
                 echo '<a href="execute.php?enviar=1&id='.$id.'" target="_blank" class="btn btn-success mx-2 mt-3"><i class="bi bi-send"></i> Enviar</a>';
                 echo '<a href="edit.php?id='.$id.'" class="btn btn-success mx-2 mt-3"><i class="bi bi-pencil-square"></i> Editar</a>';
-                echo '<a href="execute.php?devolucion=1&id='.$id.'" class="btn btn-danger mx-2 mt-3"><i class="bi bi-arrow-counterclockwise"></i> Devolución</a>';
+                if(!empty($row["did"])){
+                    echo '<a href="execute.php?deshacer=1&id='.$id.'" class="btn btn-danger mx-2 mt-3"><i class="bi bi-arrow-counterclockwise"></i> Deshacer</a>';
+                } else {
+                    echo '<a href="execute.php?devolucion=1&id='.$id.'" class="btn btn-danger mx-2 mt-3"><i class="bi bi-arrow-counterclockwise"></i> Devolución</a>';
+                }
                 if($_SESSION["login"] == "admin"){
                     echo '<button type="button" class="btn btn-danger mx-2 mt-3" data-bs-toggle="modal" data-bs-target="#elimModal"><i class="bi bi-trash"></i> Eliminar</button>';
                 }                
@@ -170,9 +174,9 @@
                 $pdo = connect();
                 echo '<p class="display-5 text-light">Resultados para <i>\''.$_GET["search"].'\'</i></p>';
                 $search = "%".$_GET["search"]."%";
-                $stmt = $pdo->prepare("SELECT *, DATE_FORMAT(fecha, '%d/%m/%Y') as fecha FROM info_orden
-                WHERE `tipo` LIKE :search OR `id` LIKE :search OR `nombre` LIKE :search OR `local` LIKE :search OR `servicio` LIKE :search
-                ORDER BY `id` DESC");
+                $stmt = $pdo->prepare("SELECT *, i.id as id, d.id as did, DATE_FORMAT(fecha, '%d/%m/%Y') as fecha FROM info_orden i LEFT JOIN devolucion d ON (i.id = d.id_orden)
+                WHERE `tipo` LIKE :search OR i.id LIKE :search OR `nombre` LIKE :search OR `local` LIKE :search OR `servicio` LIKE :search
+                ORDER BY i.id DESC");
                 $stmt->bindParam(':search', $search);
                 $stmt->execute();
             }

@@ -154,9 +154,9 @@ function insertarBDV(){
 function selectBD($id=0){
     $pdo = connect();
     if($id == 0){
-        $stmt = $pdo->prepare("SELECT * FROM `info_orden`");
+        $stmt = $pdo->prepare("SELECT *, o.id as id, d.id as did, f.id as fid FROM `info_orden` o LEFT JOIN `devolucion` d ON (d.id_orden = o.id) LEFT JOIN `factura` f ON (f.id_orden = o.id)");
     } else{
-        $stmt = $pdo->prepare("SELECT * FROM `info_orden` WHERE `id` = :id");
+        $stmt = $pdo->prepare("SELECT *, o.id as id, d.id as did, f.id as fid FROM `info_orden` o LEFT JOIN `devolucion` d ON (d.id_orden = o.id) LEFT JOIN `factura` f ON (f.id_orden = o.id) WHERE o.`id` = :id");
         $stmt->bindParam(':id', $id);
     }
     try {
@@ -941,10 +941,15 @@ function editarEntrada($id){
     header('Location: list.php?id='.$id);
 }
 
-function devolucion($id){
+function devolucion($id, $des = 0){
     $pdo = connect();
-    $stmt = $pdo->prepare("INSERT INTO devolucion VALUES (null, :id)");
-    $stmt->bindParam(':id', $id);
+    if($des === 0){
+        $stmt = $pdo->prepare("INSERT INTO devolucion VALUES (null, :id)");
+        $stmt->bindParam(':id', $id);
+    } else {
+        $stmt = $pdo->prepare("DELETE FROM `devolucion` WHERE `devolucion`.`id_orden` = :id");
+        $stmt->bindParam(':id', $id);
+    }
     try {
         $stmt->execute();
     } catch(PDOException $e){
@@ -1040,16 +1045,22 @@ function totalVentas($d=0, $m, $y, $local=0){
             $pdf->Cell($width/10, 5, iconv('UTF-8', 'windows-1252',  $row["precio"]." €"), 1, 0);
             $pdf->Cell($width/10-10, 5, iconv('UTF-8', 'windows-1252', 1), 1, 0);
             $pdf->Cell($width/10, 5, iconv('UTF-8', 'windows-1252',  $row["precio"]." €"), 1, 1);
-            $iva = round(($row["precio"] * $row["iva"])/100, 2);
-            $iv+=$iva;
-            $tot+=doubleval($row["precio"]);
-            if($row["metodo"] == "Efectivo") {
-                $total_efectivo += doubleval($row["precio"]);
-                $iva_efectivo += $iva;
-            }
-            if($row["metodo"] == "Tarjeta") {
-                $total_tarjeta += doubleval($row["precio"]);
-                $iva_tarjeta += $iva;
+            if(!empty($row["did"])){
+                $pdf->Cell(28, 5, iconv('UTF-8', 'windows-1252', $row["id"]." - ".$row["fecha"]), 1, 0);
+                $pdf->Cell($width-70, 5, iconv('UTF-8', 'windows-1252', "DEVOLUCIÓN"), 1, 0);
+                $pdf->Cell($width/10, 5, iconv('UTF-8', 'windows-1252',  "-".$row["precio"]." €"), 1, 1);
+            } else {
+                $iva = round(($row["precio"] * $row["iva"])/100, 2);
+                $iv+=$iva;
+                $tot+=doubleval($row["precio"]);
+                if($row["metodo"] == "Efectivo") {
+                    $total_efectivo += doubleval($row["precio"]);
+                    $iva_efectivo += $iva;
+                }
+                if($row["metodo"] == "Tarjeta") {
+                    $total_tarjeta += doubleval($row["precio"]);
+                    $iva_tarjeta += $iva;
+                }
             }
         }else{
             $pro = explode(";", $row["desc"]);
