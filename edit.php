@@ -200,7 +200,13 @@
                             <label for="precio">Precio €</label>
                         </div>
                     </div>
-                    <div class="col-12 col-md-4 mb-3">
+                    <div class="col-12 col-md-2 mb-3">
+                        <div class="form-floating">
+                            <input class="form-control" onkeyup="findTotal()" placeholder="Descuento" type="number" step="0.1" value='.$datos["descuento"].' name="descuento" id="descuento">
+                            <label for="descuento">Descuento</label>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-2 mb-3">
                         <div class="form-floating">
                             <input class="form-control" onblur="findTotal()" placeholder="Iva 21%" type="number" step="0.1" value=21 name="iva" id="iva" value="'.$datos["iva"].'" required>
                             <label for="iva">Iva 21%</label>
@@ -236,7 +242,9 @@
                 var precio = parseFloat(document.getElementById('precio').value);
                 var iva = parseFloat(document.getElementById('iva').value);
                 var final = parseFloat(document.getElementById('precio-final').value);
-                let calc = precio + (precio*(iva/100));
+                var descuento = parseFloat(document.getElementById('descuento').value);
+                let calc = precio - ((precio*descuento)/100);
+                calc = calc + (calc*(iva/100));
                 document.getElementById('precio-final').value = calc.toFixed(2);
             }
             function findPrecio() {

@@ -782,9 +782,7 @@ function crearTVenta($id, $factura=0, $enviar=0){
 }
 
 function insertFactura($id, $simp = 0){
-    
     $pdo = connect();
-
     $check = $pdo->prepare("SELECT * FROM factura WHERE `id_orden` = :id");
     $check->bindParam(':id', $id);
     $check->execute();
@@ -915,7 +913,7 @@ function editarEntrada($id){
     }
 
     $pdo = connect();
-    $stmt = $pdo->prepare("UPDATE `info_orden` SET `nombre` = :nombre, `telefono` = :tel, `documento` = :doc, `servicio` = :servicio, `email` = :email, `direccion` = :direccion, `cp` = :cp, `preciosVenta`=:pV, `cantidadVenta`=:cV, `precio` = :precio, `iva` = :iva, `precio-final` = :preciofinal, `metodo` = :metodo, `desc` = :de, `local` = :loc, `razon` = :razon WHERE `info_orden`.`id` = :id");
+    $stmt = $pdo->prepare("UPDATE `info_orden` SET `nombre` = :nombre, `telefono` = :tel, `documento` = :doc, `servicio` = :servicio, `email` = :email, `direccion` = :direccion, `cp` = :cp, `preciosVenta`=:pV, `cantidadVenta`=:cV, `precio` = :precio, `iva` = :iva, `precio-final` = :preciofinal, `descuento` = :descuento, `metodo` = :metodo, `desc` = :de, `local` = :loc, `razon` = :razon WHERE `info_orden`.`id` = :id");
     $stmt->bindParam(':id', $id);
     $stmt->bindParam(':nombre', $_POST["nombre"]);
     $stmt->bindParam(':tel', $_POST["tel"]);
@@ -929,7 +927,8 @@ function editarEntrada($id){
     $stmt->bindParam(':precio', $_POST["precio"]);
     $stmt->bindParam(':iva', $_POST["iva"]);
     $stmt->bindParam(':preciofinal', $_POST["precio-final"]);
-    $stmt->bindParam(':metodo', $_POST["metodo"]);
+    $stmt->bindParam(':descuento', $_POST["descuento"]);
+    $stmt->bindParam(':metodo', $metodo);
     $stmt->bindParam(':de', $desc);
     $stmt->bindParam(':loc', $_POST["local"]);
     $stmt->bindParam(':razon', $_POST["razon"]);
@@ -940,6 +939,19 @@ function editarEntrada($id){
     }
     
     header('Location: list.php?id='.$id);
+}
+
+function devolucion($id){
+    $pdo = connect();
+    $stmt = $pdo->prepare("INSERT INTO devolucion VALUES (null, :id)");
+    $stmt->bindParam(':id', $id);
+    try {
+        $stmt->execute();
+    } catch(PDOException $e){
+        echo $e->getMessage()."<br>";
+        $stmt->debugDumpParams();
+    }
+    header('Location: list.php');
 }
 
 function eliminarEntrada($id){
@@ -955,18 +967,18 @@ function totalVentas($d=0, $m, $y, $local=0){
     $pdo = connect();
     if($d == 0){
         if($local === 0){
-            $stmt = $pdo->prepare("SELECT *, f.id as fid FROM `factura` f INNER JOIN `info_orden` o ON (f.id_orden = o.id) WHERE MONTH(`fecha`) = :m AND YEAR(`fecha`) = :y");
+            $stmt = $pdo->prepare("SELECT *, o.id as id, f.id as fid, d.id as did FROM `factura` f RIGHT JOIN `info_orden` o ON (f.id_orden = o.id) LEFT JOIN `devolucion` d ON (f.id_orden = d.id_orden) WHERE MONTH(`fecha`) = :m AND YEAR(`fecha`) = :y");
         } else {
-            $stmt = $pdo->prepare("SELECT *, f.id as fid FROM `factura` f INNER JOIN `info_orden` o ON (f.id_orden = o.id) WHERE MONTH(`fecha`) = :m AND YEAR(`fecha`) = :y AND `local` = :loc");
+            $stmt = $pdo->prepare("SELECT *, o.id as id, f.id as fid, d.id as did FROM `factura` f RIGHT JOIN `info_orden` o ON (f.id_orden = o.id) LEFT JOIN `devolucion` d ON (f.id_orden = d.id_orden) WHERE MONTH(`fecha`) = :m AND YEAR(`fecha`) = :y AND `local` = :loc");
             $stmt->bindParam(':loc', $local);
         }
         $stmt->bindParam(':m', $m);
         $stmt->bindParam(':y', $y);
     } else {
         if($local === 0){
-            $stmt = $pdo->prepare("SELECT *, f.id as fid FROM `factura` f INNER JOIN `info_orden` o ON (f.id_orden = o.id) WHERE DAY(`fecha`) = :d AND MONTH(`fecha`) = :m AND YEAR(`fecha`) = :y");
+            $stmt = $pdo->prepare("SELECT *, o.id as id, f.id as fid, d.id as did FROM `factura` f RIGHT JOIN `info_orden` o ON (f.id_orden = o.id) LEFT JOIN `devolucion` d ON (f.id_orden = d.id_orden) WHERE DAY(`fecha`) = :d AND MONTH(`fecha`) = :m AND YEAR(`fecha`) = :y");
         } else {
-            $stmt = $pdo->prepare("SELECT *, f.id as fid FROM `factura` f INNER JOIN `info_orden` o ON (f.id_orden = o.id) WHERE DAY(`fecha`) = :d AND MONTH(`fecha`) = :m AND YEAR(`fecha`) = :y AND `local` = :loc");
+            $stmt = $pdo->prepare("SELECT *, o.id as id, f.id as fid, d.id as did FROM `factura` f RIGHT JOIN `info_orden` o ON (f.id_orden = o.id) LEFT JOIN `devolucion` d ON (f.id_orden = d.id_orden) WHERE DAY(`fecha`) = :d AND MONTH(`fecha`) = :m AND YEAR(`fecha`) = :y AND `local` = :loc");
             $stmt->bindParam(':loc', $local);
         }
         $stmt->bindParam(':d', $d);
@@ -1017,7 +1029,7 @@ function totalVentas($d=0, $m, $y, $local=0){
     $iva_tarjeta = 0;
     while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
         if($row["tipo"] == "servicio"){
-            $pdf->Cell(28, 5, iconv('UTF-8', 'windows-1252', $row["fid"]." - ".$row["fecha"]), 1, 0);
+            $pdf->Cell(28, 5, iconv('UTF-8', 'windows-1252', $row["id"]." - ".$row["fecha"]), 1, 0);
             $pdf->Cell($width/2-56, 5, iconv('UTF-8', 'windows-1252', ucfirst($row["tipo"]) .": ". $row["servicio"]), 1, 0);
             $pdf->Cell(4, 5, iconv('UTF-8', 'windows-1252', $row["factura"]?"X":""), 1, 0);
             $pdf->Cell(4, 5, iconv('UTF-8', 'windows-1252', $row["simplificada"]?"X":""), 1, 0);
@@ -1050,7 +1062,7 @@ function totalVentas($d=0, $m, $y, $local=0){
                 $p = isset($pre[$i]) ? $pre[$i] : 0;
                 $c = isset($can[$i]) ? $can[$i] : 1;
         
-                $pdf->Cell(28, 5, iconv('UTF-8', 'windows-1252', $row["fid"]." - ".$row["fecha"]), 1, 0);
+                $pdf->Cell(28, 5, iconv('UTF-8', 'windows-1252', $row["id"]." - ".$row["fecha"]), 1, 0);
                 $pdf->Cell($width/2-56, 5, iconv('UTF-8', 'windows-1252', ucfirst($row["tipo"]) . ": ". $pro[$i]), 1, 0);
                 $pdf->Cell(4, 5, iconv('UTF-8', 'windows-1252', $row["factura"]?"X":""), 1, 0);
                 $pdf->Cell(4, 5, iconv('UTF-8', 'windows-1252', $row["simplificada"]?"X":""), 1, 0);
@@ -1063,17 +1075,23 @@ function totalVentas($d=0, $m, $y, $local=0){
                 $pdf->Cell($width/10, 5, iconv('UTF-8', 'windows-1252',  (intval($c)*doubleval($p))." €"), 1, 1);
                 $total += (doubleval($p)*intval($c));
             }
-            $tot+=$total;
-            $iva = round(($total * $row["iva"])/100, 2);
-            if($row["metodo"] == "Efectivo") {
-                $total_efectivo += doubleval($row["precio"]);
-                $iva_efectivo += $iva;
+            if(!empty($row["did"])){
+                $pdf->Cell(28, 5, iconv('UTF-8', 'windows-1252', $row["id"]." - ".$row["fecha"]), 1, 0);
+                $pdf->Cell($width-70, 5, iconv('UTF-8', 'windows-1252', "DEVOLUCIÓN"), 1, 0);
+                $pdf->Cell($width/10, 5, iconv('UTF-8', 'windows-1252',  "-".$row["precio"]." €"), 1, 1);
+            } else {
+                $tot+=$total;
+                $iva = round(($total * $row["iva"])/100, 2);
+                if($row["metodo"] == "Efectivo") {
+                    $total_efectivo += doubleval($row["precio"]);
+                    $iva_efectivo += $iva;
+                }
+                if($row["metodo"] == "Tarjeta") {
+                    $total_tarjeta += $total;
+                    $iva_tarjeta += $iva;
+                }
+                $iv+=$iva;
             }
-            if($row["metodo"] == "Tarjeta") {
-                $total_tarjeta += $total;
-                $iva_tarjeta += $iva;
-            }
-            $iv+=$iva;
         }
         $pdf->Ln(5);
     }

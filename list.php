@@ -24,7 +24,6 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
         <!-- JQUERY -->
-        <script src="jquery-3.7.1.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
         <style>
@@ -87,6 +86,7 @@
                 }
                 echo '<a href="execute.php?enviar=1&id='.$id.'" target="_blank" class="btn btn-success mx-2 mt-3"><i class="bi bi-send"></i> Enviar</a>';
                 echo '<a href="edit.php?id='.$id.'" class="btn btn-success mx-2 mt-3"><i class="bi bi-pencil-square"></i> Editar</a>';
+                echo '<a href="execute.php?devolucion=1&id='.$id.'" class="btn btn-danger mx-2 mt-3"><i class="bi bi-arrow-counterclockwise"></i> Devolución</a>';
                 if($_SESSION["login"] == "admin"){
                     echo '<button type="button" class="btn btn-danger mx-2 mt-3" data-bs-toggle="modal" data-bs-target="#elimModal"><i class="bi bi-trash"></i> Eliminar</button>';
                 }                
@@ -164,7 +164,7 @@
             <?php
             if(!isset($_GET["search"])){
                 $pdo = connect();
-                $stmt = $pdo->prepare("SELECT *, DATE_FORMAT(fecha, '%d/%m/%Y') as fecha FROM info_orden ORDER BY id DESC");
+                $stmt = $pdo->prepare("SELECT *, i.id as id, d.id as did, DATE_FORMAT(fecha, '%d/%m/%Y') as fecha FROM info_orden i LEFT JOIN devolucion d ON (i.id = d.id_orden) ORDER BY i.id DESC");
                 $stmt->execute();
             }else{
                 $pdo = connect();
@@ -199,10 +199,15 @@
                     default:
                         $bg = "bg-light-subtle";
                 }
+                $dev = "";
+                if(!empty($row["did"])) {
+                    $bg = "text-bg-dark";
+                    $dev = " - <span class='text-danger'>DEVUELTO</span>";
+                }
                 echo '
                     <div class="col-lg-4 col-12">
                         <div class="card '.$bg.' my-3">
-                            <h5 class="card-header py-3">'.ucfirst($row["tipo"]).' # '.$row["id"].'<br>'.$row["local"].'</h5>
+                            <h5 class="card-header py-3">'.ucfirst($row["tipo"]).' # '.$row["id"].'<br>'.$row["local"].$dev.'</h5>
                             <div class="card-body">
                                 <p class="card-text"><b>Nombre:</b> '.$row["nombre"].'</p>
                                 <p class="card-text"><b>Documento:</b> '.$row["documento"].'</p>
