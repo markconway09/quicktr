@@ -939,7 +939,7 @@ function editarEntrada($id){
         echo '<p class="text-light">'.$e->getMessage().'</p>';
     }
     
-    header('Location: list.php?id='.$id);
+    header('Location: index.php?pag=list&id='.$id);
 }
 
 function devolucion($id, $des = 0){
@@ -957,7 +957,7 @@ function devolucion($id, $des = 0){
         echo $e->getMessage()."<br>";
         $stmt->debugDumpParams();
     }
-    header('Location: list.php');
+    header('Location: index.php?pag=list');
 }
 
 function eliminarEntrada($id){
@@ -965,7 +965,7 @@ function eliminarEntrada($id){
     $stmt = $pdo->prepare("DELETE FROM info_orden WHERE `id` = :num");
     $stmt->bindParam(":num", $id);
     $stmt->execute();
-    header('Location: list.php');
+    header('Location: index.php?pag=list');
 }
 
 function totalVentas($d=0, $m, $y, $local=0){

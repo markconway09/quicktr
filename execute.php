@@ -4,11 +4,11 @@ require_once "functions.php";
 
 if(isset($_POST["guardar-servicio"])){
     $id = insertarBDS();
-    header('Location: list.php?id='.$id);
+    header('Location: index.php?pag=list&id='.$id);
 }
 if(isset($_POST["guardar-venta"])){
     $id = insertarBDV();
-    header('Location: list.php?id='.$id);
+    header('Location: index.php?pag=list&id='.$id);
 }
 if(isset($_GET["enviar"])) enviarCorreo($_GET["id"]);
 if(isset($_GET["servicio"])) {

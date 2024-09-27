@@ -60,7 +60,6 @@
             </a>
             <?php
             if(isset($_SESSION["login"])){
-                echo '<a href="list.php" class="btn btn-secondary mx-2"><i class="bi bi-columns-gap"></i> Lista</a>';
                 echo '<a href="index.php?logout=true" class="btn btn-danger mx-2"><i class="bi bi-box-arrow-in-left"></i> Log Out</a>';
             }
             ?>
@@ -76,6 +75,7 @@
             <a class="btn btn-primary my-2" href="?pag=form-servicio">Servicio</a>
             <a class="btn btn-primary my-2" href="?pag=form-venta">Venta</a>
             <a class="btn btn-success my-2" href="/almacen">Almacen</a>
+            <a class="btn btn-success my-2" href="?pag=list">Lista</a>
             <?php
             if(!empty($_SESSION["login"]) && $_SESSION["login"]=="admin"){?>
             <a class="btn btn-secondary my-2" href="?pag=totalventas">Total Ventas</a>

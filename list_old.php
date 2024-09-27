@@ -1,8 +1,62 @@
+<?php
+    session_start();
+    if(!isset($_SESSION["login"])){
+        header('Location: index.php');
+    }
+
+    // IMPORT FUNCTIONS
+    require_once "functions.php";
+?>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="shortcut icon" href="favicon.ico"/>
+        <title>Orden de reparación</title>
+        <!-- GFONTS -->
+         <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+        <!-- BOOTSTRAP -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+        <!-- JQUERY -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+        <style>
+            body{
+                font-family: "comfortaa";
+            }
+            .material-symbols-outlined {
+              font-variation-settings:
+              'FILL' 0,
+              'wght' 400,
+              'GRAD' 0,
+              'opsz' 24
+            }
+        </style>
+    </head>
+    <body class="bg-secondary">
+        <!-- NAVBAR -->
+        <nav class="navbar navbar-light" style="background-color:rgb(43,45,46);">
+            <a class="navbar-brand mx-auto" href="index.php">
+                <img class="rounded" src="LOGO.png" alt="logo" height="90">
+            </a>
+            <a href="index.php" class="btn btn-secondary mx-2"><i class="bi bi-ui-checks"></i> Formulario</a>
+            <?php
+            if(isset($_SESSION["login"])){
+                echo '<a href="index.php?logout=true" class="btn btn-danger mx-2"><i class="bi bi-box-arrow-in-left"></i> Log Out</a>';
+            }
+            ?>
+        </nav>
         <div class="container border my-4 px-4 py-2 bg-dark rounded">
             <?php
             if(isset($_GET["id"])){
                 $id = $_GET["id"];
-                echo '<a href="?pag=list" class="btn btn-secondary mx-2 mt-3"><i class="bi bi-arrow-left"></i> Volver</a>';
+                echo '<a href="list.php" class="btn btn-secondary mx-2 mt-3"><i class="bi bi-arrow-left"></i> Volver</a>';
                 $row = selectBD($id);
                 if($row["tipo"]=="venta"){
                     $d = explode(";", $row["desc"]);
@@ -88,7 +142,7 @@
             ?>
             <div class="row">
                 <div class="col-12 mt-2">
-                    <form action="?pag=list" method="POST">
+                    <form action="" method="GET">
                         <div class="row">
                             <div class="col-12 col-md-6">
                                 <div class="form-floating">
@@ -98,13 +152,11 @@
                             </div>
                             <div class="col-12 col-md-6">
                                 <button type="submit" id="submit" class="btn btn-primary btn-block p-3 my-2"><i class="bi bi-search"></i> Buscar</button>
-                                <form action="?pag=list" method="POST">
-                                    <button name="search" value="pendiente" style="background-color:#ccab06; color:white" class="btn btn-block p-3"><i class='bi bi-clock-history'></i> Pendientes</button>
-                                    <button name="search" value="terminado" class="btn btn-success btn-block p-3"><i class='bi bi-check-circle'></i> Terminados</button>
-                                </form>
+                                <a href="list.php?search=pendiente" style="background-color:#ccab06; color:white" class="btn btn-block p-3"><i class='bi bi-clock-history'></i> Pendientes</a>
+                                <a href="list.php?search=terminado" class="btn btn-success btn-block p-3"><i class='bi bi-check-circle'></i> Terminados</a>
                                 <?php
-                                if(isset($_POST["search"])){
-                                    echo '<a href="?pag=list" class="btn btn-secondary btn-block p-3"><i class="bi bi-x-circle"></i> Quitar filtro</a>';
+                                if(isset($_GET["search"])){
+                                    echo '<a href="list.php" class="btn btn-secondary btn-block p-3"><i class="bi bi-x-circle"></i> Quitar filtro</a>';
                                 }
                                 ?>
                             </div>
@@ -113,21 +165,21 @@
                 </div>
             </div></i>
             <?php
-            if(!isset($_POST["search"])){
+            if(!isset($_GET["search"])){
                 $pdo = connect();
                 $stmt = $pdo->prepare("SELECT *, i.id as id, d.id as did, DATE_FORMAT(fecha, '%d/%m/%Y') as fecha FROM info_orden i LEFT JOIN devolucion d ON (i.id = d.id_orden) ORDER BY i.id DESC");
                 $stmt->execute();
-            }else if($_POST["search"] == "pendiente" || $_POST["search"] == "terminado"){
-                if($_POST["search"] == "pendiente") $search = 0;
-                if($_POST["search"] == "terminado") $search = 1;
+            }else if($_GET["search"] == "pendiente" || $_GET["search"] == "terminado"){
+                if($_GET["search"] == "pendiente") $search = 0;
+                if($_GET["search"] == "terminado") $search = 1;
                 $pdo = connect();
                 $stmt = $pdo->prepare("SELECT *, i.id as id, d.id as did, DATE_FORMAT(fecha, '%d/%m/%Y') as fecha FROM info_orden i LEFT JOIN devolucion d ON (i.id = d.id_orden) WHERE `pendiente` = :search AND `tipo` = 'servicio'");
                 $stmt->bindParam(':search', $search);
                 $stmt->execute();
             }else{
                 $pdo = connect();
-                echo '<p class="display-5 text-light">Resultados para <i>\''.$_POST["search"].'\'</i></p>';
-                $search = "%".$_POST["search"]."%";
+                echo '<p class="display-5 text-light">Resultados para <i>\''.$_GET["search"].'\'</i></p>';
+                $search = "%".$_GET["search"]."%";
                 $stmt = $pdo->prepare("SELECT *, i.id as id, d.id as did, DATE_FORMAT(fecha, '%d/%m/%Y') as fecha FROM info_orden i LEFT JOIN devolucion d ON (i.id = d.id_orden)
                 WHERE `tipo` LIKE :search OR i.id LIKE :search OR `nombre` LIKE :search OR `local` LIKE :search OR `servicio` LIKE :search
                 ORDER BY i.id DESC");
@@ -188,7 +240,7 @@
                                 <li class="list-group-item '.$bg.'"><b>Descuento:</b> '.$row["descuento"].'%</b></li>
                             </ul>
                             <div class="card-body">
-                                <a href="?pag=list&id='.$row["id"].'" class="btn btn-primary">Más Info <i class="bi bi-caret-right-fill"></i></a>
+                                <a href="list.php?id='.$row["id"].'" class="btn btn-primary">Más Info <i class="bi bi-caret-right-fill"></i></a>
                             </div>
                         </div>
                     </div>';
@@ -201,3 +253,5 @@
             }
             ?>
         </div>
+    </body>
+</html>
