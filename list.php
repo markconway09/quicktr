@@ -30,7 +30,7 @@
                     echo '<a href="execute.php?servicio=1&id='.$id.'" target="_blank" class="btn btn-primary mx-2 mt-3"><i class="bi bi-receipt-cutoff"></i> Factura</a>';
                     echo '<a href="execute.php?servsimp=1&id='.$id.'" target="_blank" class="btn btn-primary mx-2 mt-3"><i class="bi bi-receipt"></i> Factura Simplificada</a>';
                 }
-                echo '<a href="execute.php?enviar=1&id='.$id.'" target="_blank" class="btn btn-success mx-2 mt-3"><i class="bi bi-send"></i> Enviar</a>';
+                echo '<button type="button" class="btn btn-success mx-2 mt-3" data-bs-toggle="modal" data-bs-target="#enviarModal"><i class="bi bi-send"></i> Enviar</button>';
                 echo '<a href="edit.php?id='.$id.'" class="btn btn-success mx-2 mt-3"><i class="bi bi-pencil-square"></i> Editar</a>';
                 if(!empty($row["did"])){
                     echo '<a href="execute.php?deshacer=1&id='.$id.'" class="btn btn-danger mx-2 mt-3"><i class="bi bi-arrow-counterclockwise"></i> Deshacer</a>';
@@ -77,6 +77,24 @@
                             <form method="GET" action="execute.php">
                                 <input type="hidden" name="id" value="'.$row["id"].'">
                                 <input class="btn btn-danger" type="submit" name="eliminar" id="eliminar" value="Eliminar">
+                                <button type="button" class="btn btn-secondary"data-bs-dismiss="modal">Cancelar</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>';
+            echo '<div class="modal fade" id="enviarModal" tabindex="-1" aria-labelledby="enviarModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="enviarModalLabel">Enviar esta factura? (# '.$row["id"].')</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Enviar a: '.$row["email"].'</p>
+                            <form method="GET" action="execute.php">
+                                <input type="hidden" name="id" value="'.$row["id"].'">
+                                <input class="btn btn-success" type="submit" name="enviar" id="enviar" value="Enviar">
                                 <button type="button" class="btn btn-secondary"data-bs-dismiss="modal">Cancelar</button>
                             </form>
                         </div>

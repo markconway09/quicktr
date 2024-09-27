@@ -63,7 +63,7 @@
         <?php
         require_once 'functions.php';
         echo '<form action="" method="POST" class="form-control p-4 bg-dark">
-                <a href="list.php?id='.$datos["id"].'" class="btn btn-secondary mb-4">Volver</a>
+                <a href="index.php?pag=list&id='.$datos["id"].'" class="btn btn-secondary mb-4">Volver</a>
                 <div class="row">
                     <div class="col-12 col-md-4 mb-3">
                         <div class="form-floating">
@@ -149,7 +149,7 @@
                         <div class="form-floating">
                             <select class="form-control" name="metodo" id="metodo">
                                 <option value="'.$datos["metodo"].'" selected>Actual: '.ucfirst($datos["metodo"]).'</option>
-                                <option value="Tarjeta">Tarjeta/Bizum</option>
+                                <option value="Tarjeta">Tarjeta</option>
                                 <option value="Efectivo">Efectivo</option>
                             </select>
                             <label for="metodo">Metodo de pago</label>
@@ -220,13 +220,23 @@
                     </div>
                 </div>
                 <div class="row">
+                    <?php if($datos["tipo"] == "servicio") { ?>
                     <div class="col-2">
-                        <select class="form-control form-select" name="pendiente" id="pendiente">
-                            <option value="1" <?php if($datos["pendiente"]===1) echo "selected"; ?>>Terminado</option>
-                            <option value="0" <?php if($datos["pendiente"]===0) echo "selected"; ?>>Pendiente</option>
-                        </select>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="pendiente" id="pendiente1" value=0 <?php if($datos["pendiente"]===0) echo "checked"; ?>>
+                            <label class="form-check-label text-light" for="pendiente1">
+                                Pendiente
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="pendiente" id="pendiente2" value=1 <?php if($datos["pendiente"]===1) echo "checked"; ?>>
+                            <label class="form-check-label text-light" for="pendiente2">
+                                Terminado
+                            </label>
+                        </div>
                     </div>
-                    <div class="col-10">
+                    <?php } ?>
+                    <div class="<?php if($datos["tipo"] == "servicio") {echo"col-10";}else{echo"col-12";} ?>">
                         <input type="submit" name="editar-factura" class="btn btn-primary col-12 mx-auto" value="Guardar Cambios">
                     </div>
                 </div>
