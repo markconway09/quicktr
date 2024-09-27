@@ -136,6 +136,7 @@
             }
             $i = 0;
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+                if($_SESSION["login"] != "admin" && $_SESSION["local"] != $row["local"]) continue;
                 if($i==0) echo '<div class="row">';
                 if(strlen($row["desc"])>25){
                     $desc = substr($row["desc"], 0, 25) . '...';
