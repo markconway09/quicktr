@@ -30,7 +30,7 @@ function insertarBDS(){
 
     $pdo = connect();
     $stmt = $pdo->prepare("INSERT INTO info_orden VALUES 
-    (null, :nom, :tel, :doc, :ser, :email, :direccion, :cp, :preciosV, :cantV, :precio, :descuento, :iva, :final, :metodo, :descr, :loc, :fecha, :tipo, :razon, :dept)");
+    (null, :nom, :tel, :doc, :ser, :email, :direccion, :cp, :preciosV, :cantV, :precio, :descuento, :iva, :final, :metodo, :descr, :loc, :fecha, :tipo, 0, :razon, :dept)");
     $stmt->bindParam(':nom', $_POST["nombre"]);
     $stmt->bindParam(':tel', $tel);
     $stmt->bindParam(':doc', $doc);
@@ -92,7 +92,7 @@ function insertarBDV(){
 
     $pdo = connect();
     $stmt = $pdo->prepare("INSERT INTO info_orden VALUES 
-    (null, :nom, :tel, :doc, :ser, :email, :direccion, :cp, :preciosV, :cantV, :precio, :descuento, :iva, :final, :metodo, :descr, :loc, :fecha, :tipo, :razon, :dept)");
+    (null, :nom, :tel, :doc, :ser, :email, :direccion, :cp, :preciosV, :cantV, :precio, :descuento, :iva, :final, :metodo, :descr, :loc, :fecha, :tipo, 0, :razon, :dept)");
     $stmt->bindParam(':nom', $nombre);
     $stmt->bindParam(':tel', $tel);
     $stmt->bindParam(':doc', $doc);
@@ -913,7 +913,7 @@ function editarEntrada($id){
     }
 
     $pdo = connect();
-    $stmt = $pdo->prepare("UPDATE `info_orden` SET `nombre` = :nombre, `telefono` = :tel, `documento` = :doc, `servicio` = :servicio, `email` = :email, `direccion` = :direccion, `cp` = :cp, `preciosVenta`=:pV, `cantidadVenta`=:cV, `precio` = :precio, `iva` = :iva, `precio-final` = :preciofinal, `descuento` = :descuento, `metodo` = :metodo, `desc` = :de, `local` = :loc, `razon` = :razon WHERE `info_orden`.`id` = :id");
+    $stmt = $pdo->prepare("UPDATE `info_orden` SET `nombre` = :nombre, `telefono` = :tel, `documento` = :doc, `servicio` = :servicio, `email` = :email, `direccion` = :direccion, `cp` = :cp, `preciosVenta`=:pV, `cantidadVenta`=:cV, `precio` = :precio, `iva` = :iva, `precio-final` = :preciofinal, `descuento` = :descuento, `metodo` = :metodo, `desc` = :de, `local` = :loc, `razon` = :razon, `pendiente` = :pend WHERE `info_orden`.`id` = :id");
     $stmt->bindParam(':id', $id);
     $stmt->bindParam(':nombre', $_POST["nombre"]);
     $stmt->bindParam(':tel', $_POST["tel"]);
@@ -932,6 +932,7 @@ function editarEntrada($id){
     $stmt->bindParam(':de', $desc);
     $stmt->bindParam(':loc', $_POST["local"]);
     $stmt->bindParam(':razon', $_POST["razon"]);
+    $stmt->bindParam(':pend', $_POST["pendiente"]);
     try {
         $stmt->execute();
     } catch (PDOException $e){

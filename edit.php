@@ -192,38 +192,45 @@
                             </div>
                         </div>';
                     }
-                echo'
+                ?>
                 <div class="row">
                     <div class="col-12 col-md-4 mb-3">
                         <div class="form-floating">
-                            <input class="form-control" onblur="findTotal()" placeholder="Precio" type="number" step="0.01" name="precio" id="precio" value="'.$datos["precio"].'" required>
+                            <input class="form-control" onblur="findTotal()" placeholder="Precio" type="number" step="0.01" name="precio" id="precio" value="<?php echo $datos["precio"] ?>" required>
                             <label for="precio">Precio €</label>
                         </div>
                     </div>
                     <div class="col-12 col-md-2 mb-3">
                         <div class="form-floating">
-                            <input class="form-control" onkeyup="findTotal()" placeholder="Descuento" type="number" step="0.1" value='.$datos["descuento"].' name="descuento" id="descuento">
+                            <input class="form-control" onkeyup="findTotal()" placeholder="Descuento" type="number" step="0.1" value=<?php echo $datos["descuento"] ?> name="descuento" id="descuento">
                             <label for="descuento">Descuento</label>
                         </div>
                     </div>
                     <div class="col-12 col-md-2 mb-3">
                         <div class="form-floating">
-                            <input class="form-control" onblur="findTotal()" placeholder="Iva 21%" type="number" step="0.1" value=21 name="iva" id="iva" value="'.$datos["iva"].'" required>
+                            <input class="form-control" onblur="findTotal()" placeholder="Iva 21%" type="number" step="0.1" value=21 name="iva" id="iva" value="<?php echo $datos["iva"] ?>" required>
                             <label for="iva">Iva 21%</label>
                         </div>
                     </div>
                     <div class="col-12 col-md-4 mb-3">
                         <div class="form-floating">
-                            <input class="form-control" onblur="findPrecio()" placeholder="Precio Final" step="0.01" type="number" name="precio-final" id="precio-final" value="'.$datos["precio-final"].'" required>
+                            <input class="form-control" onblur="findPrecio()" placeholder="Precio Final" step="0.01" type="number" name="precio-final" id="precio-final" value="<?php echo $datos["precio-final"] ?>" required>
                             <label for="precio-final">Precio Final €</label>
                         </div>
                     </div>
                 </div>
                 <div class="row">
-                    <input type="submit" name="editar-factura" class="btn btn-primary col-11 mx-auto" value="Guardar Cambios">
+                    <div class="col-2">
+                        <select class="form-control form-select" name="pendiente" id="pendiente">
+                            <option value="1" <?php if($datos["pendiente"]===1) echo "selected"; ?>>Terminado</option>
+                            <option value="0" <?php if($datos["pendiente"]===0) echo "selected"; ?>>Pendiente</option>
+                        </select>
+                    </div>
+                    <div class="col-10">
+                        <input type="submit" name="editar-factura" class="btn btn-primary col-12 mx-auto" value="Guardar Cambios">
+                    </div>
                 </div>
-            </form>';
-            ?>
+            </form>
         </div>
         <script type="text/javascript">
             function addPrice(prod, num){

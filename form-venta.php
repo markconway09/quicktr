@@ -4,7 +4,7 @@
             <div class="col-12 col-md-6 mb-3">
                 <div class="form-floating">
                     <select class="form-control form-select" name="metodo" id="metodo" required>
-                        <option value="Tarjeta">Tarjeta/Bizum</option>
+                        <option value="Tarjeta">Tarjeta</option>
                         <option value="Efectivo">Efectivo</option>
                     </select>
                     <label for="metodo">Método de pago</label>

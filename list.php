@@ -89,7 +89,8 @@
                 if(!empty($row["did"])){
                     echo '<a href="execute.php?deshacer=1&id='.$id.'" class="btn btn-danger mx-2 mt-3"><i class="bi bi-arrow-counterclockwise"></i> Deshacer</a>';
                 } else {
-                    echo '<a href="execute.php?devolucion=1&id='.$id.'" class="btn btn-danger mx-2 mt-3"><i class="bi bi-arrow-counterclockwise"></i> Devolución</a>';
+                    if($row["tipo"] == "servicio") echo '<a href="execute.php?devolucion=1&id='.$id.'" class="btn btn-danger mx-2 mt-3"><i class="bi bi-arrow-counterclockwise"></i> Cancelar</a>';
+                    if($row["tipo"] == "venta") echo '<a href="execute.php?devolucion=1&id='.$id.'" class="btn btn-danger mx-2 mt-3"><i class="bi bi-arrow-counterclockwise"></i> Devolución</a>';
                 }
                 if($_SESSION["login"] == "admin"){
                     echo '<button type="button" class="btn btn-danger mx-2 mt-3" data-bs-toggle="modal" data-bs-target="#elimModal"><i class="bi bi-trash"></i> Eliminar</button>';
@@ -143,21 +144,19 @@
                 <div class="col-12 mt-2">
                     <form action="" method="GET">
                         <div class="row">
-                            <div class="col-12 col-md-8">
+                            <div class="col-12 col-md-6">
                                 <div class="form-floating">
                                     <input type="text" placeholder="Buscar... (Tipo, Nombre, Servicio, Id...)" name="search" id="search" class="form-control my-2">
                                     <label for="search">Buscar... (Tipo, Nombre, Id...)</label>
                                 </div>
                             </div>
-                            <div class="col-12 col-md-4">
+                            <div class="col-12 col-md-6">
                                 <button type="submit" id="submit" class="btn btn-primary btn-block p-3 my-2"><i class="bi bi-search"></i> Buscar</button>
+                                <a href="list.php?search=pendiente" style="background-color:#ccab06; color:white" class="btn btn-block p-3"><i class='bi bi-clock-history'></i> Pendientes</a>
+                                <a href="list.php?search=terminado" class="btn btn-success btn-block p-3"><i class='bi bi-check-circle'></i> Terminados</a>
                                 <?php
                                 if(isset($_GET["search"])){
-                                    echo '<a href="list.php" class="btn btn-secondary btn-block p-3">Quitar filtro</a>';
-                                }else{
-                                    if($_SESSION["login"]=="admin"){
-                                        echo '<a href="index.php?pag=totalventas" class="btn btn-success btn-block p-3 mx-2">Total Ventas</a>';
-                                    }
+                                    echo '<a href="list.php" class="btn btn-secondary btn-block p-3"><i class="bi bi-x-circle"></i> Quitar filtro</a>';
                                 }
                                 ?>
                             </div>
@@ -169,6 +168,13 @@
             if(!isset($_GET["search"])){
                 $pdo = connect();
                 $stmt = $pdo->prepare("SELECT *, i.id as id, d.id as did, DATE_FORMAT(fecha, '%d/%m/%Y') as fecha FROM info_orden i LEFT JOIN devolucion d ON (i.id = d.id_orden) ORDER BY i.id DESC");
+                $stmt->execute();
+            }else if($_GET["search"] == "pendiente" || $_GET["search"] == "terminado"){
+                if($_GET["search"] == "pendiente") $search = 0;
+                if($_GET["search"] == "terminado") $search = 1;
+                $pdo = connect();
+                $stmt = $pdo->prepare("SELECT *, i.id as id, d.id as did, DATE_FORMAT(fecha, '%d/%m/%Y') as fecha FROM info_orden i LEFT JOIN devolucion d ON (i.id = d.id_orden) WHERE `pendiente` = :search AND `tipo` = 'servicio'");
+                $stmt->bindParam(':search', $search);
                 $stmt->execute();
             }else{
                 $pdo = connect();
@@ -206,7 +212,15 @@
                 $dev = "";
                 if(!empty($row["did"])) {
                     $bg = "text-bg-dark";
-                    $dev = " - <span class='text-danger'>DEVUELTO</span>";
+                    if($row["tipo"]=="servicio") $dev = " - <span class='text-danger'><i class='bi bi-arrow-counterclockwise'></i> CANCELADO</span>";
+                    if($row["tipo"]=="venta") $dev = " - <span class='text-danger'><i class='bi bi-arrow-counterclockwise'></i> DEVUELTO</span>";
+                } else if($row["tipo"]=="servicio") {
+                    if($row["pendiente"] === 1){
+                        $dev = " - <span style='color:#26FF17'><i class='bi bi-check-circle'></i> TERMINADO</span>";
+                    } else {
+                        $dev = " - <span class='text-warning'><i class='bi bi-clock-history'></i> PENDIENTE</span>";
+
+                    }
                 }
                 echo '
                     <div class="col-lg-4 col-12">
