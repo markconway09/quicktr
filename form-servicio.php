@@ -53,8 +53,18 @@
                     <div class="col-12 col-md-6 mb-3">
                         <div class="form-floating">
                             <select class="form-control form-select" name="local" id="local">
-                                <option class="text-primary" value="Barcelona">Barcelona</option>
-                                <option class="text-success" value="Mataró">Mataró</option>
+                                <?php
+                                if(!is_null($_SESSION["local"])) {
+                                    ?>
+                                    <option value="<?php echo $_SESSION["local"]; ?>"><?php echo $_SESSION["local"]; ?></option>
+                                    <?php
+                                } else {
+                                ?>
+                                <option value="Barcelona">Barcelona</option>
+                                <option value="Mataró">Mataró</option>
+                                <?php
+                                }
+                                ?>
                             </select>
                             <label for="local">Local</label>
                         </div>
