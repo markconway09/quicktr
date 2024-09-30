@@ -46,10 +46,10 @@
                     if($row["tipo"]=="servicio") $estado = " - <span class='text-danger'><i class='bi bi-arrow-counterclockwise'></i> CANCELADO</span>";
                     if($row["tipo"]=="venta") $estado = " - <span class='text-danger'><i class='bi bi-arrow-counterclockwise'></i> DEVUELTO</span>";
                 } else if($row["tipo"]=="servicio") {
-                    if($row["pendiente"] === 1){
-                        $estado = " - <span style='color:#26FF17'><i class='bi bi-check-circle'></i> TERMINADO</span> <a href='execute.php?desCobrar=1&id=".$id."' class='btn btn-danger'>Deshacer</a>";
+                    if($row["pendiente"] == 1){
+                        $estado = " - <span style='color:#26FF17'><i class='bi bi-check-circle'></i> TERMINADO</span> <a href='execute.php?desCobrar=1&id=".$id."' class='btn btn-danger mb-1'>Deshacer</a>";
                     } else {
-                        $estado = " - <span class='text-warning'><i class='bi bi-clock-history'></i> PENDIENTE</span> <a href='execute.php?cobrar=1&id=".$id."' class='btn btn-primary'>Cobrar</a>";
+                        $estado = " - <span class='text-warning'><i class='bi bi-clock-history'></i> PENDIENTE</span> <a href='execute.php?cobrar=1&id=".$id."' class='btn btn-primary mb-1'>Cobrar</a>";
 
                     }
                 }         
@@ -194,7 +194,7 @@
                     if($row["tipo"]=="servicio") $dev = " - <span class='text-danger'><i class='bi bi-arrow-counterclockwise'></i> CANCELADO</span>";
                     if($row["tipo"]=="venta") $dev = " - <span class='text-danger'><i class='bi bi-arrow-counterclockwise'></i> DEVUELTO</span>";
                 } else if($row["tipo"]=="servicio") {
-                    if($row["pendiente"] === 1){
+                    if($row["pendiente"] == 1){
                         $dev = " - <span style='color:#26FF17'><i class='bi bi-check-circle'></i> TERMINADO</span>";
                     } else {
                         $dev = " - <span class='text-warning'><i class='bi bi-clock-history'></i> PENDIENTE</span>";

@@ -56,11 +56,11 @@
         <nav class="navbar navbar-light" style="background-color:rgb(43,45,46);">
             <a class="navbar-brand mx-auto" href="index.php">
                 <img class="rounded" src="LOGO.png" alt="logo" height="90">
-                <span class="badge badge-pill bg-danger">1.83</span>
+                <span class="badge badge-pill bg-danger">1.84</span>
             </a>
             <?php
             if(isset($_SESSION["login"])){
-                echo '<a href="index.php?logout=true" class="btn btn-danger mx-2"><i class="bi bi-box-arrow-in-left"></i> Log Out</a>';
+                echo '<span class="text-light mx-3">'.(!$_SESSION["local"]?"Admin":$_SESSION["local"]).'</span><a href="index.php?logout=true" class="btn btn-danger mx-2"><i class="bi bi-box-arrow-in-left"></i> Log Out</a>';
             }
             ?>
         </nav>
@@ -70,21 +70,29 @@
             exit();
         }
         ?>
-        <!-- FORM -->
         <div class="container p-2 mx-auto my-4 rounded text-center" style="background-color: rgb(43,45,46);box-shadow: 0px 0px 15px black;">
-            <span class="text-light mx-5"><?php echo $_SESSION["local"] ?></span>
-            <a class="btn btn-primary my-2" href="?pag=form-servicio">Servicio</a>
-            <a class="btn btn-primary my-2" href="?pag=form-venta">Venta</a>
-            <a class="btn btn-success my-2" href="/almacen">Almacen</a>
-            <a class="btn btn-success my-2" href="?pag=list">Lista</a>
             <?php
-            if(!empty($_SESSION["login"]) && $_SESSION["login"]=="admin"){?>
-            <a class="btn btn-secondary my-2" href="?pag=totalventas">Total Ventas</a>
-            <a class="btn btn-secondary my-2" href="?pag=user-admin">Usuarios</a>
-            <?php
+            if(!$_SESSION["local"]){
+                ?>
+                <button class="btn btn-secondary text-light d-inline dropdown-toggle mx-5" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Admin
+            </button>
+                <?php
             }
             ?>
+            
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <a class="dropdown-item" href="?pag=totalventas">Total Ventas</a>
+                <a class="dropdown-item" href="?pag=user-admin">Usuarios</a>
+                <a class="dropdown-item" href="?pag=infoClientes">Clientes</a>
+            </div>
+            <a class="btn btn-primary my-2" href="?pag=form-servicio">Servicio</a>
+            <a class="btn btn-primary my-2" href="?pag=form-venta">Venta</a>
+            <a class="btn btn-success my-2" target="_blank" href="/almacen">Almacén <i class="bi bi-box-arrow-up-right"></i></a>
+            <a class="btn btn-secondary my-2 mx-5" href="?pag=list"><i class="bi bi-columns-gap"></i> Lista</a>
         </div>
+        
+        <!-- CONTENIDO -->
         <div class="container my-4">
             <?php
                 if(isset($_GET["pag"])){

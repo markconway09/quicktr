@@ -24,8 +24,8 @@
             <td><?php echo $row["username"]; ?></td>
             <td>
                 <button class="btn btn-sm btn-secondary"
-                        data-toggle="modal"
-                        data-target="#passModal"
+                        data-bs-toggle="modal"
+                        data-bs-target="#passModal"
                         data-bs-whatever="<?php echo $row["username"]; ?>">
                     Cambiar
                 </button>
@@ -48,7 +48,8 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        ...
+        <input class="form-control" placeholder="Username" type="text" name="pass" id="pass">
+        <input class="form-control" placeholder="Password" type="password" name="pass" id="pass">
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
