@@ -960,6 +960,19 @@ function devolucion($id, $des = 0){
     header('Location: index.php?pag=list');
 }
 
+function cobrarServicio($id, $estado){
+    $pdo = connect();
+    $stmt = $pdo->prepare("UPDATE `info_orden` SET `pendiente` = :pend WHERE `info_orden`.`id` = :id");
+    $stmt->bindParam(':id', $id);
+    $stmt->bindParam(':pend', $estado);
+    try {
+        $stmt->execute();
+    } catch (PDOException $e){
+        echo '<p class="text-light">'.$e->getMessage().'</p>';
+    }
+    header('Location: index.php?pag=list&id='.$id);
+}
+
 function eliminarEntrada($id){
     $pdo = connect();
     $stmt = $pdo->prepare("DELETE FROM info_orden WHERE `id` = :num");

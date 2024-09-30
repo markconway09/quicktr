@@ -32,3 +32,5 @@ if(isset($_GET["ventasimp"])) {
 if(isset($_GET["devolucion"])) devolucion($_GET["id"]);
 if(isset($_GET["deshacer"])) devolucion($_GET["id"],1);
 if(isset($_GET["eliminar"])) eliminarEntrada($_GET["id"]);
+if(isset($_GET["cobrar"])) cobrarServicio($_GET["id"],1);
+if(isset($_GET["desCobrar"])) cobrarServicio($_GET["id"],0);
