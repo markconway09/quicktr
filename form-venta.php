@@ -1,5 +1,5 @@
     <form action="execute.php" target="_blank" method="POST" class="form-control p-4 bg-dark">
-        <h1 class="display-2 text-light text-center mb-4">VENTA</h1>
+        <h1 class="display-5 text-light text-center mb-4">VENTA</h1>
         <div class="row">
             <div class="col-12 col-md-6 mb-3">
                 <div class="form-floating">

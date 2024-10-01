@@ -10,7 +10,7 @@
                     $c = explode(";", $row["cantidadVenta"]);
                     $desc = '<b>Producto(s):</b> ';
                     for($k = 0; $k<count($d);){
-                        $desc .= $d[$k] . " (".(isset($p[$k])?$p[$k]."€":"?")." x ".(isset($c[$k])?$c[$k]:"?").")";
+                        $desc .= "<a href='/almacen/?search=".$d[$k]."' target='_blank'>" . $d[$k] . "</a> (".(isset($p[$k])?$p[$k]."€":"?")." x ".(isset($c[$k])?$c[$k]:"?").")";
                         $k++;
                         if(isset($d[$k])){
                             $desc .= ", ";
@@ -69,12 +69,13 @@
                                     <p class="card-text"><b>Local:</b> '.$row["local"].'</p>
                                     <p class="card-text"><b>Cómo nos encontró:</b> '.$row["razon"].'</p>
                                     <p class="card-text"><b>Departamento:</b> '.$row["dept"].'</p>
+                                    <p class="card-text"><b>Método de pago:</b> '.$row["metodo"].'</p>
                                     ';
                                     echo'
                                 </div>
                                 <hr> 
                                 <ul class="list-group list-group-flush mb-3">
-                                    <li class="list-group-item"><b>Precio:</b> '.$row["precio"].'€ (+ IVA '.$row["iva"].'%) = <b>'.$row["precio-final"].'€</b></li>
+                                    <li class="list-group-item"><b>Precio:</b> '.$row["precio"].'€ (- '.$row["descuento"].'%) (+ IVA '.$row["iva"].'%) = <b>'.$row["precio-final"].'€</b></li>
                                 </ul>
                             </div>
                         </div>';

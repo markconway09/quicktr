@@ -1067,15 +1067,16 @@ function totalVentas($d=0, $m, $y, $local=0){
                 $pdf->Cell($width-70, 5, iconv('UTF-8', 'windows-1252', "DEVOLUCIÓN"), 1, 0);
                 $pdf->Cell($width/10, 5, iconv('UTF-8', 'windows-1252',  "-".$row["precio"]." €"), 1, 1);
             } else {
-                $iva = round(($row["precio"] * $row["iva"])/100, 2);
+                $final = $row["precio"] + ($row["precio"]/100*$row["descuento"]);
+                $iva = round(($final * $row["iva"])/100, 2);
                 $iv+=$iva;
                 $tot+=doubleval($row["precio"]);
                 if($row["metodo"] == "Efectivo") {
-                    $total_efectivo += doubleval($row["precio"]);
+                    $total_efectivo += doubleval($final);
                     $iva_efectivo += $iva;
                 }
                 if($row["metodo"] == "Tarjeta") {
-                    $total_tarjeta += doubleval($row["precio"]);
+                    $total_tarjeta += doubleval($final);
                     $iva_tarjeta += $iva;
                 }
             }
@@ -1101,7 +1102,9 @@ function totalVentas($d=0, $m, $y, $local=0){
                 $pdf->Cell($width/10, 5, iconv('UTF-8', 'windows-1252',  doubleval($p)." €"), 1, 0);
                 $pdf->Cell($width/10-10, 5, iconv('UTF-8', 'windows-1252', $c), 1, 0);
                 $pdf->Cell($width/10, 5, iconv('UTF-8', 'windows-1252',  (intval($c)*doubleval($p))." €"), 1, 1);
-                $total += (doubleval($p)*intval($c));
+                //descuento
+                $descuento = (doubleval($p)*intval($c))-((doubleval($p)*intval($c))/100*$row["descuento"]);
+                $total += $descuento;
             }
             if(!empty($row["did"])){
                 $pdf->Cell(28, 5, iconv('UTF-8', 'windows-1252', $row["id"]." - ".$row["fecha"]), 1, 0);
@@ -1111,7 +1114,7 @@ function totalVentas($d=0, $m, $y, $local=0){
                 $tot+=$total;
                 $iva = round(($total * $row["iva"])/100, 2);
                 if($row["metodo"] == "Efectivo") {
-                    $total_efectivo += doubleval($row["precio"]);
+                    $total_efectivo += $total;
                     $iva_efectivo += $iva;
                 }
                 if($row["metodo"] == "Tarjeta") {
