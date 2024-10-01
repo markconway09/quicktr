@@ -155,9 +155,9 @@
                             <label for="metodo">Metodo de pago</label>
                         </div>
                     </div>
-                </div>
-                    <h3 class="display-6 text-light text-center">Producto(s)</h3>';
+                </div>';
                     if($datos["tipo"]=="venta"){
+                        echo '<h3 class="display-6 text-light text-center">Producto(s)</h3>';
                         $prod = explode(";", $datos["desc"]);
                         $prec = explode(";", $datos["preciosVenta"]);
                         $cant = explode(";", $datos["cantidadVenta"]);
@@ -184,11 +184,12 @@
                             $i++;
                         }
                     } else {
-                        echo '<div class="row">
+                        echo '<h3 class="display-6 text-light text-center">Detalles del servicio</h3>
+                        <div class="row">
                         <div class="col-12 mb-3">
                             <div class="form-floating">
                                 <textarea rows="2" style="height:100%;" class="form-control" name="desc" id="desc">'.$datos["desc"].'</textarea>
-                                <label for="desc">Descripción del producto</label>
+                                <label for="desc">Descripción del servicio</label>
                             </div>
                         </div>';
                     }

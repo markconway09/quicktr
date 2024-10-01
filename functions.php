@@ -898,6 +898,9 @@ function editarEntrada($id){
     $desc = "";
     $pV = "";
     $cV = "";
+    if(!isset($_POST["prod1"])){
+        $desc = $_POST["desc"];
+    }
     while(isset($_POST["prod".$k]) && $_POST["prod".$k] != ""){
         //$p = explode(": ",$_POST["prod".$k])[1];
         //$desc .= $p;
