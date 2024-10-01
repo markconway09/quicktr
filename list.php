@@ -152,7 +152,7 @@
                 if($_POST["search"] == "pendiente") $search = 0;
                 if($_POST["search"] == "terminado") $search = 1;
                 $pdo = connect();
-                $stmt = $pdo->prepare("SELECT *, i.id as id, d.id as did, DATE_FORMAT(fecha, '%d/%m/%Y') as fecha FROM info_orden i LEFT JOIN devolucion d ON (i.id = d.id_orden) WHERE `pendiente` = :search AND `tipo` = 'servicio'");
+                $stmt = $pdo->prepare("SELECT *, i.id as id, d.id as did, DATE_FORMAT(fecha, '%d/%m/%Y') as fecha FROM info_orden i LEFT JOIN devolucion d ON (i.id = d.id_orden) WHERE `pendiente` = :search AND `tipo` = 'servicio' ORDER BY i.id DESC");
                 $stmt->bindParam(':search', $search);
                 $stmt->execute();
             }else{

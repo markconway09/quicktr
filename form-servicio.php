@@ -3,7 +3,7 @@
                 <div class="row">
                     <div class="col-12 col-md-4 mb-3">
                         <div class="form-floating">
-                            <input class="form-control" placeholder="Nombre" type="text" name="nombre" id="nombre" required>
+                            <input class="form-control" placeholder="Nombre" type="text" name="nombre" id="nombre">
                             <label for="nombre">Nombre</label>
                         </div>
                     </div>
@@ -16,7 +16,7 @@
                             </div>
                             
                             <div class="form-floating">
-                                <input class="form-control" placeholder="Teléfono" type="tel" name="tel" id="tel" required>
+                                <input class="form-control" placeholder="Teléfono" type="tel" name="tel" id="tel">
                                 <label for="tel">Teléfono</label>
                             </div>
                         </div>
@@ -44,7 +44,7 @@
                     </div>
                     <div id="email-change" class="col-12 col-md-6 mb-3">
                         <div class="form-floating">
-                            <input class="form-control" placeholder="Email" type="email" name="email" id="email" required>
+                            <input class="form-control" placeholder="Email" type="email" name="email" id="email">
                             <label for="email">Email</label>
                         </div>
                     </div>

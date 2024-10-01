@@ -17,25 +17,27 @@ function connect(){
 }
 
 function insertarBDS(){
-    $tel = $_POST["countryCode"] . $_POST["tel"];
     $servicio = $_POST["servicio"];
     $tipo = "Servicio";
     $desc = $_POST["motivo"];
     $pV = "";
     $cV = "";
-    $doc="";$dir="";$cp="";
+    $doc="";$dir="";$cp="";$email="No especificado";$tel="";$nombre="";
+    if(isset($_POST["tel"])) $tel = $_POST["countryCode"] . $_POST["tel"];
     if(isset($_POST["doc"])) $doc = $_POST["doc"];
+    if(isset($_POST["nombre"])) $nombre = $_POST["nombre"];
     if(isset($_POST["direccion"])) $dir = $_POST["direccion"];
     if(isset($_POST["cp"])) $cp = $_POST["cp"];
+    if(isset($_POST["email"])) $email = $_POST["email"];
 
     $pdo = connect();
     $stmt = $pdo->prepare("INSERT INTO info_orden VALUES 
     (null, :nom, :tel, :doc, :ser, :email, :direccion, :cp, :preciosV, :cantV, :precio, :descuento, :iva, :final, :metodo, :descr, :loc, :fecha, :tipo, 0, :razon, :dept)");
-    $stmt->bindParam(':nom', $_POST["nombre"]);
+    $stmt->bindParam(':nom', $nombre);
     $stmt->bindParam(':tel', $tel);
     $stmt->bindParam(':doc', $doc);
     $stmt->bindParam(':ser', $servicio);
-    $stmt->bindParam(':email', $_POST["email"]);
+    $stmt->bindParam(':email', $email);
     $stmt->bindParam(':direccion', $dir);
     $stmt->bindParam(':cp', $cp);
     $stmt->bindParam(':preciosV', $pV);
@@ -347,12 +349,14 @@ function crearPDF($id, $factura=0 , $enviar=0){
     cuidado de sus dispositivos.';
     $txt2 = iconv('UTF-8', 'windows-1252', $txt2);
     $pdf->MultiCell(null, 5, $txt2, null);
-
-    // ABRIR PDF
-    $pdf->Output('I', null, true);
     
     //---------------END CREAR PDF---------------//
-    if($enviar != 0) $pdf->Output('F', 'doc.pdf', true);
+    if($enviar != 0){
+        $pdf->Output('F', 'doc.pdf', true);
+    } else {
+        // ABRIR PDF
+        $pdf->Output('I', null, true);
+    }
 }
 
 function crearFServicio($id, $enviar=0){
@@ -774,11 +778,13 @@ function crearTVenta($id, $factura=0, $enviar=0){
     $txt2 = iconv('UTF-8', 'windows-1252', $txt2);
     $pdf->MultiCell(null, 5, $txt2, null);
 
-    // ABRIR PDF
-    $pdf->Output('I', null, true);
-    
     //---------------END CREAR PDF---------------//
-    if($enviar != 0) $pdf->Output('F', 'doc.pdf', true);
+    if($enviar != 0){
+        $pdf->Output('F', 'doc.pdf', true);
+    } else {
+        // ABRIR PDF
+        $pdf->Output('I', null, true);
+    }
 }
 
 function insertFactura($id, $simp = 0){
@@ -839,9 +845,78 @@ function enviarCorreo($id){
         //Recipients
         $mail->setFrom('info@quicktr.com');
         $mail->addAddress('sistemas@dvagroup.es');
+        if($datos["tipo"]=="servicio"){
+            crearPDF($id, 0, 1);
+        } else if($datos["tipo"]=="venta"){
+            crearTVenta($id, 1);
+        }
+        $mail->addAttachment('doc.pdf');
+
+        //Content
+        $mail->isHTML(true);
+        $mail->Subject = 'Nueva orden de '.$datos["nombre"].' «'.$datos["servicio"].'»';
+        $mail->Body    = '<html><body><h1>'.ucfirst($datos["tipo"]).' # '.$id.' - '.$datos["servicio"].'</h1>
+            <p>
+                De: '.$datos["nombre"].' (<a href="mailto:'.$datos["email"].'">'.$datos["email"].'<a>)
+            </p>
+            <p>
+            Asunto: '.$datos["servicio"].'
+            </p>
+            <p>
+            Nombre: '.$datos["nombre"].'
+            </p>
+            <p>
+            Teléfono: <a href="https://wa.me//'.$datos["telefono"].'" target="_blank">'.$datos["telefono"].'<a>
+            </p>
+            <p>
+            Dni/NIF/NIE: '.$datos["documento"].'
+            </p>
+            <p>
+            Precio: '.$datos["precio"].'
+            <br>
+            IVA: '.$datos["iva"].'
+            <br>
+            Precio Total: '.$datos["precio-final"].'
+            </p>
+            <p>
+            Servicio Reportado '.$datos["servicio"].'
+            </p>
+            <p>
+            Observaciones: '.$datos["desc"].'
+            </p>
+            </body></html>';
+
+        $mail->send();
+    } catch (Exception $e) {
+        echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+    }
+}
+
+function enviarCorreoCliente($id){
+    //---------------RECOGER DATOS---------------//
+    $datos = selectBD($id);
+
+    // ENVIAR CORREO
+    $mail = new PHPMailer(true);
+    $mail->CharSet = "UTF-8";
+    $mail->Encoding = 'base64';
+
+    try {
+        //Server settings
+        $mail->SMTPDebug = SMTP::DEBUG_OFF;
+        $mail->isSMTP();
+        $mail->Host       = 'mail.quicktr.com';
+        $mail->SMTPAuth   = true;
+        $mail->Username   = 'info@quicktr.com';
+        $mail->Password   = 'Barcelona2024';
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+        $mail->Port       = 465;
+
+        //Recipients
+        $mail->setFrom('info@quicktr.com');
         $mail->addAddress($datos["email"]);
         if($datos["tipo"]=="servicio"){
-            crearPDF($id, 1);
+            crearPDF($id, 0, 1);
         } else if($datos["tipo"]=="venta"){
             crearTVenta($id, 1);
         }
