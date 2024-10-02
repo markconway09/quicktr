@@ -787,7 +787,7 @@ function crearTVenta($id, $factura=0, $enviar=0){
     }
 }
 
-function insertFactura($id, $simp = 0){
+function insertFactura($id, $tipo){
     $pdo = connect();
     $check = $pdo->prepare("SELECT * FROM factura WHERE `id_orden` = :id");
     $check->bindParam(':id', $id);
@@ -795,24 +795,29 @@ function insertFactura($id, $simp = 0){
     $row = $check->fetch(PDO::FETCH_ASSOC);
     if(!empty($row["id"])){
         // SI YA EXISTE ESA ORDEN EN LA TABLA SOLO ACTUALIZAMOS
-        if($simp === 0){
+        if($tipo == 0){
             $stmt = $pdo->prepare("UPDATE factura SET `factura`.`factura` = '1' WHERE `id` = :id");
-        } else {
+        } else if($tipo == 1) {
             $stmt = $pdo->prepare("UPDATE factura SET `simplificada` = '1' WHERE `id` = :id");
+        } else if($tipo == 2) {
+            $stmt = $pdo->prepare("UPDATE factura SET `ticket` = '1' WHERE `id` = :id");
         }
         $stmt->bindParam(':id', $row["id"]);
     } else {
         // SINO INSERTAMOS
-        $fac=0;
-        if($simp === 0){
+        $fac=0;$simp=0;$ticket=0;
+        if($tipo == 0){
             $fac = 1;
-        } else {
+        } else if($tipo == 1) {
             $simp = 1;
+        } else if($tipo == 2) {
+            $ticket = 1;
         }
-        $stmt = $pdo->prepare("INSERT INTO factura VALUES (null, :id, :fac, :simp)");
+        $stmt = $pdo->prepare("INSERT INTO factura VALUES (null, :id, :fac, :simp, :ticket)");
         $stmt->bindParam(':id', $id);
         $stmt->bindParam(':fac', $fac);
         $stmt->bindParam(':simp', $simp);
+        $stmt->bindParam(':ticket', $ticket);
     }
     try {
         $stmt->execute();
@@ -1106,7 +1111,8 @@ function totalVentas($d=0, $m, $y, $local=0){
     
     $pdf->SetFont('Arial','B',8);
     $pdf->Cell(28, 5, iconv('UTF-8', 'windows-1252', 'ID - Fecha'), 1, 0);
-    $pdf->Cell($width/2-56, 5, iconv('UTF-8', 'windows-1252', 'Descripción'), 1, 0);
+    $pdf->Cell($width/2-60, 5, iconv('UTF-8', 'windows-1252', 'Descripción'), 1, 0);
+    $pdf->Cell(4, 5, iconv('UTF-8', 'windows-1252', 'T'), 1, 0);
     $pdf->Cell(4, 5, iconv('UTF-8', 'windows-1252', 'F'), 1, 0);
     $pdf->Cell(4, 5, iconv('UTF-8', 'windows-1252', 'S'), 1, 0);
     $pdf->Cell(17, 5, iconv('UTF-8', 'windows-1252', 'Local'), 1, 0);
@@ -1127,7 +1133,8 @@ function totalVentas($d=0, $m, $y, $local=0){
     while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
         if($row["tipo"] == "servicio"){
             $pdf->Cell(28, 5, iconv('UTF-8', 'windows-1252', $row["id"]." - ".$row["fecha"]), 1, 0);
-            $pdf->Cell($width/2-56, 5, iconv('UTF-8', 'windows-1252', ucfirst($row["tipo"]) .": ". $row["servicio"]), 1, 0);
+            $pdf->Cell($width/2-60, 5, iconv('UTF-8', 'windows-1252', ucfirst($row["tipo"]) .": ". $row["servicio"]), 1, 0);
+            $pdf->Cell(4, 5, iconv('UTF-8', 'windows-1252', $row["ticket"]?"X":""), 1, 0);
             $pdf->Cell(4, 5, iconv('UTF-8', 'windows-1252', $row["factura"]?"X":""), 1, 0);
             $pdf->Cell(4, 5, iconv('UTF-8', 'windows-1252', $row["simplificada"]?"X":""), 1, 0);
             $pdf->Cell(17, 5, iconv('UTF-8', 'windows-1252', $row["local"]), 1, 0);
@@ -1167,7 +1174,8 @@ function totalVentas($d=0, $m, $y, $local=0){
                 $c = isset($can[$i]) ? $can[$i] : 1;
         
                 $pdf->Cell(28, 5, iconv('UTF-8', 'windows-1252', $row["id"]." - ".$row["fecha"]), 1, 0);
-                $pdf->Cell($width/2-56, 5, iconv('UTF-8', 'windows-1252', ucfirst($row["tipo"]) . ": ". $pro[$i]), 1, 0);
+                $pdf->Cell($width/2-60, 5, iconv('UTF-8', 'windows-1252', ucfirst($row["tipo"]) . ": ". $pro[$i]), 1, 0);
+                $pdf->Cell(4, 5, iconv('UTF-8', 'windows-1252', $row["ticket"]?"X":""), 1, 0);
                 $pdf->Cell(4, 5, iconv('UTF-8', 'windows-1252', $row["factura"]?"X":""), 1, 0);
                 $pdf->Cell(4, 5, iconv('UTF-8', 'windows-1252', $row["simplificada"]?"X":""), 1, 0);
                 $pdf->Cell(17, 5, iconv('UTF-8', 'windows-1252', $row["local"]), 1, 0);
