@@ -17,22 +17,24 @@ function connect(){
 }
 
 function insertarBDS(){
-    $servicio = $_POST["servicio"];
+    $servicio = $_POST["servicio"] . ": " . $_POST["servicio2"];
     $tipo = "Servicio";
     $desc = $_POST["motivo"];
     $pV = "";
     $cV = "";
-    $doc="";$dir="";$cp="";$email="No especificado";$tel="";$nombre="";
+    $doc="";$dir="";$cp="";$email="No especificado";$tel="";$nombre="";$ins_d="";$ins_p=0;
     if(isset($_POST["tel"])) $tel = $_POST["countryCode"] . $_POST["tel"];
     if(isset($_POST["doc"])) $doc = $_POST["doc"];
     if(isset($_POST["nombre"])) $nombre = $_POST["nombre"];
     if(isset($_POST["direccion"])) $dir = $_POST["direccion"];
     if(isset($_POST["cp"])) $cp = $_POST["cp"];
     if(isset($_POST["email"])) $email = $_POST["email"];
+    if(!empty($_POST["insumo_desc"])) $ins_d = $_POST["insumo_desc"];
+    if(!empty($_POST["insumo_precio"])) $ins_p = $_POST["insumo_precio"];
 
     $pdo = connect();
     $stmt = $pdo->prepare("INSERT INTO info_orden VALUES 
-    (null, :nom, :tel, :doc, :ser, :email, :direccion, :cp, :preciosV, :cantV, :precio, :descuento, :iva, :final, :metodo, :descr, :loc, :fecha, :tipo, 0, :razon, :dept)");
+    (null, :nom, :tel, :doc, :ser, :email, :direccion, :cp, :preciosV, :cantV, :precio, :descuento, :iva, :final, :ins_d, :ins_p, :metodo, :descr, :loc, :fecha, :tipo, 0, :razon, :dept)");
     $stmt->bindParam(':nom', $nombre);
     $stmt->bindParam(':tel', $tel);
     $stmt->bindParam(':doc', $doc);
@@ -46,6 +48,8 @@ function insertarBDS(){
     $stmt->bindParam(':descuento', $_POST["descuento"]);
     $stmt->bindParam(':iva', $_POST["iva"]);
     $stmt->bindParam(':final', $_POST["precio-final"]);
+    $stmt->bindParam(':ins_d', $ins_d);
+    $stmt->bindParam(':ins_p', $ins_p);
     $stmt->bindParam(':metodo', $_POST["metodo"]);
     $stmt->bindParam(':descr', $desc);
     $stmt->bindParam(':loc', $_POST["local"]);
@@ -94,7 +98,7 @@ function insertarBDV(){
 
     $pdo = connect();
     $stmt = $pdo->prepare("INSERT INTO info_orden VALUES 
-    (null, :nom, :tel, :doc, :ser, :email, :direccion, :cp, :preciosV, :cantV, :precio, :descuento, :iva, :final, :metodo, :descr, :loc, :fecha, :tipo, 0, :razon, :dept)");
+    (null, :nom, :tel, :doc, :ser, :email, :direccion, :cp, :preciosV, :cantV, :precio, :descuento, :iva, :final, null, null, :metodo, :descr, :loc, :fecha, :tipo, 0, :razon, :dept)");
     $stmt->bindParam(':nom', $nombre);
     $stmt->bindParam(':tel', $tel);
     $stmt->bindParam(':doc', $doc);
@@ -244,7 +248,7 @@ function crearPDF($id, $factura=0 , $enviar=0){
     $pdf->Ln(5);
 
     $pdf->Cell($width/4, 5, 'Servicio', 0, 0);
-    $pdf->Cell($width/1.5, 5, iconv('UTF-8', 'windows-1252', $datos["servicio"]), 1, 1);
+    $pdf->MultiCell($width/1.5, 5, iconv('UTF-8', 'windows-1252', $datos["servicio"]), 1, 1);
     $pdf->Ln(1);
     $motivo = iconv('UTF-8', 'windows-1252', $datos["desc"]);
     $pdf->Cell($width/4, 5, iconv('UTF-8', 'windows-1252', 'Descripción'), 0, 0);
@@ -853,7 +857,7 @@ function enviarCorreo($id){
         if($datos["tipo"]=="servicio"){
             crearPDF($id, 0, 1);
         } else if($datos["tipo"]=="venta"){
-            crearTVenta($id, 1);
+            crearTVenta($id, 0, 1);
         }
         $mail->addAttachment('doc.pdf');
 
@@ -919,11 +923,12 @@ function enviarCorreoCliente($id){
 
         //Recipients
         $mail->setFrom('info@quicktr.com');
+        $mail->addAddress('sistemas@dvagroup.es');
         $mail->addAddress($datos["email"]);
         if($datos["tipo"]=="servicio"){
             crearPDF($id, 0, 1);
         } else if($datos["tipo"]=="venta"){
-            crearTVenta($id, 1);
+            crearTVenta($id, 0, 1);
         }
         $mail->addAttachment('doc.pdf');
 
@@ -968,6 +973,7 @@ function enviarCorreoCliente($id){
 }
 
 function editarEntrada($id){
+    $servicio = $_POST["servicio"] . ": " . $_POST["servicio2"];
     $doc="";$dir="";$cp="";$metodo="";
     if(isset($_POST["doc"])) $doc = $_POST["doc"];
     if(isset($_POST["direccion"])) $dir = $_POST["direccion"];
@@ -996,12 +1002,12 @@ function editarEntrada($id){
     }
 
     $pdo = connect();
-    $stmt = $pdo->prepare("UPDATE `info_orden` SET `nombre` = :nombre, `telefono` = :tel, `documento` = :doc, `servicio` = :servicio, `email` = :email, `direccion` = :direccion, `cp` = :cp, `preciosVenta`=:pV, `cantidadVenta`=:cV, `precio` = :precio, `iva` = :iva, `precio-final` = :preciofinal, `descuento` = :descuento, `metodo` = :metodo, `desc` = :de, `local` = :loc, `razon` = :razon, `pendiente` = :pend WHERE `info_orden`.`id` = :id");
+    $stmt = $pdo->prepare("UPDATE `info_orden` SET `nombre` = :nombre, `telefono` = :tel, `documento` = :doc, `servicio` = :servicio, `email` = :email, `direccion` = :direccion, `cp` = :cp, `preciosVenta`=:pV, `cantidadVenta`=:cV, `precio` = :precio, `iva` = :iva, `precio-final` = :preciofinal, `insumo_desc` = :insumo_d, `insumo_precio` = :insumo_p, `descuento` = :descuento, `metodo` = :metodo, `desc` = :de, `local` = :loc, `razon` = :razon, `dept` = :dept, `pendiente` = :pend WHERE `info_orden`.`id` = :id");
     $stmt->bindParam(':id', $id);
     $stmt->bindParam(':nombre', $_POST["nombre"]);
     $stmt->bindParam(':tel', $_POST["tel"]);
     $stmt->bindParam(':doc', $doc);
-    $stmt->bindParam(':servicio', $_POST["servicio"]);
+    $stmt->bindParam(':servicio', $servicio);
     $stmt->bindParam(':email', $_POST["email"]);
     $stmt->bindParam(':direccion', $dir);
     $stmt->bindParam(':cp', $cp);
@@ -1010,11 +1016,14 @@ function editarEntrada($id){
     $stmt->bindParam(':precio', $_POST["precio"]);
     $stmt->bindParam(':iva', $_POST["iva"]);
     $stmt->bindParam(':preciofinal', $_POST["precio-final"]);
+    $stmt->bindParam(':insumo_d', $_POST["insumo_desc"]);
+    $stmt->bindParam(':insumo_p', $_POST["insumo_precio"]);
     $stmt->bindParam(':descuento', $_POST["descuento"]);
     $stmt->bindParam(':metodo', $metodo);
     $stmt->bindParam(':de', $desc);
     $stmt->bindParam(':loc', $_POST["local"]);
     $stmt->bindParam(':razon', $_POST["razon"]);
+    $stmt->bindParam(':dept', $_POST["dept"]);
     $stmt->bindParam(':pend', $_POST["pendiente"]);
     try {
         $stmt->execute();

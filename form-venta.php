@@ -30,6 +30,9 @@
                 </div>
             </div>
         </div>
+        
+        <hr class="text-light pb-3">
+
         <div class="row" id="productos">
             <h3 class="display-6 text-light text-center">Producto(s)</h3>
             <div class="col-12 mb-3" id="col-input">

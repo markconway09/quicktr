@@ -52,7 +52,19 @@
                         $estado = " - <span class='text-warning'><i class='bi bi-clock-history'></i> PENDIENTE</span> <a href='execute.php?cobrar=1&id=".$id."' class='btn btn-primary mb-1'>Cobrar</a>";
 
                     }
-                }         
+                }
+                $servicio = "";$ins = "";
+                if($row["tipo"] == "servicio"){
+                    $ser = explode(": ", $row["servicio"]);
+                    $servicio .= '<p class="card-text"><b>Tipo de servicio:</b> '.$ser[0].'</p>';
+                    $servicio .= '<p class="card-text"><b>Servicio:</b> '.$ser[1].'</p>';
+
+                    if($row["insumo_desc"]!=""){
+                        $ins = '<li class="list-group-item"><b>Insumo:</b> '.$row["insumo_desc"].' ('.$row["insumo_precio"].'€)</li>';
+                    } else {
+                        $ins = '<li class="list-group-item"><b>Insumo:</b> 0</li>';
+                    }
+                }
                 echo '<div class="col-12">
                             <div class="card my-3">
                                 <h5 class="card-header text-bg-secondary py-3">'.ucfirst($row["tipo"]).' # '.$row["id"].$estado.'</h5>
@@ -60,7 +72,7 @@
                                     <p class="card-text"><b>Nombre:</b> '.$row["nombre"].'</p>
                                     <p class="card-text"><b>Documento:</b> '.$row["documento"].'</p>
                                     <p class="card-text"><b>Fecha (d/m/y):</b> '.$row["fecha"].'</p>
-                                    <p class="card-text"><b>Servicio:</b> '.$row["servicio"].'</p>
+                                    '.$servicio.'
                                     <p class="card-text"><b>Email:</b> '.$row["email"].'</p>
                                     <p class="card-text"><b>Dirección:</b> '.$row["direccion"]." - ".$row["cp"].'</p>
                                     <p class="card-text"><b>Teléfono:</b> <a href="https://wa.me//'.$row["telefono"].'" target="_blank">'.$row["telefono"].'<a></p>
@@ -75,6 +87,7 @@
                                 </div>
                                 <hr> 
                                 <ul class="list-group list-group-flush mb-3">
+                                    '.$ins.'
                                     <li class="list-group-item"><b>Precio:</b> '.$row["precio"].'€ (- '.$row["descuento"].'%) (+ IVA '.$row["iva"].'%) = <b>'.$row["precio-final"].'€</b></li>
                                 </ul>
                             </div>
@@ -210,7 +223,7 @@
                                 <p class="card-text"><b>Nombre:</b> '.$row["nombre"].'</p>
                                 <p class="card-text"><b>Documento:</b> '.$row["documento"].'</p>
                                 <p class="card-text"><b>Fecha (d/m/y):</b> '.$row["fecha"].'</p>
-                                <p class="card-text"><b>Servicio:</b> '.$row["servicio"].'</p>
+                                <p class="card-text"><b>Servicio:</b> '.explode(": ", $row["servicio"])[0].'</p>
                                 <p class="card-text"><b>Email:</b> '.$row["email"].'</p>
                                 <p class="card-text"><b>Teléfono:</b> '.$row["telefono"].'</p>
                                 <p class="card-text"><b>Descripción:</b> '.$desc.'</p>
