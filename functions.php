@@ -1339,4 +1339,64 @@ function tesoreria($m, $y, $local){
     $pdf->Output('I', null, true);
 }
 
+function totalGastos($m, $y, $local=0){
+    $date = $m."/".$y;
+    $pdo = connect();
+    if($local == 0){
+        $stmt = $pdo->prepare("SELECT *, o.id as id, f.id as fid, d.id as did FROM `factura` f RIGHT JOIN `info_orden` o ON (f.id_orden = o.id) LEFT JOIN `devolucion` d ON (f.id_orden = d.id_orden) WHERE MONTH(`fecha`) = :m AND YEAR(`fecha`) = :y");
+    } else {
+        $stmt = $pdo->prepare("SELECT *, o.id as id, f.id as fid, d.id as did FROM `factura` f RIGHT JOIN `info_orden` o ON (f.id_orden = o.id) LEFT JOIN `devolucion` d ON (f.id_orden = d.id_orden) WHERE MONTH(`fecha`) = :m AND YEAR(`fecha`) = :y AND `local` = :loc");
+        $stmt->bindParam(':loc', $local);
+    }
+    $stmt->bindParam(':m', $m);
+    $stmt->bindParam(':y', $y);
+    try {
+        $stmt->execute();
+    } catch(PDOException $e){
+        echo $e->getMessage();
+    }
+    
+    // CREAR PDF
+    $pdf = new FPDF();
+    $width = $pdf->GetPageWidth();
+    $pdf->AddPage();
+    $pdf->SetMargins(10, 5, 5);
+    // LOGO
+    $pdf->Cell($width, 5);
+    $pdf->Ln(1);
+    $pdf->Image('LOGO.png', null, null, $width/3);
+    $pdf->Ln(5);
+    $pdf->SetFont('Arial','',8);
+    $pdf->Cell($width/2, 5, iconv('UTF-8', 'windows-1252', "Fecha: ".$m."/".$y), 0, 1);
+    if($local!=0) $pdf->Cell($width/2, 5, iconv('UTF-8', 'windows-1252', "Local: ".$local), 0, 1);
+    $pdf->Ln(5);
+
+    // HEADERS
+    $pdf->SetFont('Arial','B',8);
+    $pdf->Cell($width/5.65, 5, iconv('UTF-8', 'windows-1252', 'ID - Fecha'), 1, 0);
+    $pdf->Cell($width/5.65, 5, iconv('UTF-8', 'windows-1252', 'Precio'), 1, 0);
+    $pdf->Cell($width/5.65, 5, iconv('UTF-8', 'windows-1252', 'Insumo'), 1, 0);
+    $pdf->Cell($width/5.65, 5, iconv('UTF-8', 'windows-1252', 'Coste'), 1, 0);
+    $pdf->Cell($width/5.65, 5, iconv('UTF-8', 'windows-1252', 'Total'), 1, 1);
+    $pdf->SetFont('Arial','',8);
+
+    $total = 0;
+    // DATOS
+    while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+        if($row["insumo_precio"] == "" || $row["insumo_precio"] == 0) continue;
+        $g = $row["precio-final"] - $row["insumo_precio"];
+        $total += $g;
+        $pdf->Cell($width/5.65, 5, iconv('UTF-8', 'windows-1252', $row["id"] . " - " . $row["fecha"]), 1, 0);
+        $pdf->Cell($width/5.65, 5, iconv('UTF-8', 'windows-1252', $row["precio-final"] . " €"), 1, 0);
+        $pdf->Cell($width/5.65, 5, iconv('UTF-8', 'windows-1252', $row["insumo_desc"]), 1, 0);
+        $pdf->Cell($width/5.65, 5, iconv('UTF-8', 'windows-1252', $row["insumo_precio"] . " €"), 1, 0);
+        $pdf->Cell($width/5.65, 5, iconv('UTF-8', 'windows-1252', $g . " €"), 1, 1);
+    }
+    $pdf->Ln(5);
+    $pdf->Cell($width/5.65, 5, iconv('UTF-8', 'windows-1252', "Total: " . $total . " €"), 1, 1);
+
+    // ABRIR PDF
+    $pdf->Output('I', null, true);
+}
+
 ?>

@@ -19,6 +19,7 @@
             <th scope="col">#</th>
             <th scope="col">Nombre</th>
             <th scope="col">Teléfono</th>
+            <th scope="col">Email</th>
             <th scope="col">Documento</th>
             <th scope="col">Dirección</th>
             <th scope="col">Cód. Postal</th>
@@ -33,6 +34,7 @@
             <th scope="row"><?php echo $row["id"]; ?></th>
             <td><?php echo $row["nombre"]; ?></td>
             <td><?php echo $row["telefono"]; ?></td>
+            <td><?php echo $row["email"]; ?></td>
             <td><?php echo $row["documento"]; ?></td>
             <td><?php echo $row["direccion"]; ?></td>
             <td><?php echo $row["cp"]; ?></td>

@@ -60,9 +60,9 @@
                     $servicio .= '<p class="card-text"><b>Servicio:</b> '.$ser[1].'</p>';
 
                     if($row["insumo_desc"]!=""){
-                        $ins = '<li class="list-group-item"><b>Insumo:</b> '.$row["insumo_desc"].' ('.$row["insumo_precio"].'€)</li>';
+                        $ins = '<li class="list-group-item"><b>Insumo:</b> '.$row["insumo_desc"].' ('.$row["insumo_precio"].'€) <a href="index.php?pag=edit_insumo&id='.$id.'" class="btn btn-primary">Editar</a></li>';
                     } else {
-                        $ins = '<li class="list-group-item"><b>Insumo:</b> 0</li>';
+                        $ins = '<li class="list-group-item"><b>Insumo:</b> 0 <a href="index.php?pag=edit_insumo&id='.$id.'" class="btn btn-primary">Editar</a></li>';
                     }
                 }
                 echo '<div class="col-12">

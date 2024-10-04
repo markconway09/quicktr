@@ -195,7 +195,7 @@
                         <div class="row">
                             <div class="col-12 col-md-6 mb-3">
                                 <div class="form-floating">
-                                    <select class="form-control form-select" name="servicio" id="servicio" required>
+                                    <select class="form-control form-select" name="servicio" id="servicio">
                                         <option value="<?php echo $servicio[0];?>">Actual: <?php echo $servicio[0];?></option>
                                         <option value="Reparación Móvil">Reparación Móvil</option>
                                         <option value="Reparación Ordenador">Reparación Ordenador</option>
@@ -209,7 +209,7 @@
                             </div>
                             <div class="col-12 col-md-6 mb-3">
                                 <div class="form-floating">
-                                    <select class="form-control form-select" name="servicio2" id="servicio2" required>
+                                    <select class="form-control form-select" name="servicio2" id="servicio2">
                                         <option value="<?php echo $servicio[1];?>" selected>Actual: <?php echo $servicio[1];?></option>
                                     </select>
                                     <label for="servicio2">Servicio</label>
@@ -270,13 +270,13 @@
                     <?php if($datos["tipo"] == "servicio") { ?>
                     <div class="col-2">
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="pendiente" id="pendiente1" value=0 <?php if($datos["pendiente"]===0) echo "checked"; ?>>
+                            <input class="form-check-input" type="radio" name="pendiente" id="pendiente1" value=0 <?php if($datos["pendiente"]==0) echo "checked"; ?>>
                             <label class="form-check-label text-light" for="pendiente1">
                                 Pendiente
                             </label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="pendiente" id="pendiente2" value=1 <?php if($datos["pendiente"]===1) echo "checked"; ?>>
+                            <input class="form-check-input" type="radio" name="pendiente" id="pendiente2" value=1 <?php if($datos["pendiente"]==1) echo "checked"; ?>>
                             <label class="form-check-label text-light" for="pendiente2">
                                 Terminado
                             </label>
