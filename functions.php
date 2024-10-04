@@ -1034,6 +1034,22 @@ function editarEntrada($id){
     header('Location: index.php?pag=list&id='.$id);
 }
 
+function editarInsumo(){
+    $pdo = connect();
+    $stmt = $pdo->prepare("UPDATE `info_orden` SET `insumo_desc` = :insumo_d, `insumo_precio` = :insumo_p, `desc` = :de WHERE `info_orden`.`id` = :id");
+    $stmt->bindParam(':id', $_GET["id"]);
+    $stmt->bindParam(':de', $_POST["desc"]);
+    $stmt->bindParam(':insumo_d', $_POST["insumo_desc"]);
+    $stmt->bindParam(':insumo_p', $_POST["insumo_precio"]);
+    try {
+        $stmt->execute();
+    } catch (PDOException $e){
+        echo '<p class="text-light">'.$e->getMessage().'</p>';
+    }
+    
+    header('Location: index.php?pag=list&id='.$_GET["id"]);
+}
+
 function devolucion($id, $des = 0){
     $pdo = connect();
     if($des === 0){
