@@ -35,16 +35,14 @@
                 if(!empty($row["did"])){
                     echo '<a href="execute.php?deshacer=1&id='.$id.'" class="btn btn-danger mx-2 mt-3"><i class="bi bi-arrow-counterclockwise"></i> Deshacer</a>';
                 } else {
-                    if($row["tipo"] == "servicio") echo '<a href="execute.php?devolucion=1&id='.$id.'" class="btn btn-danger mx-2 mt-3"><i class="bi bi-arrow-counterclockwise"></i> Cancelar</a>';
-                    if($row["tipo"] == "venta") echo '<a href="execute.php?devolucion=1&id='.$id.'" class="btn btn-danger mx-2 mt-3"><i class="bi bi-arrow-counterclockwise"></i> Devolución</a>';
+                    echo '<a href="execute.php?devolucion=1&id='.$id.'" class="btn btn-danger mx-2 mt-3"><i class="bi bi-arrow-counterclockwise"></i> Devolución</a>';
                 }
                 if($_SESSION["login"] == "admin"){
                     echo '<button type="button" class="btn btn-danger mx-2 mt-3" data-bs-toggle="modal" data-bs-target="#elimModal"><i class="bi bi-trash"></i> Eliminar</button>';
                 }      
                 $estado = "";
                 if(!empty($row["did"])) {
-                    if($row["tipo"]=="servicio") $estado = " - <span class='text-danger'><i class='bi bi-arrow-counterclockwise'></i> CANCELADO</span>";
-                    if($row["tipo"]=="venta") $estado = " - <span class='text-danger'><i class='bi bi-arrow-counterclockwise'></i> DEVUELTO</span>";
+                    $estado = " - <span class='text-danger'><i class='bi bi-arrow-counterclockwise'></i> DEVUELTO</span>";
                 } else if($row["tipo"]=="servicio") {
                     if($row["pendiente"] == 1){
                         $estado = " - <span style='color:#26FF17'><i class='bi bi-check-circle'></i> TERMINADO</span> <a href='execute.php?desCobrar=1&id=".$id."' class='btn btn-danger mb-1'>Deshacer</a>";
@@ -72,6 +70,7 @@
                                     <p class="card-text"><b>Nombre:</b> '.$row["nombre"].'</p>
                                     <p class="card-text"><b>Documento:</b> '.$row["documento"].'</p>
                                     <p class="card-text"><b>Fecha (d/m/y):</b> '.$row["fecha"].'</p>
+                                    <p class="card-text"><b>Fecha de pago:</b> '.$row["fecha_pago"].'</p>
                                     '.$servicio.'
                                     <p class="card-text"><b>Email:</b> '.$row["email"].'</p>
                                     <p class="card-text"><b>Dirección:</b> '.$row["direccion"]." - ".$row["cp"].'</p>
@@ -205,8 +204,7 @@
                 $dev = "";
                 if(!empty($row["did"])) {
                     $bg = "text-bg-dark";
-                    if($row["tipo"]=="servicio") $dev = " - <span class='text-danger'><i class='bi bi-arrow-counterclockwise'></i> CANCELADO</span>";
-                    if($row["tipo"]=="venta") $dev = " - <span class='text-danger'><i class='bi bi-arrow-counterclockwise'></i> DEVUELTO</span>";
+                    $dev = " - <span class='text-danger'><i class='bi bi-arrow-counterclockwise'></i> DEVUELTO</span>";
                 } else if($row["tipo"]=="servicio") {
                     if($row["pendiente"] == 1){
                         $dev = " - <span style='color:#26FF17'><i class='bi bi-check-circle'></i> TERMINADO</span>";
