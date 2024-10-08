@@ -44,11 +44,40 @@
                 if(!empty($row["did"])) {
                     $estado = " - <span class='text-danger'><i class='bi bi-arrow-counterclockwise'></i> DEVUELTO</span>";
                 } else if($row["tipo"]=="servicio") {
-                    if($row["pendiente"] == 1){
-                        $estado = " - <span style='color:#26FF17'><i class='bi bi-check-circle'></i> TERMINADO</span> <a href='execute.php?desCobrar=1&id=".$id."' class='btn btn-danger mb-1'>Deshacer</a>";
-                    } else {
-                        $estado = " - <span class='text-warning'><i class='bi bi-clock-history'></i> PENDIENTE</span> <a href='execute.php?cobrar=1&id=".$id."' class='btn btn-primary mb-1'>Cobrar</a>";
-
+                    switch($row["pendiente"]){
+                        case 0:
+                            $estado = " - <span class='text-warning'><i class='bi bi-clock-history'></i> PENDIENTE</span> ";
+                                    if($_SESSION["login"] == "tecnico" || $_SESSION["login"] == "admin") {
+                                        $estado .= "<form class='d-inline-block' action='execute.php' method='POST'>
+                                                        <input type='hidden' name='id' value='".$id."'>
+                                                        <input type='submit' class='btn btn-danger mb-1' name='terminar' value='Terminar'>
+                                                    </form>";
+                                    }
+                            break;
+                        case 1:
+                            $estado = " - <span style='color:#26FF17'><i class='bi bi-check2'></i> TERMINADO</span>
+                                    <form class='d-inline-block' action='execute.php' method='POST'>
+                                        <input type='hidden' name='id' value='".$id."'>";
+                                        if($_SESSION["login"] == "dependiente" || $_SESSION["login"] == "admin"){
+                                            $estado .= "<select class='form-control form-select' name='metodo'>
+                                                            <option>Tarjeta</option>
+                                                            <option>Efectivo</option>
+                                                        </select><input type='submit' class='btn btn-danger mb-1' name='cobrar' value='Cobrar'>
+                                                    </form>";
+                                        } else if($_SESSION["login"] == "tecnico" || $_SESSION["login"] == "admin") {
+                                            $estado .= "<input type='submit' class='btn btn-danger mb-1' name='desTerminar' value='Deshacer'>
+                                                    </form>";
+                                        }
+                            break;
+                        case 2:
+                            $estado = " - <span style='color:#26FF17'><i class='bi bi-check2-all'></i> ENTREGADO</span> ";
+                                    if($_SESSION["login"] == "dependiente" || $_SESSION["login"] == "admin") {
+                                        $estado .= "<form class='d-inline-block' action='execute.php' method='POST'>
+                                                        <input type='hidden' name='id' value='".$id."'>
+                                                        <input type='submit' class='btn btn-danger mb-1' name='desCobrar' value='Deshacer'>
+                                                    </form>";
+                                    }
+                            break;
                     }
                 }
                 $servicio = "";$ins = "";
@@ -135,7 +164,7 @@
                         <div class="row">
                             <div class="col-12 col-md-6">
                                 <div class="form-floating">
-                                    <input type="text" placeholder="Buscar... (Tipo, Nombre, Servicio, Id...)" name="search" id="search" class="form-control my-2">
+                                    <input type="text" placeholder="Buscar... (Tipo, Nombre, Id...)" name="search" id="search" class="form-control my-2">
                                     <label for="search">Buscar... (Tipo, Nombre, Id...)</label>
                                 </div>
                             </div>
@@ -143,13 +172,11 @@
                                 <button type="submit" id="submit" class="btn btn-primary btn-block p-3 my-2"><i class="bi bi-search"></i> Buscar</button>
                                 <form action="?pag=list" method="POST">
                                     <button name="search" value="pendiente" style="background-color:#ccab06; color:white" class="btn btn-block p-3"><i class='bi bi-clock-history'></i> Pendientes</button>
-                                    <button name="search" value="terminado" class="btn btn-success btn-block p-3"><i class='bi bi-check-circle'></i> Terminados</button>
+                                    <button name="search" value="terminado" class="btn btn-success btn-block p-3"><i class='bi bi-check2'></i> Terminados</button>
+                                    <?php if($_SESSION["login"] != "tecnico") { ?>
+                                    <button name="search" value="entregado" class="btn btn-success btn-block p-3"><i class="bi bi-check2-all"></i> Entregados</button>
+                                    <?php } ?>
                                 </form>
-                                <?php
-                                if(isset($_POST["search"])){
-                                    echo '<a href="?pag=list" class="btn btn-secondary btn-block p-3"><i class="bi bi-x-circle"></i> Quitar filtro</a>';
-                                }
-                                ?>
                             </div>
                         </div>
                     </form>
@@ -160,16 +187,17 @@
                 $pdo = connect();
                 $stmt = $pdo->prepare("SELECT *, i.id as id, d.id as did, DATE_FORMAT(fecha, '%d/%m/%Y') as fecha FROM info_orden i LEFT JOIN devolucion d ON (i.id = d.id_orden) ORDER BY i.id DESC");
                 $stmt->execute();
-            }else if($_POST["search"] == "pendiente" || $_POST["search"] == "terminado"){
+            }else if($_POST["search"] == "pendiente" || $_POST["search"] == "terminado" || $_POST["search"] == "entregado"){
                 if($_POST["search"] == "pendiente") $search = 0;
                 if($_POST["search"] == "terminado") $search = 1;
+                if($_POST["search"] == "entregado") $search = 2;
                 $pdo = connect();
                 $stmt = $pdo->prepare("SELECT *, i.id as id, d.id as did, DATE_FORMAT(fecha, '%d/%m/%Y') as fecha FROM info_orden i LEFT JOIN devolucion d ON (i.id = d.id_orden) WHERE `pendiente` = :search AND `tipo` = 'servicio' ORDER BY i.id DESC");
                 $stmt->bindParam(':search', $search);
                 $stmt->execute();
             }else{
                 $pdo = connect();
-                echo '<p class="display-5 text-light">Resultados para <i>\''.$_POST["search"].'\'</i></p>';
+                echo '<p class="display-5 text-light">Resultados para <i>\''.$_POST["search"].'\'</i> <a href="?pag=list" class="btn btn-secondary btn-block mx-3 p-3"><i class="bi bi-x-circle"></i> Quitar filtro</a></p>';
                 $search = "%".$_POST["search"]."%";
                 $stmt = $pdo->prepare("SELECT *, i.id as id, d.id as did, DATE_FORMAT(fecha, '%d/%m/%Y') as fecha FROM info_orden i LEFT JOIN devolucion d ON (i.id = d.id_orden)
                 WHERE `tipo` LIKE :search OR i.id LIKE :search OR `nombre` LIKE :search OR `local` LIKE :search OR `servicio` LIKE :search
@@ -179,7 +207,12 @@
             }
             $i = 0;
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
-                if($_SESSION["login"] != "admin" && $_SESSION["local"] != $row["local"]) continue;
+                    // RESTRICCIONES POR USUARIO //
+                // DEPENDIENTES SOLO VEN TICKETS DE SU LOCAL
+                if($_SESSION["login"] != "admin" && ($_SESSION["local"]!=null&&$_SESSION["local"] != $row["local"])) continue;
+                // TECNICO SOLO VE PENDIENTES Y TERMINADOS
+                if($_SESSION["login"] == "tecnico" && $row["pendiente"] == 2 || $row["tipo"] == "venta") continue;
+                
                 if($i==0) echo '<div class="row">';
                 if(strlen($row["desc"])>25){
                     $desc = substr($row["desc"], 0, 25) . '...';
@@ -194,10 +227,6 @@
                     case "Mataró":
                         $bg = "bg-success-subtle";
                         break;
-                    case "Badalona":
-                        $bg = "bg-warning-subtle";
-                        break;
-                        
                     default:
                         $bg = "bg-light-subtle";
                 }
@@ -207,10 +236,11 @@
                     $dev = " - <span class='text-danger'><i class='bi bi-arrow-counterclockwise'></i> DEVUELTO</span>";
                 } else if($row["tipo"]=="servicio") {
                     if($row["pendiente"] == 1){
-                        $dev = " - <span style='color:#26FF17'><i class='bi bi-check-circle'></i> TERMINADO</span>";
+                        $dev = " - <span style='color:#26FF17'><i class='bi bi-check2'></i> TERMINADO</span>";
+                    } else if($row["pendiente"] == 2) {
+                        $dev = " - <span style='color:#26FF17'><i class='bi bi-check2-all'></i> ENTREGADO</span>";
                     } else {
                         $dev = " - <span class='text-warning'><i class='bi bi-clock-history'></i> PENDIENTE</span>";
-
                     }
                 }
                 echo '

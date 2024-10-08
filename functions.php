@@ -22,7 +22,7 @@ function insertarBDS(){
     $desc = $_POST["motivo"];
     $pV = "";
     $cV = "";
-    $doc="";$dir="";$cp="";$email="No especificado";$tel="";$nombre="";$ins_d="";$ins_p=0;
+    $doc="";$dir="";$cp="";$email="No especificado";$tel="";$nombre="";$ins_d="";$ins_p=0;$metodo="";
     if(isset($_POST["tel"])) $tel = $_POST["countryCode"] . $_POST["tel"];
     if(isset($_POST["doc"])) $doc = $_POST["doc"];
     if(isset($_POST["nombre"])) $nombre = $_POST["nombre"];
@@ -31,6 +31,7 @@ function insertarBDS(){
     if(isset($_POST["email"])) $email = $_POST["email"];
     if(!empty($_POST["insumo_desc"])) $ins_d = $_POST["insumo_desc"];
     if(!empty($_POST["insumo_precio"])) $ins_p = $_POST["insumo_precio"];
+    if(!empty($_POST["metodo"])) $metodo = $_POST["metodo"];
 
     $pdo = connect();
     $stmt = $pdo->prepare("INSERT INTO info_orden VALUES 
@@ -50,7 +51,7 @@ function insertarBDS(){
     $stmt->bindParam(':final', $_POST["precio-final"]);
     $stmt->bindParam(':ins_d', $ins_d);
     $stmt->bindParam(':ins_p', $ins_p);
-    $stmt->bindParam(':metodo', $_POST["metodo"]);
+    $stmt->bindParam(':metodo', $metodo);
     $stmt->bindParam(':descr', $desc);
     $stmt->bindParam(':loc', $_POST["local"]);
     $date = date('Y-m-d');
@@ -208,7 +209,7 @@ function crearPDF($id, $factura=0 , $enviar=0){
     $pdf->Cell($width/3, 5, 'NIF: B19359082');
     $pdf->SetFont('Arial','',8);
     $fecha = empty($datos["fecha_pago"])?date('d/m/Y'):$datos["fecha_pago"];
-    $pdf->Cell($width/2, 5, 'Fecha: ' . $fecha);
+    $pdf->Cell($width/3, 5, 'Fecha: ' . $fecha);
     $pdf->Ln();
     $pdf->Cell($width, 5, 'QUICK T&R, S.L.');
     $pdf->Ln(8);
@@ -680,7 +681,7 @@ function crearTVenta($id, $factura=0, $enviar=0){
     $pdf->Cell($width/3, 5, 'NIF: B19359082');
     $pdf->SetFont('Arial','',8);
     $fecha = empty($datos["fecha_pago"])?date('d/m/Y'):$datos["fecha_pago"];
-    $pdf->Cell($width/2, 5, 'Fecha: ' . $fecha);
+    $pdf->Cell($width/3, 5, 'Fecha: ' . $fecha);
     $pdf->Ln();
     $pdf->Cell($width, 5, 'QUICK T&R, S.L.');
     $pdf->Ln(8);
@@ -1110,13 +1111,14 @@ function devolucion($id, $des = 0){
     header('Location: index.php?pag=list');
 }
 
-function cobrarServicio($id, $estado){
-    $date = $estado == 1?date('Y-m-d'):null;
+function cambiarEstado($id, $estado, $metodo=null){
+    $date = $estado == 2?date('Y-m-d'):null;
     $pdo = connect();
-    $stmt = $pdo->prepare("UPDATE `info_orden` SET `pendiente` = :pend, `fecha_pago` = :pago WHERE `info_orden`.`id` = :id");
+    $stmt = $pdo->prepare("UPDATE `info_orden` SET `pendiente` = :pend, `fecha_pago` = :pago, `metodo` = :metodo WHERE `info_orden`.`id` = :id");
     $stmt->bindParam(':id', $id);
     $stmt->bindParam(':pago', $date);
     $stmt->bindParam(':pend', $estado);
+    $stmt->bindParam(':metodo', $metodo);
     try {
         $stmt->execute();
     } catch (PDOException $e){

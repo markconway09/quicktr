@@ -14,7 +14,7 @@
             $pass = $_POST["pass"];
             $verify = password_verify($pass, $hash);
             if ($verify) { 
-                $_SESSION["login"] = $row["admin"]==1?"admin":"user";
+                $_SESSION["login"] = $row["tipo"];
                 $_SESSION["local"] = $row["local"]!=null?$row["local"]:null;
             } else { 
                 echo '<script>alert("Contraseña incorrecta")</script>'; 
@@ -56,11 +56,11 @@
         <nav class="navbar navbar-light" style="background-color:rgb(43,45,46);">
             <a class="navbar-brand mx-auto" href="index.php">
                 <img class="rounded" src="LOGO.png" alt="logo" height="90">
-                <span class="badge badge-pill bg-danger">1.86</span>
+                <span class="badge badge-pill bg-danger">1.87</span>
             </a>
             <?php
             if(isset($_SESSION["login"])){
-                echo '<span class="text-light mx-3">'.(!$_SESSION["local"]?"Admin":$_SESSION["local"]).'</span><a href="index.php?logout=true" class="btn btn-danger mx-2"><i class="bi bi-box-arrow-in-left"></i> Log Out</a>';
+                echo '<span class="text-light mx-3">'.(!$_SESSION["login"]?"":$_SESSION["login"])." ".(!$_SESSION["local"]?"":$_SESSION["local"]).'</span><a href="index.php?logout=true" class="btn btn-danger mx-2"><i class="bi bi-box-arrow-in-left"></i> Log Out</a>';
             }
             ?>
         </nav>
@@ -72,7 +72,7 @@
         ?>
         <div class="container p-2 mx-auto my-4 rounded text-center" style="background-color: rgb(43,45,46);box-shadow: 0px 0px 15px black;">
             <?php
-            if(!$_SESSION["local"]){
+            if($_SESSION["login"] == "admin"){
                 ?>
                 <button class="btn btn-secondary text-light d-inline dropdown-toggle mx-5" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     Admin

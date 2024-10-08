@@ -1,13 +1,21 @@
 <form action="execute.php" target="_blank" method="POST" class="form-control p-4 bg-dark">
     <h1 class="display-5 text-light text-center mb-4">SERVICIO</h1>
                 <div class="row">
-                    <div class="col-12 col-md-4 mb-3">
+                    <div class="col-12 col-md-7 mb-3">
                         <div class="form-floating">
                             <input class="form-control" placeholder="Nombre" type="text" name="nombre" id="nombre">
                             <label for="nombre">Nombre</label>
                         </div>
                     </div>
-                    <div class="col-12 col-md-4 mb-3">
+                    <div class="col-12 col-md-5 mb-3">
+                        <div class="form-floating">
+                            <input class="form-control" placeholder="DNI/NIF/NIE" type="text" name="doc" id="doc">
+                            <label for="doc">DNI/NIF/NIE</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-md-5 mb-3">
                         <div class="input-group">
                             <div class="form-floating">
                             <?php
@@ -21,15 +29,15 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-md-4 mb-3">
+                    <div class="col-12 col-md-7 mb-3">
                         <div class="form-floating">
-                            <input class="form-control" placeholder="DNI/NIF/NIE" type="text" name="doc" id="doc">
-                            <label for="doc">DNI/NIF/NIE</label>
+                            <input class="form-control" placeholder="Email" type="email" name="email" id="email">
+                            <label for="email">Email</label>
                         </div>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-12 col-md-3 mb-3">
+                    <div class="col-12 col-md-4 mb-3">
                         <div class="form-floating">
                             <select class="form-control form-select" name="local" id="local">
                                 <?php
@@ -48,24 +56,7 @@
                             <label for="local">Local</label>
                         </div>
                     </div>
-                    <div class="col-12 col-md-6 mb-3">
-                        <div class="form-floating">
-                            <input class="form-control" placeholder="Email" type="email" name="email" id="email">
-                            <label for="email">Email</label>
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-3 mb-3">
-                        <div class="form-floating">
-                            <select class="form-control form-select" name="metodo" id="metodo">
-                                <option value="Tarjeta">Tarjeta</option>
-                                <option value="Efectivo">Efectivo</option>
-                            </select>
-                            <label for="metodo">Método de pago</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-12 col-md-6 mb-3">
+                    <div class="col-12 col-md-4 mb-3">
                         <div class="form-floating">
                         <select class="form-control form-select" name="razon" id="razon">
                                 <option value="Sin especificar" selected>-</option>
@@ -78,7 +69,7 @@
                             <label for="razon">Como nos encontró</label>
                         </div>
                     </div>
-                    <div class="col-12 col-md-6 mb-3">
+                    <div class="col-12 col-md-4 mb-3">
                         <div class="form-floating">
                             <select class="form-control form-select" name="dept" id="dept">
                                 <option value="hardware">Hardware</option>

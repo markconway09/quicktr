@@ -267,23 +267,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <?php if($datos["tipo"] == "servicio") { ?>
-                    <div class="col-2">
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="pendiente" id="pendiente1" value=0 <?php if($datos["pendiente"]==0) echo "checked"; ?>>
-                            <label class="form-check-label text-light" for="pendiente1">
-                                Pendiente
-                            </label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="pendiente" id="pendiente2" value=1 <?php if($datos["pendiente"]==1) echo "checked"; ?>>
-                            <label class="form-check-label text-light" for="pendiente2">
-                                Terminado
-                            </label>
-                        </div>
-                    </div>
-                    <?php } ?>
-                    <div class="<?php if($datos["tipo"] == "servicio") {echo"col-10";}else{echo"col-12";} ?>">
+                    <div class="col-12">
                         <input type="submit" name="editar-factura" class="btn btn-primary col-12 mx-auto" value="Guardar Cambios">
                     </div>
                 </div>
