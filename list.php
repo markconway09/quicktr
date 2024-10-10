@@ -231,17 +231,17 @@
                 <div class="col-12 mt-2">
                     <form action="?pag=list" method="POST">
                         <div class="row">
-                            <div class="col-12 col-md-6">
-                                <div class="form-floating">
-                                    <input type="text" placeholder="Buscar... (Tipo, Nombre, Id...)" name="search" id="search" class="form-control my-2">
-                                    <label for="search">Buscar... (Tipo, Nombre, Id...)</label>
+                            <div class="col-12 my-2">
+                                <div class="input-group">
+                                    <div class="form-floating">
+                                        <input type="text" placeholder="Buscar... (Tipo, Nombre, Id...)" name="search" id="search" class="form-control ">
+                                        <label for="search">Buscar... (Dispositivo, Id, Servicio...)</label>
+                                    </div>
+                                    <button type="submit" id="submit" class="btn btn-primary p-3"><i class="bi bi-search"></i> Buscar</button>
+                                    <?php if(isset($_POST["search"])){?>
+                                        <a href="?pag=list" class="btn btn-secondary btn-block p-3"><i class="bi bi-x-circle"></i> Quitar filtro</a>
+                                    <?php } ?>
                                 </div>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <button type="submit" id="submit" class="btn btn-primary btn-block p-3 my-2"><i class="bi bi-search"></i> Buscar</button>
-                                <?php if(isset($_POST["search"])){?>
-                                    <a href="?pag=list" class="btn btn-secondary btn-block mx-3 p-3"><i class="bi bi-x-circle"></i> Quitar filtro</a>
-                                <?php } ?>
                             </div>
                         </div>
                     </form>
@@ -287,7 +287,7 @@
                 $dev = "";
                 if(!empty($row["did"])) {
                     $bg = "text-bg-dark";
-                    $dev = " | <span class='text-danger'><i class='bi bi-arrow-counterclockwise'></i> DEVUELTO</span>";
+                    $dev = " | <i class='bi bi-arrow-counterclockwise'></i> DEVUELTO";
                 } else {
                     $dev = " | ".$pasos[$row["estado"]];
                 }

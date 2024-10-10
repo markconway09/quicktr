@@ -56,7 +56,7 @@
         <nav class="navbar navbar-light" style="background-color:rgb(43,45,46);">
             <a class="navbar-brand mx-auto" href="index.php">
                 <img class="rounded" src="LOGO.png" alt="logo" height="90">
-                <span class="badge badge-pill bg-danger">1.9</span>
+                <span class="badge badge-pill bg-danger">1.9.1</span>
             </a>
             <?php
             if(isset($_SESSION["login"])){
@@ -70,28 +70,37 @@
             exit();
         }
         ?>
-        <div class="container p-2 mx-auto my-4 rounded text-center sticky-top" style="background-color: rgb(43,45,46);box-shadow: 0px 0px 15px black;">
-            <?php
-            if($_SESSION["login"] == "admin"){
-                ?>
-                <button class="btn btn-secondary text-light d-inline dropdown-toggle mx-5" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Admin
-            </button>
-                <?php
-            }
-            ?>
-            
-            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <a class="dropdown-item" href="?pag=totalventas">Total Ventas</a>
-                <a class="dropdown-item" href="?pag=user-admin">Usuarios</a>
-                <a class="dropdown-item" href="?pag=infoClientes">Clientes</a>
-            </div>
-            <a class="btn btn-primary my-2" href="?pag=form-servicio">Formulario</a>
-            <!--<a class="btn btn-primary my-2" href="?pag=form-venta">Venta</a>-->
-            <a class="btn btn-success my-2" target="_blank" href="/almacen">Almacén <i class="bi bi-box-arrow-up-right"></i></a>
-            <a class="btn btn-secondary my-2 mx-5" href="?pag=list"><i class="bi bi-columns-gap"></i> Lista</a>
+        <div class="container mx-auto p-2 rounded my-4 text-center sticky-top" style="background-color: rgb(43,45,46);">
+            <form action="index.php" method="get">
+                <div class="col-12">
+                    <div class="input-group d-flex">
+                        <?php if ($_SESSION["login"] == "admin") { ?>
+                            <div class="btn-group">
+                                <button class="btn btn-secondary text-light dropdown-toggle" style="border-radius:6px 0 0 6px" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-gear-fill"></i> Admin
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="?pag=totalventas">Total Ventas</a></li>
+                                    <li><a class="dropdown-item" href="?pag=user-admin">Usuarios</a></li>
+                                    <li><a class="dropdown-item" href="?pag=infoClientes">Clientes</a></li>
+                                </ul>
+                            </div>
+                            <a class="btn btn-success flex-fill" target="_blank" href="/almacen">
+                                <i class="bi bi-box-fill"></i> Almacén <i class="bi bi-box-arrow-up-right"></i>
+                            </a>
+                        <?php } ?>
+                        <button class="btn btn-primary flex-fill" type="submit" name="pag" value="form-servicio">
+                            <i class="bi bi-pencil-square"></i> Formulario
+                        </button>
+                        <button class="btn btn-secondary flex-fill" type="submit" name="pag" value="list">
+                            <i class="bi bi-columns-gap"></i> Lista
+                        </button>
+                    </div>
+                </div>
+            </form>
         </div>
-        
+
+
         <!-- CONTENIDO -->
         <div class="container my-4">
             <?php
