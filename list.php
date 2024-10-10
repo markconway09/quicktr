@@ -170,6 +170,64 @@
             }
             ?>
             <div class="row">
+                <ul class="nav nav-tabs bg-dark">
+                    <li class="nav-item">
+                        <?php
+                            if(!isset($_GET["filter"])) {
+                                echo '<a class="nav-link active" href="?pag=list">Todo</a>';
+                            } else {
+                                echo '<a class="nav-link text-light" href="?pag=list">Todo</a>';
+                            }
+                        ?>
+                    </li>
+                    <li class="nav-item">
+                        <?php
+                            if(isset($_GET["filter"])&&$_GET["filter"] == "0") {
+                                echo '<a class="nav-link active" href="?pag=list&filter=0">Diagnóstico</a>';
+                            } else {
+                                echo '<a class="nav-link text-light" href="?pag=list&filter=0">Diagnóstico</a>';
+                            }
+                        ?>
+                    </li>
+                    <li class="nav-item">
+                        <?php
+                            if(isset($_GET["filter"])&&$_GET["filter"] == "1") {
+                                echo '<a class="nav-link active" href="?pag=list&filter=1">Aprobación</a>';
+                            } else {
+                                echo '<a class="nav-link text-light" href="?pag=list&filter=1">Aprobación</a>';
+                            }
+                        ?>
+                    </li>
+                    <li class="nav-item">
+                        <?php
+                            if(isset($_GET["filter"])&&$_GET["filter"] == "2") {
+                                echo '<a class="nav-link active" href="?pag=list&filter=2">Reparación</a>';
+                            } else {
+                                echo '<a class="nav-link text-light" href="?pag=list&filter=2">Reparación</a>';
+                            }
+                        ?>
+                    </li>
+                    <li class="nav-item">
+                        <?php
+                            if(isset($_GET["filter"])&&$_GET["filter"] == "3") {
+                                echo '<a class="nav-link active" href="?pag=list&filter=3">Terminado</a>';
+                            } else {
+                                echo '<a class="nav-link text-light" href="?pag=list&filter=3">Terminado</a>';
+                            }
+                        ?>
+                    </li>
+                    <li class="nav-item">
+                        <?php
+                            if(isset($_GET["filter"])&&$_GET["filter"] == "4") {
+                                echo '<a class="nav-link active" href="?pag=list&filter=4">Entregado</a>';
+                            } else {
+                                echo '<a class="nav-link text-light" href="?pag=list&filter=4">Entregado</a>';
+                            }
+                        ?>
+                    </li>
+                </ul>
+            </div>
+            <div class="row">
                 <div class="col-12 mt-2">
                     <form action="?pag=list" method="POST">
                         <div class="row">
@@ -191,10 +249,17 @@
             </div></i>
             <?php
             if(!isset($_POST["search"])){
-                $pdo = connect();
-                $stmt = $pdo->prepare("SELECT *, i.id as id, d.id as did, DATE_FORMAT(fecha, '%d/%m/%Y') as fecha FROM info_orden i LEFT JOIN devolucion d ON (i.id = d.id_orden) ORDER BY i.id DESC");
-                $stmt->execute();
-            }else{
+                if(!isset($_GET["filter"])){
+                    $pdo = connect();
+                    $stmt = $pdo->prepare("SELECT *, i.id as id, d.id as did, DATE_FORMAT(fecha, '%d/%m/%Y') as fecha FROM info_orden i LEFT JOIN devolucion d ON (i.id = d.id_orden) ORDER BY i.id DESC");
+                    $stmt->execute();
+                } else {
+                    $pdo = connect();
+                    $stmt = $pdo->prepare("SELECT *, i.id as id, d.id as did, DATE_FORMAT(fecha, '%d/%m/%Y') as fecha FROM info_orden i LEFT JOIN devolucion d ON (i.id = d.id_orden) WHERE `estado` = :estado ORDER BY i.id DESC");
+                    $stmt->bindParam(':estado', $_GET["filter"]);
+                    $stmt->execute();
+                }
+            }else {
                 $pdo = connect();
                 echo '<p class="display-5 text-light">Resultados para <i>\''.$_POST["search"].'\'</i></p>';
                 $search = "%".$_POST["search"]."%";
@@ -210,7 +275,7 @@
                 // DEPENDIENTES SOLO VEN TICKETS DE SU LOCAL
                 if($_SESSION["login"] != "admin" && ($_SESSION["local"]!=null&&$_SESSION["local"] != $row["local"])) continue;
                 // TECNICO SOLO VE PENDIENTES Y TERMINADOS
-                if($_SESSION["login"] == "tecnico" && $row["estado"] == 4) continue;
+                //if($_SESSION["login"] == "tecnico" && $row["estado"] == 4) continue;
                 
                 if($i==0) echo '<div class="row">';
                 if(strlen($row["desc"])>25){
