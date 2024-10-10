@@ -22,7 +22,7 @@ function insertarBDS(){
     $desc = $_POST["motivo"];
     $pV = "";
     $cV = "";
-    $doc="";$dir="";$cp="";$email="No especificado";$tel="";$nombre="";$ins_d="";$ins_p=0;$metodo="";
+    $doc="";$dir="";$cp="";$email="No especificado";$tel="";$nombre="";$ins_d="";$ins_p=0;$metodo="";$disp="";
     if(isset($_POST["tel"])) $tel = $_POST["countryCode"] . $_POST["tel"];
     if(isset($_POST["doc"])) $doc = $_POST["doc"];
     if(isset($_POST["nombre"])) $nombre = $_POST["nombre"];
@@ -32,10 +32,11 @@ function insertarBDS(){
     if(!empty($_POST["insumo_desc"])) $ins_d = $_POST["insumo_desc"];
     if(!empty($_POST["insumo_precio"])) $ins_p = $_POST["insumo_precio"];
     if(!empty($_POST["metodo"])) $metodo = $_POST["metodo"];
+    if(!empty($_POST["dispositivo"])) $disp = $_POST["dispositivo"];
 
     $pdo = connect();
     $stmt = $pdo->prepare("INSERT INTO info_orden VALUES 
-    (null, :nom, :tel, :doc, :ser, :email, :direccion, :cp, :preciosV, :cantV, :precio, :descuento, :iva, :final, :ins_d, :ins_p, :metodo, :descr, :loc, :fecha, null, :tipo, 0, :razon, :dept)");
+    (null, :nom, :tel, :doc, :ser, :email, :direccion, :cp, :preciosV, :cantV, :precio, :descuento, :iva, :final, :ins_d, :ins_p, :metodo, :disp, :descr, :loc, :fecha, null, :tipo, 0, :razon, :dept)");
     $stmt->bindParam(':nom', $nombre);
     $stmt->bindParam(':tel', $tel);
     $stmt->bindParam(':doc', $doc);
@@ -52,6 +53,7 @@ function insertarBDS(){
     $stmt->bindParam(':ins_d', $ins_d);
     $stmt->bindParam(':ins_p', $ins_p);
     $stmt->bindParam(':metodo', $metodo);
+    $stmt->bindParam(':disp', $disp);
     $stmt->bindParam(':descr', $desc);
     $stmt->bindParam(':loc', $_POST["local"]);
     $date = date('Y-m-d');
@@ -68,7 +70,7 @@ function insertarBDS(){
     return $pdo->lastInsertId();
 }
 
-function insertarBDV(){
+/*function insertarBDV(){
     $servicio = "Venta";
     $tipo = "Venta";
     $k = 1;
@@ -156,7 +158,7 @@ function insertarBDV(){
         }
     }
     return $id;
-}
+}*/
 
 function selectBD($id=0){
     $pdo = connect();
@@ -506,7 +508,7 @@ function crearFServicio($id, $enviar=0){
     if($enviar != 0) $pdf->Output('F', 'doc.pdf', true);
 }
 
-function crearFactura($id, $enviar=0){
+/*function crearFactura($id, $enviar=0){
     //---------------RECOGER DATOS---------------//
     $datos = selectBD($id);
     // DIRECCIÓN
@@ -645,9 +647,9 @@ function crearFactura($id, $enviar=0){
     
     //---------------END CREAR PDF---------------//
     if($enviar != 0) $pdf->Output('F', 'doc.pdf', true);
-}
+}*/
 
-function crearTVenta($id, $factura=0, $enviar=0){
+/*function crearTVenta($id, $factura=0, $enviar=0){
     //---------------RECOGER DATOS---------------//
     $datos = selectBD($id);
     // DIRECCIÓN
@@ -832,7 +834,7 @@ function crearTVenta($id, $factura=0, $enviar=0){
         // ABRIR PDF
         $pdf->Output('I', null, true);
     }
-}
+}*/
 
 function insertFactura($id, $tipo){
     $pdo = connect();
@@ -899,9 +901,9 @@ function enviarCorreo($id){
         $mail->addAddress('sistemas@dvagroup.es');
         if($datos["tipo"]=="servicio"){
             crearPDF($id, 0, 1);
-        } else if($datos["tipo"]=="venta"){
+        }/* else if($datos["tipo"]=="venta"){
             crearTVenta($id, 0, 1);
-        }
+        }*/
         $mail->addAttachment('doc.pdf');
 
         //Content
@@ -970,9 +972,9 @@ function enviarCorreoCliente($id){
         $mail->addAddress($datos["email"]);
         if($datos["tipo"]=="servicio"){
             crearPDF($id, 0, 1);
-        } else if($datos["tipo"]=="venta"){
+        }/* else if($datos["tipo"]=="venta"){
             crearTVenta($id, 0, 1);
-        }
+        }*/
         $mail->addAttachment('doc.pdf');
 
         //Content
@@ -1017,11 +1019,12 @@ function enviarCorreoCliente($id){
 
 function editarEntrada($id){
     $servicio = $_POST["servicio"] . ": " . $_POST["servicio2"];
-    $doc="";$dir="";$cp="";$metodo="";
+    $doc="";$dir="";$cp="";$metodo="";$disp="";
     if(isset($_POST["doc"])) $doc = $_POST["doc"];
     if(isset($_POST["direccion"])) $dir = $_POST["direccion"];
     if(isset($_POST["cp"])) $cp = $_POST["cp"];
     if(isset($_POST["metodo"])) $metodo = $_POST["metodo"];
+    if(isset($_POST["dispositivo"])) $disp = $_POST["dispositivo"];
 
     $k = 1;
     $desc = "";
@@ -1045,7 +1048,7 @@ function editarEntrada($id){
     }
 
     $pdo = connect();
-    $stmt = $pdo->prepare("UPDATE `info_orden` SET `nombre` = :nombre, `telefono` = :tel, `documento` = :doc, `servicio` = :servicio, `email` = :email, `direccion` = :direccion, `cp` = :cp, `preciosVenta`=:pV, `cantidadVenta`=:cV, `precio` = :precio, `iva` = :iva, `precio-final` = :preciofinal, `insumo_desc` = :insumo_d, `insumo_precio` = :insumo_p, `descuento` = :descuento, `metodo` = :metodo, `desc` = :de, `local` = :loc, `razon` = :razon, `dept` = :dept, `pendiente` = :pend WHERE `info_orden`.`id` = :id");
+    $stmt = $pdo->prepare("UPDATE `info_orden` SET `nombre` = :nombre, `telefono` = :tel, `documento` = :doc, `servicio` = :servicio, `email` = :email, `direccion` = :direccion, `cp` = :cp, `preciosVenta`=:pV, `cantidadVenta`=:cV, `precio` = :precio, `iva` = :iva, `precio-final` = :preciofinal, `insumo_desc` = :insumo_d, `insumo_precio` = :insumo_p, `descuento` = :descuento, `metodo` = :metodo, `nombre_dispositivo` = :disp, `desc` = :de, `local` = :loc, `razon` = :razon, `dept` = :dept, `pendiente` = :pend WHERE `info_orden`.`id` = :id");
     $stmt->bindParam(':id', $id);
     $stmt->bindParam(':nombre', $_POST["nombre"]);
     $stmt->bindParam(':tel', $_POST["tel"]);
@@ -1063,6 +1066,7 @@ function editarEntrada($id){
     $stmt->bindParam(':insumo_p', $_POST["insumo_precio"]);
     $stmt->bindParam(':descuento', $_POST["descuento"]);
     $stmt->bindParam(':metodo', $metodo);
+    $stmt->bindParam(':disp', $disp);
     $stmt->bindParam(':de', $desc);
     $stmt->bindParam(':loc', $_POST["local"]);
     $stmt->bindParam(':razon', $_POST["razon"]);
@@ -1079,8 +1083,9 @@ function editarEntrada($id){
 
 function editarInsumo(){
     $pdo = connect();
-    $stmt = $pdo->prepare("UPDATE `info_orden` SET `insumo_desc` = :insumo_d, `insumo_precio` = :insumo_p, `desc` = :de WHERE `info_orden`.`id` = :id");
+    $stmt = $pdo->prepare("UPDATE `info_orden` SET `insumo_desc` = :insumo_d, `insumo_precio` = :insumo_p, `nombre_dispositivo` = :dis, `desc` = :de WHERE `info_orden`.`id` = :id");
     $stmt->bindParam(':id', $_GET["id"]);
+    $stmt->bindParam(':dis', $_POST["dispositivo"]);
     $stmt->bindParam(':de', $_POST["desc"]);
     $stmt->bindParam(':insumo_d', $_POST["insumo_desc"]);
     $stmt->bindParam(':insumo_p', $_POST["insumo_precio"]);
@@ -1111,20 +1116,24 @@ function devolucion($id, $des = 0){
     header('Location: index.php?pag=list');
 }
 
-function cambiarEstado($id, $estado, $metodo=null){
-    $date = $estado == 2?date('Y-m-d'):null;
+function cambiarEstado($id, $estado, $redirect, $metodo=null){
+    $date = $estado == 4?date('Y-m-d'):null;
     $pdo = connect();
-    $stmt = $pdo->prepare("UPDATE `info_orden` SET `pendiente` = :pend, `fecha_pago` = :pago, `metodo` = :metodo WHERE `info_orden`.`id` = :id");
+    $stmt = $pdo->prepare("UPDATE `info_orden` SET `estado` = :estado, `fecha_pago` = :pago, `metodo` = :metodo WHERE `info_orden`.`id` = :id");
     $stmt->bindParam(':id', $id);
     $stmt->bindParam(':pago', $date);
-    $stmt->bindParam(':pend', $estado);
+    $stmt->bindParam(':estado', $estado);
     $stmt->bindParam(':metodo', $metodo);
     try {
         $stmt->execute();
     } catch (PDOException $e){
         echo '<p class="text-light">'.$e->getMessage().'</p>';
     }
-    header('Location: index.php?pag=list&id='.$id);
+    if($redirect==0){
+        header('Location: index.php?pag=list');
+    } else {
+        header('Location: index.php?pag=list&id='.$id);
+    }
 }
 
 function eliminarEntrada($id){

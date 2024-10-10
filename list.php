@@ -1,5 +1,10 @@
         <div class="container border my-4 px-4 py-2 bg-dark rounded">
             <?php
+            $pasos = ["Diagnóstico", "Aprobación", "Reparación", "Terminado", "Entregado"];
+            $pasosLargo = ["Espera del diagnóstico", "Espera aprobación del cliente", "En Reparación", "Reparación terminada", "Entregado"];
+            $colores = ["#f54254", "#e8a31a", "#2f852c", "#4472c4", "#adadad"];
+            $localColor = ["blue", "red"];
+            
             if(isset($_GET["id"])){
                 $id = $_GET["id"];
                 echo '<a href="?pag=list" class="btn btn-secondary mx-2 mt-3"><i class="bi bi-arrow-left"></i> Volver</a>';
@@ -42,43 +47,9 @@
                 }      
                 $estado = "";
                 if(!empty($row["did"])) {
-                    $estado = " - <span class='text-danger'><i class='bi bi-arrow-counterclockwise'></i> DEVUELTO</span>";
-                } else if($row["tipo"]=="servicio") {
-                    switch($row["pendiente"]){
-                        case 0:
-                            $estado = " - <span class='text-warning'><i class='bi bi-clock-history'></i> PENDIENTE</span> ";
-                                    if($_SESSION["login"] == "tecnico" || $_SESSION["login"] == "admin") {
-                                        $estado .= "<form class='d-inline-block' action='execute.php' method='POST'>
-                                                        <input type='hidden' name='id' value='".$id."'>
-                                                        <input type='submit' class='btn btn-danger mb-1' name='terminar' value='Terminar'>
-                                                    </form>";
-                                    }
-                            break;
-                        case 1:
-                            $estado = " - <span style='color:#26FF17'><i class='bi bi-check2'></i> TERMINADO</span>
-                                    <form class='d-inline-block' action='execute.php' method='POST'>
-                                        <input type='hidden' name='id' value='".$id."'>";
-                                        if($_SESSION["login"] == "dependiente" || $_SESSION["login"] == "admin"){
-                                            $estado .= "<select class='form-control form-select' name='metodo'>
-                                                            <option>Tarjeta</option>
-                                                            <option>Efectivo</option>
-                                                        </select><input type='submit' class='btn btn-danger mb-1' name='cobrar' value='Cobrar'>
-                                                    </form>";
-                                        } else if($_SESSION["login"] == "tecnico" || $_SESSION["login"] == "admin") {
-                                            $estado .= "<input type='submit' class='btn btn-danger mb-1' name='desTerminar' value='Deshacer'>
-                                                    </form>";
-                                        }
-                            break;
-                        case 2:
-                            $estado = " - <span style='color:#26FF17'><i class='bi bi-check2-all'></i> ENTREGADO</span> ";
-                                    if($_SESSION["login"] == "dependiente" || $_SESSION["login"] == "admin") {
-                                        $estado .= "<form class='d-inline-block' action='execute.php' method='POST'>
-                                                        <input type='hidden' name='id' value='".$id."'>
-                                                        <input type='submit' class='btn btn-danger mb-1' name='desCobrar' value='Deshacer'>
-                                                    </form>";
-                                    }
-                            break;
-                    }
+                    $estado = "<span class='text-danger'><i class='bi bi-arrow-counterclockwise'></i> DEVUELTO</span>";
+                } else {
+                    $estado = $pasosLargo[$row["estado"]];
                 }
                 $servicio = "";$ins = "";
                 if($row["tipo"] == "servicio"){
@@ -87,74 +58,114 @@
                     $servicio .= '<p class="card-text"><b>Servicio:</b> '.$ser[1].'</p>';
 
                     if($row["insumo_desc"]!=""){
-                        $ins = '<li class="list-group-item"><b>Insumo:</b> '.$row["insumo_desc"].' ('.$row["insumo_precio"].'€) <a href="index.php?pag=edit_insumo&id='.$id.'" class="btn btn-primary">Editar</a></li>';
+                        $ins = '<li class="list-group-item"><b>Insumo:</b> '.$row["insumo_desc"].' ('.$row["insumo_precio"].'€)';
                     } else {
-                        $ins = '<li class="list-group-item"><b>Insumo:</b> 0 <a href="index.php?pag=edit_insumo&id='.$id.'" class="btn btn-primary">Editar</a></li>';
+                        $ins = '<li class="list-group-item"><b>Insumo:</b> 0';
                     }
+                    if($_SESSION["login"] == "tecnico" || $_SESSION["login"] == "admin") $ins .= ' <a href="index.php?pag=edit_insumo&id='.$id.'" class="btn btn-primary">Editar</a>';
+                    $ins .= '</li>';
                 }
                 echo '<div class="col-12">
                             <div class="card my-3">
-                                <h5 class="card-header text-bg-secondary py-3">'.ucfirst($row["tipo"]).' # '.$row["id"].$estado.'</h5>
+                                <h5 class="card-header py-3" style="color:white;background-color:'.$colores[$row["estado"]].';">'.ucfirst($row["tipo"]).' # '.$row["id"].'</h5>
                                 <div class="card-body">
-                                    <p class="card-text"><b>Nombre:</b> '.$row["nombre"].'</p>
-                                    <p class="card-text"><b>Documento:</b> '.$row["documento"].'</p>
-                                    <p class="card-text"><b>Fecha (d/m/y):</b> '.$row["fecha"].'</p>
-                                    <p class="card-text"><b>Fecha de pago:</b> '.$row["fecha_pago"].'</p>
-                                    '.$servicio.'
-                                    <p class="card-text"><b>Email:</b> '.$row["email"].'</p>
-                                    <p class="card-text"><b>Dirección:</b> '.$row["direccion"]." - ".$row["cp"].'</p>
-                                    <p class="card-text"><b>Teléfono:</b> <a href="https://wa.me//'.$row["telefono"].'" target="_blank">'.$row["telefono"].'<a></p>
+                                    '.$estado;?>
+                                <br>
+                                <?php if(($row["estado"] < 4 && $_SESSION["login"]=="tecnico")||($_SESSION["login"]=="dependiente"&&$row["estado"]==4)){ if(($row["estado"]-1)>=0){ ?><a href="execute.php?estado=<?php echo $row["estado"]-1 ?>&id=<?php echo $row["id"] ?>&pag=1" class="btn text-light" style="color:black; background-color:<?php echo $colores[$row["estado"]-1] ?>"><i class="bi bi-caret-left-fill"></i> <?php echo $pasos[$row["estado"]-1] ?></a><?php }} ?>
+                                <?php if(($row["estado"] < 3 && $_SESSION["login"]=="tecnico")){ if(($row["estado"]+1)<5){ ?><a href="execute.php?estado=<?php echo $row["estado"]+1 ?>&id=<?php echo $row["id"] ?>&pag=1" class="btn text-light" style="color:black; background-color:<?php echo $colores[$row["estado"]+1] ?>"><?php echo $pasos[$row["estado"]+1] ?> <i class="bi bi-caret-right-fill"></i></a><?php }} ?>
+                                <?php if($_SESSION["login"]=="admin"){ if(($row["estado"]-1)>=0){ ?><a href="execute.php?estado=<?php echo $row["estado"]-1 ?>&id=<?php echo $row["id"] ?>&pag=1" class="btn text-light" style="color:black; background-color:<?php echo $colores[$row["estado"]-1] ?>"><i class="bi bi-caret-left-fill"></i> <?php echo $pasos[$row["estado"]-1] ?></a><?php }} ?>
+                                <?php if($_SESSION["login"]=="admin"){ if(($row["estado"]+1)<4){ ?><a href="execute.php?estado=<?php echo $row["estado"]+1 ?>&id=<?php echo $row["id"] ?>&pag=1" class="btn text-light" style="color:black; background-color:<?php echo $colores[$row["estado"]+1] ?>"><?php echo $pasos[$row["estado"]+1] ?> <i class="bi bi-caret-right-fill"></i></a><?php }} ?>
+                                <?php if(($_SESSION["login"]=="admin"||$_SESSION["login"]=="dependiente")&&$row["estado"]==3){ ?>
+                                    <form action="execute.php" method="get">
+                                        <input type="hidden" name="pag" value="1">
+                                        <input type="hidden" name="id" value="<?php echo $row["id"] ?>">
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="metodo" id="metodoTarjeta" value="Tarjeta" checked>
+                                            <label class="form-check-label" for="metodoTarjeta">
+                                                Tarjeta
+                                            </label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="metodo" id="metodoEfectivo" value="Efectivo">
+                                            <label class="form-check-label" for="metodoEfectivo">
+                                                Efectivo
+                                            </label>
+                                        </div>
+                                        <button class="btn btn-secondary" type="submit" name="estado" value="4">Entregado/Cobrar</button>
+                                    </form>
+                                <?php } ?>
                                     <hr>
-                                    <p class="card-text">'.$desc.'</p>
-                                    <p class="card-text"><b>Local:</b> '.$row["local"].'</p>
-                                    <p class="card-text"><b>Cómo nos encontró:</b> '.$row["razon"].'</p>
-                                    <p class="card-text"><b>Departamento:</b> '.$row["dept"].'</p>
-                                    <p class="card-text"><b>Método de pago:</b> '.$row["metodo"].'</p>
-                                    ';
-                                    echo'
+                                    <div class="row">
+                                        <div class="col-md-6 col-12">
+                                            <p class="card-text"><b>Nombre:</b> <?php echo $row["nombre"] ?></p>
+                                            <p class="card-text"><b>Documento:</b> <?php echo $row["documento"] ?></p>
+                                            <p class="card-text"><b>Email:</b> <?php echo $row["email"]?></p>
+                                        </div>
+                                        <div class="col-md-6 col-12">
+                                            <p class="card-text"><b>Dirección:</b> <?php echo $row["direccion"]." - ".$row["cp"] ?></p>
+                                            <p class="card-text"><b>Teléfono:</b> <a href="https://wa.me//<?php echo $row["telefono"] ?>" target="_blank"><?php echo $row["telefono"]?><a></p>
+                                            <p class="card-text"><b>Cómo nos encontró:</b> <?php echo $row["razon"] ?></p>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="row">
+                                        <div class="col-md-6 col-12">
+                                            <p class="card-text"><b>Fecha (d/m/y):</b> <?php echo $row["fecha"] ?></p>
+                                            <p class="card-text"><b>Fecha de pago:</b> <?php echo $row["fecha_pago"] ?></p>
+                                            <p class="card-text"><b>Local:</b> <?php echo $row["local"] ?></p>
+                                        </div>
+                                        <div class="col-md-6 col-12">
+                                            <?php echo $servicio ?>
+                                            <p class="card-text"><b>Departamento:</b> <?php echo $row["dept"] ?></p>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <p class="card-text"><b>Dispositivo:</b> <?php echo $row["nombre_dispositivo"] ?></p>
+                                    <p class="card-text"><?php echo $desc ?></p>
+                                    <p class="card-text"><b>Método de pago:</b> <?php echo $row["metodo"] ?></p>
                                 </div>
-                                <hr> 
                                 <ul class="list-group list-group-flush mb-3">
-                                    '.$ins.'
-                                    <li class="list-group-item"><b>Precio:</b> '.$row["precio"].'€ (- '.$row["descuento"].'%) (+ IVA '.$row["iva"].'%) = <b>'.$row["precio-final"].'€</b></li>
+                                    <?php echo $ins ?>
+                                    <li class="list-group-item"><b>Precio:</b> <?php echo $row["precio"] ?>€ (- <?php echo $row["descuento"] ?>%) (+ IVA <?php echo $row["iva"] ?>%) = <b><?php echo $row["precio-final"] ?>€</b></li>
                                 </ul>
                             </div>
-                        </div>';
-                echo '<div class="modal fade" id="elimModal" tabindex="-1" aria-labelledby="elimModalLabel" aria-hidden="true">
+                        </div>
+            <div class="modal fade" id="elimModal" tabindex="-1" aria-labelledby="elimModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="elimModalLabel">Eliminar esta factura? (# '.$row["id"].')</h1>
+                            <h1 class="modal-title fs-5" id="elimModalLabel">Eliminar esta factura? (# <?php echo $row["id"] ?>)</h1>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
                             <form method="GET" action="execute.php">
-                                <input type="hidden" name="id" value="'.$row["id"].'">
+                                <input type="hidden" name="id" value="<?php echo $row["id"] ?>">
                                 <input class="btn btn-danger" type="submit" name="eliminar" id="eliminar" value="Eliminar">
                                 <button type="button" class="btn btn-secondary"data-bs-dismiss="modal">Cancelar</button>
                             </form>
                         </div>
                     </div>
                 </div>
-            </div>';
-            echo '<div class="modal fade" id="enviarModal" tabindex="-1" aria-labelledby="enviarModalLabel" aria-hidden="true">
+            </div>
+            <div class="modal fade" id="enviarModal" tabindex="-1" aria-labelledby="enviarModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="enviarModalLabel">Enviar esta factura? (# '.$row["id"].')</h1>
+                            <h1 class="modal-title fs-5" id="enviarModalLabel">Enviar esta factura? (# <?php echo $row["id"] ?>)</h1>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <p>Enviar a: '.$row["email"].'</p>
+                            <p>Enviar a: <?php echo $row["email"] ?></p>
                             <form method="GET" action="execute.php">
-                                <input type="hidden" name="id" value="'.$row["id"].'">
+                                <input type="hidden" name="id" value="<?php echo $row["id"] ?>">
                                 <input class="btn btn-success" type="submit" name="enviar" id="enviar" value="Enviar">
                                 <button type="button" class="btn btn-secondary"data-bs-dismiss="modal">Cancelar</button>
                             </form>
                         </div>
                     </div>
                 </div>
-            </div>';
+            </div>
+            <?php
             exit();
             }
             ?>
@@ -170,13 +181,9 @@
                             </div>
                             <div class="col-12 col-md-6">
                                 <button type="submit" id="submit" class="btn btn-primary btn-block p-3 my-2"><i class="bi bi-search"></i> Buscar</button>
-                                <form action="?pag=list" method="POST">
-                                    <button name="search" value="pendiente" style="background-color:#ccab06; color:white" class="btn btn-block p-3"><i class='bi bi-clock-history'></i> Pendientes</button>
-                                    <button name="search" value="terminado" class="btn btn-success btn-block p-3"><i class='bi bi-check2'></i> Terminados</button>
-                                    <?php if($_SESSION["login"] != "tecnico") { ?>
-                                    <button name="search" value="entregado" class="btn btn-success btn-block p-3"><i class="bi bi-check2-all"></i> Entregados</button>
-                                    <?php } ?>
-                                </form>
+                                <?php if(isset($_POST["search"])){?>
+                                    <a href="?pag=list" class="btn btn-secondary btn-block mx-3 p-3"><i class="bi bi-x-circle"></i> Quitar filtro</a>
+                                <?php } ?>
                             </div>
                         </div>
                     </form>
@@ -187,20 +194,12 @@
                 $pdo = connect();
                 $stmt = $pdo->prepare("SELECT *, i.id as id, d.id as did, DATE_FORMAT(fecha, '%d/%m/%Y') as fecha FROM info_orden i LEFT JOIN devolucion d ON (i.id = d.id_orden) ORDER BY i.id DESC");
                 $stmt->execute();
-            }else if($_POST["search"] == "pendiente" || $_POST["search"] == "terminado" || $_POST["search"] == "entregado"){
-                if($_POST["search"] == "pendiente") $search = 0;
-                if($_POST["search"] == "terminado") $search = 1;
-                if($_POST["search"] == "entregado") $search = 2;
-                $pdo = connect();
-                $stmt = $pdo->prepare("SELECT *, i.id as id, d.id as did, DATE_FORMAT(fecha, '%d/%m/%Y') as fecha FROM info_orden i LEFT JOIN devolucion d ON (i.id = d.id_orden) WHERE `pendiente` = :search AND `tipo` = 'servicio' ORDER BY i.id DESC");
-                $stmt->bindParam(':search', $search);
-                $stmt->execute();
             }else{
                 $pdo = connect();
-                echo '<p class="display-5 text-light">Resultados para <i>\''.$_POST["search"].'\'</i> <a href="?pag=list" class="btn btn-secondary btn-block mx-3 p-3"><i class="bi bi-x-circle"></i> Quitar filtro</a></p>';
+                echo '<p class="display-5 text-light">Resultados para <i>\''.$_POST["search"].'\'</i></p>';
                 $search = "%".$_POST["search"]."%";
                 $stmt = $pdo->prepare("SELECT *, i.id as id, d.id as did, DATE_FORMAT(fecha, '%d/%m/%Y') as fecha FROM info_orden i LEFT JOIN devolucion d ON (i.id = d.id_orden)
-                WHERE `tipo` LIKE :search OR i.id LIKE :search OR `nombre` LIKE :search OR `local` LIKE :search OR `servicio` LIKE :search
+                WHERE `nombre_dispositivo` LIKE :search OR i.id LIKE :search OR `nombre` LIKE :search OR `local` LIKE :search OR `servicio` LIKE :search
                 ORDER BY i.id DESC");
                 $stmt->bindParam(':search', $search);
                 $stmt->execute();
@@ -211,7 +210,7 @@
                 // DEPENDIENTES SOLO VEN TICKETS DE SU LOCAL
                 if($_SESSION["login"] != "admin" && ($_SESSION["local"]!=null&&$_SESSION["local"] != $row["local"])) continue;
                 // TECNICO SOLO VE PENDIENTES Y TERMINADOS
-                if($_SESSION["login"] == "tecnico" && $row["pendiente"] == 2 || $row["tipo"] == "venta") continue;
+                if($_SESSION["login"] == "tecnico" && $row["estado"] == 4) continue;
                 
                 if($i==0) echo '<div class="row">';
                 if(strlen($row["desc"])>25){
@@ -219,49 +218,54 @@
                 }else{
                     $desc = $row["desc"];
                 }
-                $bg;
-                switch($row["local"]){
-                    case "Barcelona":
-                        $bg = "text-bg-secondary";
-                        break;
-                    case "Mataró":
-                        $bg = "bg-success-subtle";
-                        break;
-                    default:
-                        $bg = "bg-light-subtle";
-                }
+                $bg = "text-bg-secondary";
                 $dev = "";
                 if(!empty($row["did"])) {
                     $bg = "text-bg-dark";
-                    $dev = " - <span class='text-danger'><i class='bi bi-arrow-counterclockwise'></i> DEVUELTO</span>";
-                } else if($row["tipo"]=="servicio") {
-                    if($row["pendiente"] == 1){
-                        $dev = " - <span style='color:#26FF17'><i class='bi bi-check2'></i> TERMINADO</span>";
-                    } else if($row["pendiente"] == 2) {
-                        $dev = " - <span style='color:#26FF17'><i class='bi bi-check2-all'></i> ENTREGADO</span>";
-                    } else {
-                        $dev = " - <span class='text-warning'><i class='bi bi-clock-history'></i> PENDIENTE</span>";
-                    }
+                    $dev = " | <span class='text-danger'><i class='bi bi-arrow-counterclockwise'></i> DEVUELTO</span>";
+                } else {
+                    $dev = " | ".$pasos[$row["estado"]];
                 }
+                $serv = explode(": ", $row["servicio"]);
                 echo '
                     <div class="col-lg-4 col-12">
                         <div class="card '.$bg.' my-3">
-                            <h5 class="card-header py-3">'.ucfirst($row["tipo"]).' # '.$row["id"].'<br>'.$row["local"].$dev.'</h5>
+                            <h5 class="card-header py-3" style="color:white;background-color:'.$colores[$row["estado"]].';">'.ucfirst($serv[0]).' # '.$row["id"].'<br><div style="display:inline;margin-right:2px;border-left: 3px solid '.$localColor[$row["local"]=="Barcelona"?0:1].';height: 5px;"></div>'.$row["local"].$dev.'</h5>';
+                            ?>
+                            <div class="text-center pt-2">
+                                <b><?php echo $pasosLargo[$row["estado"]]; ?></b><br>
+                                <div class="col-2 pt-2 d-inline-block" style="background-color:<?php echo $row["estado"]>=0?$colores[0]:"white"; ?>"></div>
+                                <div class="col-2 pt-2 d-inline-block" style="background-color:<?php echo $row["estado"]>=1?$colores[1]:"white"; ?>"></div>
+                                <div class="col-2 pt-2 d-inline-block" style="background-color:<?php echo $row["estado"]>=2?$colores[2]:"white"; ?>"></div>
+                                <div class="col-2 pt-2 d-inline-block" style="background-color:<?php echo $row["estado"]>=3?$colores[3]:"white"; ?>"></div>
+                                <div class="col-2 pt-2 d-inline-block" style="background-color:<?php echo $row["estado"]>=4?$colores[4]:"white"; ?>"></div>
+                            </div>
+                            <div class="text-center mx-auto">
+                                <i class="bi bi-caret-up-fill px-4" <?php if($row["estado"]!=0){ ?> style="color:#6d747d" <?php } ?>></i>
+                                <i class="bi bi-caret-up-fill px-4" <?php if($row["estado"]!=1){ ?> style="color:#6d747d" <?php } ?>></i>
+                                <i class="bi bi-caret-up-fill px-4" <?php if($row["estado"]!=2){ ?> style="color:#6d747d" <?php } ?>></i>
+                                <i class="bi bi-caret-up-fill px-4" <?php if($row["estado"]!=3){ ?> style="color:#6d747d" <?php } ?>></i>
+                                <i class="bi bi-caret-up-fill px-4" <?php if($row["estado"]!=4){ ?> style="color:#6d747d" <?php } ?>></i>
+                            </div>
+                            <?php
+                            echo'
                             <div class="card-body">
                                 <p class="card-text"><b>Nombre:</b> '.$row["nombre"].'</p>
-                                <p class="card-text"><b>Documento:</b> '.$row["documento"].'</p>
-                                <p class="card-text"><b>Fecha (d/m/y):</b> '.$row["fecha"].'</p>
-                                <p class="card-text"><b>Servicio:</b> '.explode(": ", $row["servicio"])[0].'</p>
-                                <p class="card-text"><b>Email:</b> '.$row["email"].'</p>
-                                <p class="card-text"><b>Teléfono:</b> '.$row["telefono"].'</p>
+                                <p class="card-text"><b>Dispositivo:</b> '.$row["nombre_dispositivo"].'</p>
                                 <p class="card-text"><b>Descripción:</b> '.$desc.'</p>
                             </div> 
                             <ul class="list-group list-group-flush">
                                 <li class="list-group-item '.$bg.'"><b>Precio:</b> '.$row["precio"].'€ (+ IVA '.$row["iva"].'%) = <b>'.$row["precio-final"].'€</b></li>
-                                <li class="list-group-item '.$bg.'"><b>Descuento:</b> '.$row["descuento"].'%</b></li>
                             </ul>
-                            <div class="card-body">
-                                <a href="?pag=list&id='.$row["id"].'" class="btn btn-primary">Más Info <i class="bi bi-caret-right-fill"></i></a>
+                            <div class="card-body">';
+                                ?>
+                                <?php if(($row["estado"] < 4 && $_SESSION["login"]=="tecnico")||($_SESSION["login"]=="dependiente"&&$row["estado"]==4)){ if(($row["estado"]-1)>=0){ ?><a href="execute.php?estado=<?php echo $row["estado"]-1 ?>&id=<?php echo $row["id"] ?>&pag=0" class="btn text-light" style="background-color:<?php echo $colores[$row["estado"]-1] ?>"><i class="bi bi-caret-left-fill"></i> <?php echo $pasos[$row["estado"]-1] ?></a><?php }} ?>
+                                <?php if(($row["estado"] < 3 && $_SESSION["login"]=="tecnico")){ if(($row["estado"]+1)<5){ ?><a href="execute.php?estado=<?php echo $row["estado"]+1 ?>&id=<?php echo $row["id"] ?>&pag=0" class="btn text-light" style="color:black; background-color:<?php echo $colores[$row["estado"]+1] ?>"><?php echo $pasos[$row["estado"]+1] ?> <i class="bi bi-caret-right-fill"></i></a><?php }} ?>
+                                <?php if($_SESSION["login"]=="admin"){ if(($row["estado"]-1)>=0){ ?><a href="execute.php?estado=<?php echo $row["estado"]-1 ?>&id=<?php echo $row["id"] ?>&pag=0" class="btn text-light" style="color:black; background-color:<?php echo $colores[$row["estado"]-1] ?>"><i class="bi bi-caret-left-fill"></i> <?php echo $pasos[$row["estado"]-1] ?></a><?php }} ?>
+                                <?php if($_SESSION["login"]=="admin"){ if(($row["estado"]+1)<5){ ?><a href="execute.php?estado=<?php echo $row["estado"]+1 ?>&id=<?php echo $row["id"] ?>&pag=0" class="btn text-light" style="color:black; background-color:<?php echo $colores[$row["estado"]+1] ?>"><?php echo $pasos[$row["estado"]+1] ?> <i class="bi bi-caret-right-fill"></i></a><?php }} ?>
+                                <?php
+                            echo '
+                                <br><a href="?pag=list&id='.$row["id"].'" class="btn btn-primary mt-2">Detalles <i class="bi bi-caret-right-fill"></i></a>
                             </div>
                         </div>
                     </div>';

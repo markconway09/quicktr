@@ -56,7 +56,7 @@
         <nav class="navbar navbar-light" style="background-color:rgb(43,45,46);">
             <a class="navbar-brand mx-auto" href="index.php">
                 <img class="rounded" src="LOGO.png" alt="logo" height="90">
-                <span class="badge badge-pill bg-danger">1.87</span>
+                <span class="badge badge-pill bg-danger">1.9</span>
             </a>
             <?php
             if(isset($_SESSION["login"])){
@@ -70,7 +70,7 @@
             exit();
         }
         ?>
-        <div class="container p-2 mx-auto my-4 rounded text-center" style="background-color: rgb(43,45,46);box-shadow: 0px 0px 15px black;">
+        <div class="container p-2 mx-auto my-4 rounded text-center sticky-top" style="background-color: rgb(43,45,46);box-shadow: 0px 0px 15px black;">
             <?php
             if($_SESSION["login"] == "admin"){
                 ?>
@@ -86,8 +86,8 @@
                 <a class="dropdown-item" href="?pag=user-admin">Usuarios</a>
                 <a class="dropdown-item" href="?pag=infoClientes">Clientes</a>
             </div>
-            <a class="btn btn-primary my-2" href="?pag=form-servicio">Servicio</a>
-            <a class="btn btn-primary my-2" href="?pag=form-venta">Venta</a>
+            <a class="btn btn-primary my-2" href="?pag=form-servicio">Formulario</a>
+            <!--<a class="btn btn-primary my-2" href="?pag=form-venta">Venta</a>-->
             <a class="btn btn-success my-2" target="_blank" href="/almacen">Almacén <i class="bi bi-box-arrow-up-right"></i></a>
             <a class="btn btn-secondary my-2 mx-5" href="?pag=list"><i class="bi bi-columns-gap"></i> Lista</a>
         </div>

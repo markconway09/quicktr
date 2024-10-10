@@ -9,11 +9,11 @@ if(isset($_POST["guardar-servicio"])){
     header('Location: index.php?pag=list&id='.$id);
 }
 // GUARDAR VENTA
-if(isset($_POST["guardar-venta"])){
+/*if(isset($_POST["guardar-venta"])){
     $id = insertarBDV();
     enviarCorreo($id);
     header('Location: index.php?pag=list&id='.$id);
-}
+}*/
 
 
 // FACTURA SERVICIO
@@ -32,7 +32,7 @@ if(isset($_GET["servsimp"])) {
     insertFactura($_GET["id"],1);
 }
 // FACTURA VENTA
-if(isset($_GET["venta"])){
+/*if(isset($_GET["venta"])){
     crearFactura($_GET["id"]);
     insertFactura($_GET["id"],0);
 }
@@ -45,7 +45,7 @@ if(isset($_GET["ticketventa"])) {
 if(isset($_GET["ventasimp"])) {
     crearTVenta($_GET["id"],1);
     insertFactura($_GET["id"],1);
-}
+}*/
 
 
 // ENVIAR AL CLIENTE
@@ -60,15 +60,11 @@ if(isset($_GET["deshacer"])) devolucion($_GET["id"],1);
 if(isset($_GET["eliminar"])) eliminarEntrada($_GET["id"]);
 
 // COBRAR (PENDIENTE->TERMINADO / TERMINADO->PENDIENTE)
-if(isset($_POST["terminar"])) {
-    cambiarEstado($_POST["id"],1);
-}
-if(isset($_POST["desTerminar"])) {
-    cambiarEstado($_POST["id"],0);
-}
-if(isset($_POST["cobrar"])) {
-    cambiarEstado($_POST["id"],2, $_POST["metodo"]);
-}
-if(isset($_POST["desCobrar"])) {
-    cambiarEstado($_POST["id"],1);
+
+if(isset($_GET["estado"])){
+    if(!isset($_GET["metodo"])){
+        cambiarEstado($_GET["id"], $_GET["estado"], $_GET["pag"]);
+    } else {
+        cambiarEstado($_GET["id"],$_GET["estado"], $_GET["pag"],$_GET["metodo"]);
+    }
 }

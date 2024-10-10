@@ -10,9 +10,16 @@ if(isset($_POST["editar_insumo"])){
     editarInsumo();
 }
 ?>
-<div class="container form-control p-4 bg-dark">
     <form action="" method="POST" class="form-control p-4 bg-dark">
         <a href="index.php?pag=list&id=<?php echo $datos["id"]; ?>" class="btn btn-secondary mb-4">Volver</a>
+        <div class="row mb-3">
+            <div class="col-12">
+                <div class="form-floating">
+                    <input class="form-control" placeholder="Dispositivo" type="text" name="dispositivo" id="dispositivo" value="<?php echo $datos["nombre_dispositivo"]; ?>">
+                    <label for="dispositivo">Dispositivo</label>
+                </div>
+            </div>
+        </div>
         <div class="row">
             <div class="col-12 mb-3">
                 <div class="form-floating">
@@ -40,4 +47,3 @@ if(isset($_POST["editar_insumo"])){
             <input type="submit" name="editar_insumo" class="btn btn-primary col-4 mx-auto" value="Guardar Cambios">
         </div>
     </form>
-</div>

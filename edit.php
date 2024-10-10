@@ -216,6 +216,14 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <input class="form-control" placeholder="Dispositivo" type="text" name="dispositivo" id="dispositivo" value="<?php echo $datos["nombre_dispositivo"]; ?>">
+                                    <label for="dispositivo">Dispositivo</label>
+                                </div>
+                            </div>
+                        </div>
                         <div class="row">
                             <div class="col-12 mb-3">
                                 <div class="form-floating">

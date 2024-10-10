@@ -109,6 +109,14 @@
                 <div class="row mb-3">
                     <div class="col-12">
                         <div class="form-floating">
+                            <input class="form-control" placeholder="Dispositivo" type="text" name="dispositivo" id="dispositivo">
+                            <label for="dispositivo">Dispositivo</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <div class="form-floating">
                             <textarea rows="5" style="height:100%;" class="form-control" placeholder="Descripción" name="motivo" id="motivo"></textarea>
                             <label for="motivo">Descripción</label>
                         </div>
@@ -160,7 +168,7 @@
                                 "Reparación de daños por agua": "",
                                 "Reemplazo de carcasa": "",
                                 "Reparación de botones": "",
-                                "Reparación de Bluetooh y Wi-Fi": "",
+                                "Reparación de Bluetooth y Wi-Fi": "",
                                 "Reparación de sensores": "",
                                 "Reemplazo de SIM y bandejas": "",
                                 "Instalación de aplicaciones": "",
