@@ -26,15 +26,9 @@
                     $precios = "";
                     $cant = "";
                 }
-                if($row["tipo"]=="venta"){
-                    echo '<a href="execute.php?ticketventa=1&id='.$id.'" target="_blank" class="btn btn-primary mx-2 mt-3"><i class="bi bi-ticket-detailed"></i> Ticket Efectivo</a>';
-                    echo '<a href="execute.php?venta=1&id='.$id.'" target="_blank" class="btn btn-primary mx-2 mt-3"><i class="bi bi-receipt-cutoff"></i> Factura</a>';
-                    echo '<a href="execute.php?ventasimp=1&id='.$id.'" target="_blank" class="btn btn-primary mx-2 mt-3"><i class="bi bi-receipt"></i> Factura Simplificada</a>';
-                }else{
-                    echo '<a href="execute.php?ticketservicio=1&id='.$id.'" target="_blank" class="btn btn-primary mx-2 mt-3"><i class="bi bi-ticket-detailed"></i> Ticket Efectivo</a>';
-                    echo '<a href="execute.php?servicio=1&id='.$id.'" target="_blank" class="btn btn-primary mx-2 mt-3"><i class="bi bi-receipt-cutoff"></i> Factura</a>';
-                    echo '<a href="execute.php?servsimp=1&id='.$id.'" target="_blank" class="btn btn-primary mx-2 mt-3"><i class="bi bi-receipt"></i> Factura Simplificada</a>';
-                }
+                echo '<a href="execute.php?ticketservicio=1&id='.$id.'" target="_blank" class="btn btn-primary mx-2 mt-3"><i class="bi bi-ticket-detailed"></i> Ticket Efectivo</a>';
+                echo '<a href="execute.php?servicio=1&id='.$id.'" target="_blank" class="btn btn-primary mx-2 mt-3"><i class="bi bi-receipt-cutoff"></i> Factura</a>';
+                echo '<a href="execute.php?servsimp=1&id='.$id.'" target="_blank" class="btn btn-primary mx-2 mt-3"><i class="bi bi-receipt"></i> Factura Simplificada</a>';
                 echo '<button type="button" class="btn btn-success mx-2 mt-3" data-bs-toggle="modal" data-bs-target="#enviarModal"><i class="bi bi-send"></i> Enviar</button>';
                 echo '<a href="edit.php?id='.$id.'" class="btn btn-success mx-2 mt-3"><i class="bi bi-pencil-square"></i> Editar</a>';
                 if(!empty($row["did"])){
@@ -58,7 +52,16 @@
                     $servicio .= '<p class="card-text"><b>Servicio:</b> '.$ser[1].'</p>';
 
                     if($row["insumo_desc"]!=""){
-                        $ins = '<li class="list-group-item"><b>Insumo:</b> '.$row["insumo_desc"].' ('.$row["insumo_precio"].'€)';
+                        $insumos = explode(";", $row["insumo_desc"]);
+                        $precios = explode(";", $row["insumo_precio"]);
+                        $ins="<li class='list-group-item'><b>Insumo:</b></li>";
+                        for($k = 0; $k<count($insumos);){
+                            $ins .= '<li class="list-group-item mx-3"><b>'.$insumos[$k].'</b> ('.$precios[$k].'€)';
+                            $k++;
+                            if(isset($d[$k])){
+                                $desc .= ", ";
+                            }
+                        }
                     } else {
                         $ins = '<li class="list-group-item"><b>Insumo:</b> 0';
                     }

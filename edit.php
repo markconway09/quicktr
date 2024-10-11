@@ -234,17 +234,7 @@
                         </div>
                         <div class="row">
                             <div class="col-12 mb-4">
-                                <div class="input-group">
-                                <span class="input-group-text">Insumo</span>
-                                    <div class="form-floating">
-                                        <input class="form-control" placeholder="Descripción" type="text" name="insumo_desc" id="insumo_desc" value="<?php echo $datos["insumo_desc"];?>">
-                                        <label for="insumo_desc">Descripción</label>
-                                    </div>
-                                    <div class="form-floating">
-                                        <input class="form-control" placeholder="Precio" type="number" step=.01 name="insumo_precio" id="insumo_precio" value="<?php echo $datos["insumo_precio"];?>">
-                                        <label for="insumo_precio">Precio</label>
-                                    </div>
-                                </div>
+                            <a target="_blank" href="index.php?pag=edit_insumo&id=<?php echo $datos["id"] ?>" class="btn btn-primary">Editar Insumo</a>
                             </div>
                         </div>
                     <?php } ?>

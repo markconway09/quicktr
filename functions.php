@@ -1034,8 +1034,6 @@ function editarEntrada($id){
         $desc = $_POST["desc"];
     }
     while(isset($_POST["prod".$k]) && $_POST["prod".$k] != ""){
-        //$p = explode(": ",$_POST["prod".$k])[1];
-        //$desc .= $p;
         $desc .= $_POST["prod".$k];
         $pV .= $_POST["prec".$k];
         $cV .= $_POST["cant".$k];
@@ -1048,7 +1046,7 @@ function editarEntrada($id){
     }
 
     $pdo = connect();
-    $stmt = $pdo->prepare("UPDATE `info_orden` SET `nombre` = :nombre, `telefono` = :tel, `documento` = :doc, `servicio` = :servicio, `email` = :email, `direccion` = :direccion, `cp` = :cp, `preciosVenta`=:pV, `cantidadVenta`=:cV, `precio` = :precio, `iva` = :iva, `precio-final` = :preciofinal, `insumo_desc` = :insumo_d, `insumo_precio` = :insumo_p, `descuento` = :descuento, `metodo` = :metodo, `nombre_dispositivo` = :disp, `desc` = :de, `local` = :loc, `razon` = :razon, `dept` = :dept, `pendiente` = :pend WHERE `info_orden`.`id` = :id");
+    $stmt = $pdo->prepare("UPDATE `info_orden` SET `nombre` = :nombre, `telefono` = :tel, `documento` = :doc, `servicio` = :servicio, `email` = :email, `direccion` = :direccion, `cp` = :cp, `preciosVenta`=:pV, `cantidadVenta`=:cV, `precio` = :precio, `iva` = :iva, `precio-final` = :preciofinal, `descuento` = :descuento, `metodo` = :metodo, `nombre_dispositivo` = :disp, `desc` = :de, `local` = :loc, `razon` = :razon, `dept` = :dept WHERE `info_orden`.`id` = :id");
     $stmt->bindParam(':id', $id);
     $stmt->bindParam(':nombre', $_POST["nombre"]);
     $stmt->bindParam(':tel', $_POST["tel"]);
@@ -1062,8 +1060,6 @@ function editarEntrada($id){
     $stmt->bindParam(':precio', $_POST["precio"]);
     $stmt->bindParam(':iva', $_POST["iva"]);
     $stmt->bindParam(':preciofinal', $_POST["precio-final"]);
-    $stmt->bindParam(':insumo_d', $_POST["insumo_desc"]);
-    $stmt->bindParam(':insumo_p', $_POST["insumo_precio"]);
     $stmt->bindParam(':descuento', $_POST["descuento"]);
     $stmt->bindParam(':metodo', $metodo);
     $stmt->bindParam(':disp', $disp);
@@ -1071,7 +1067,6 @@ function editarEntrada($id){
     $stmt->bindParam(':loc', $_POST["local"]);
     $stmt->bindParam(':razon', $_POST["razon"]);
     $stmt->bindParam(':dept', $_POST["dept"]);
-    $stmt->bindParam(':pend', $_POST["pendiente"]);
     try {
         $stmt->execute();
     } catch (PDOException $e){
@@ -1081,21 +1076,33 @@ function editarEntrada($id){
     header('Location: index.php?pag=list&id='.$id);
 }
 
-function editarInsumo(){
+function editarInsumo($id){
+    $k = 1;
+    $i_desc = "";
+    $i_prec = "";
+    while(isset($_POST["insumo_desc".$k]) && $_POST["insumo_desc".$k] != ""){
+        $i_desc .= $_POST["insumo_desc".$k];
+        $i_prec .= $_POST["insumo_precio".$k];
+        $k++;
+        if(isset($_POST["insumo_desc".$k]) && $_POST["insumo_desc".$k] != ""){
+            $i_desc .=";";
+            $i_prec .= ";";
+        }
+    }
     $pdo = connect();
     $stmt = $pdo->prepare("UPDATE `info_orden` SET `insumo_desc` = :insumo_d, `insumo_precio` = :insumo_p, `nombre_dispositivo` = :dis, `desc` = :de WHERE `info_orden`.`id` = :id");
-    $stmt->bindParam(':id', $_GET["id"]);
+    $stmt->bindParam(':id', $id);
     $stmt->bindParam(':dis', $_POST["dispositivo"]);
     $stmt->bindParam(':de', $_POST["desc"]);
-    $stmt->bindParam(':insumo_d', $_POST["insumo_desc"]);
-    $stmt->bindParam(':insumo_p', $_POST["insumo_precio"]);
+    $stmt->bindParam(':insumo_d', $i_desc);
+    $stmt->bindParam(':insumo_p', $i_prec);
     try {
         $stmt->execute();
     } catch (PDOException $e){
         echo '<p class="text-light">'.$e->getMessage().'</p>';
     }
     
-    header('Location: index.php?pag=list&id='.$_GET["id"]);
+    header('Location: index.php?pag=list&id='.$id);
 }
 
 function devolucion($id, $des = 0){
