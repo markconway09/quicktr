@@ -1076,35 +1076,6 @@ function editarEntrada($id){
     header('Location: index.php?pag=list&id='.$id);
 }
 
-function editarInsumo($id){
-    $k = 1;
-    $i_desc = "";
-    $i_prec = "";
-    while(isset($_POST["insumo_desc".$k]) && $_POST["insumo_desc".$k] != ""){
-        $i_desc .= $_POST["insumo_desc".$k];
-        $i_prec .= $_POST["insumo_precio".$k];
-        $k++;
-        if(isset($_POST["insumo_desc".$k]) && $_POST["insumo_desc".$k] != ""){
-            $i_desc .=";";
-            $i_prec .= ";";
-        }
-    }
-    $pdo = connect();
-    $stmt = $pdo->prepare("UPDATE `info_orden` SET `insumo_desc` = :insumo_d, `insumo_precio` = :insumo_p, `nombre_dispositivo` = :dis, `desc` = :de WHERE `info_orden`.`id` = :id");
-    $stmt->bindParam(':id', $id);
-    $stmt->bindParam(':dis', $_POST["dispositivo"]);
-    $stmt->bindParam(':de', $_POST["desc"]);
-    $stmt->bindParam(':insumo_d', $i_desc);
-    $stmt->bindParam(':insumo_p', $i_prec);
-    try {
-        $stmt->execute();
-    } catch (PDOException $e){
-        echo '<p class="text-light">'.$e->getMessage().'</p>';
-    }
-    
-    header('Location: index.php?pag=list&id='.$id);
-}
-
 function devolucion($id, $des = 0){
     $pdo = connect();
     if($des === 0){
