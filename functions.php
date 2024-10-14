@@ -18,7 +18,7 @@ function connect(){
 
 function insertarBDS(){
     $servicio = $_POST["servicio"] . ": " . $_POST["servicio2"];
-    $tipo = "Servicio";
+    $garantia = 0;
     $desc = $_POST["motivo"];
     $pV = "";
     $cV = "";
@@ -36,7 +36,7 @@ function insertarBDS(){
 
     $pdo = connect();
     $stmt = $pdo->prepare("INSERT INTO info_orden VALUES 
-    (null, :nom, :tel, :doc, :ser, :email, :direccion, :cp, :preciosV, :cantV, :precio, :descuento, :iva, :final, :ins_d, :ins_p, :metodo, :disp, :descr, :loc, :fecha, null, :tipo, 0, :razon, :dept)");
+    (null, :nom, :tel, :doc, :ser, :email, :direccion, :cp, :preciosV, :cantV, :precio, :descuento, :iva, :final, :ins_d, :ins_p, :metodo, :disp, :descr, :loc, :fecha, null, :garantia, 0, :razon, :dept)");
     $stmt->bindParam(':nom', $nombre);
     $stmt->bindParam(':tel', $tel);
     $stmt->bindParam(':doc', $doc);
@@ -58,7 +58,7 @@ function insertarBDS(){
     $stmt->bindParam(':loc', $_POST["local"]);
     $date = date('Y-m-d');
     $stmt->bindParam(':fecha', $date);
-    $stmt->bindParam(':tipo', $tipo);
+    $stmt->bindParam(':garantia', $garantia);
     $stmt->bindParam(':razon', $_POST["razon"]);
     $stmt->bindParam(':dept', $_POST["dept"]);
     try {
@@ -879,6 +879,7 @@ function insertFactura($id, $tipo){
 function enviarCorreo($id){
     //---------------RECOGER DATOS---------------//
     $datos = selectBD($id);
+    $ser = explode(": ", $datos["servicio"]);
 
     // ENVIAR CORREO
     $mail = new PHPMailer(true);
@@ -899,17 +900,13 @@ function enviarCorreo($id){
         //Recipients
         $mail->setFrom('info@quicktr.com');
         $mail->addAddress('sistemas@dvagroup.es');
-        if($datos["tipo"]=="servicio"){
-            crearPDF($id, 0, 1);
-        }/* else if($datos["tipo"]=="venta"){
-            crearTVenta($id, 0, 1);
-        }*/
+        crearPDF($id, 0, 1);
         $mail->addAttachment('doc.pdf');
 
         //Content
         $mail->isHTML(true);
-        $mail->Subject = 'Nueva orden de '.$datos["nombre"].' «'.$datos["servicio"].'»';
-        $mail->Body    = '<html><body><h1>'.ucfirst($datos["tipo"]).' # '.$id.' - '.$datos["servicio"].'</h1>
+        $mail->Subject = 'Nueva orden de '.$datos["nombre"].' «'.ucfirst($ser[0]).'»';
+        $mail->Body    = '<html><body><h1>'.ucfirst($ser[0]).' # '.$id.' - '.$ser[1].'</h1>
             <p>
                 De: '.$datos["nombre"].' (<a href="mailto:'.$datos["email"].'">'.$datos["email"].'<a>)
             </p>
@@ -949,6 +946,7 @@ function enviarCorreo($id){
 function enviarCorreoCliente($id){
     //---------------RECOGER DATOS---------------//
     $datos = selectBD($id);
+    $ser = explode(": ", $datos["servicio"]);
 
     // ENVIAR CORREO
     $mail = new PHPMailer(true);
@@ -970,17 +968,13 @@ function enviarCorreoCliente($id){
         $mail->setFrom('info@quicktr.com');
         $mail->addAddress('sistemas@dvagroup.es');
         $mail->addAddress($datos["email"]);
-        if($datos["tipo"]=="servicio"){
-            crearPDF($id, 0, 1);
-        }/* else if($datos["tipo"]=="venta"){
-            crearTVenta($id, 0, 1);
-        }*/
+        crearPDF($id, 0, 1);
         $mail->addAttachment('doc.pdf');
 
         //Content
         $mail->isHTML(true);
-        $mail->Subject = 'Nueva orden de '.$datos["nombre"].' «'.$datos["servicio"].'»';
-        $mail->Body    = '<html><body><h1>'.ucfirst($datos["tipo"]).' # '.$id.' - '.$datos["servicio"].'</h1>
+        $mail->Subject = 'Nueva orden de '.$datos["nombre"].' «'.ucfirst($ser[0]).'»';
+        $mail->Body    = '<html><body><h1>'.ucfirst($ser[0]).' # '.$id.' - '.$ser[1].'</h1>
             <p>
                 De: '.$datos["nombre"].' (<a href="mailto:'.$datos["email"].'">'.$datos["email"].'<a>)
             </p>
@@ -1074,6 +1068,61 @@ function editarEntrada($id){
     }
     
     header('Location: index.php?pag=list&id='.$id);
+}
+
+function garantia($id){
+    $servicio = $_POST["servicio"] . ": " . $_POST["servicio2"];
+    $garantia = $id;
+    $desc = "";
+    $pV = "";
+    $cV = "";
+    $doc="";$dir="";$cp="";$email="No especificado";$tel="";$nombre="";$ins_d="";$ins_p=0;$metodo="";$disp="";
+    if(isset($_POST["tel"])) $tel = $_POST["tel"];
+    if(isset($_POST["desc"])) $desc = $_POST["desc"];
+    if(isset($_POST["doc"])) $doc = $_POST["doc"];
+    if(isset($_POST["nombre"])) $nombre = $_POST["nombre"];
+    if(isset($_POST["direccion"])) $dir = $_POST["direccion"];
+    if(isset($_POST["cp"])) $cp = $_POST["cp"];
+    if(isset($_POST["email"])) $email = $_POST["email"];
+    if(!empty($_POST["insumo_desc"])) $ins_d = $_POST["insumo_desc"];
+    if(!empty($_POST["insumo_precio"])) $ins_p = $_POST["insumo_precio"];
+    if(!empty($_POST["metodo"])) $metodo = $_POST["metodo"];
+    if(!empty($_POST["dispositivo"])) $disp = $_POST["dispositivo"];
+
+    $pdo = connect();
+    $stmt = $pdo->prepare("INSERT INTO info_orden VALUES 
+    (null, :nom, :tel, :doc, :ser, :email, :direccion, :cp, :preciosV, :cantV, :precio, :descuento, :iva, :final, :ins_d, :ins_p, :metodo, :disp, :descr, :loc, :fecha, null, :garantia, 0, :razon, :dept)");
+    $stmt->bindParam(':nom', $nombre);
+    $stmt->bindParam(':tel', $tel);
+    $stmt->bindParam(':doc', $doc);
+    $stmt->bindParam(':ser', $servicio);
+    $stmt->bindParam(':email', $email);
+    $stmt->bindParam(':direccion', $dir);
+    $stmt->bindParam(':cp', $cp);
+    $stmt->bindParam(':preciosV', $pV);
+    $stmt->bindParam(':cantV', $cV);
+    $stmt->bindParam(':precio', $_POST["precio"]);
+    $stmt->bindParam(':descuento', $_POST["descuento"]);
+    $stmt->bindParam(':iva', $_POST["iva"]);
+    $stmt->bindParam(':final', $_POST["precio-final"]);
+    $stmt->bindParam(':ins_d', $ins_d);
+    $stmt->bindParam(':ins_p', $ins_p);
+    $stmt->bindParam(':metodo', $metodo);
+    $stmt->bindParam(':disp', $disp);
+    $stmt->bindParam(':descr', $desc);
+    $stmt->bindParam(':loc', $_POST["local"]);
+    $date = date('Y-m-d');
+    $stmt->bindParam(':fecha', $date);
+    $stmt->bindParam(':garantia', $garantia);
+    $stmt->bindParam(':razon', $_POST["razon"]);
+    $stmt->bindParam(':dept', $_POST["dept"]);
+    try {
+        $stmt->execute();
+    } catch(PDOException $e){
+        echo $e->getMessage()."<br>";
+        $stmt->debugDumpParams();
+    }
+    return $pdo->lastInsertId();
 }
 
 function devolucion($id, $des = 0){
@@ -1229,82 +1278,35 @@ function totalVentas($d=0, $m, $y, $local=0){
     $iva_efectivo = 0;
     $iva_tarjeta = 0;
     while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
-        if($row["tipo"] == "servicio"){
+        $pdf->Cell(28, 5, iconv('UTF-8', 'windows-1252', $row["id"]." - ".$row["fecha"]), 1, 0);
+        $pdf->Cell($width/2-60, 5, iconv('UTF-8', 'windows-1252', ucfirst($row["servicio"])), 1, 0);
+        $pdf->Cell(4, 5, iconv('UTF-8', 'windows-1252', $row["ticket"]?"X":""), 1, 0);
+        $pdf->Cell(4, 5, iconv('UTF-8', 'windows-1252', $row["factura"]?"X":""), 1, 0);
+        $pdf->Cell(4, 5, iconv('UTF-8', 'windows-1252', $row["simplificada"]?"X":""), 1, 0);
+        $pdf->Cell(17, 5, iconv('UTF-8', 'windows-1252', $row["local"]), 1, 0);
+        $pdf->Cell(15, 5, iconv('UTF-8', 'windows-1252', $row["metodo"]), 1, 0);
+        $pdf->Cell(10, 5, iconv('UTF-8', 'windows-1252', $row["descuento"]."%"), 1, 0);
+        $pdf->Cell($width/15, 5, iconv('UTF-8', 'windows-1252', $row["iva"]."%"), 1, 0);
+        $pdf->Cell($width/15, 5, iconv('UTF-8', 'windows-1252',  $row["precio"]." €"), 1, 0);
+        $pdf->Cell($width/15, 5, iconv('UTF-8', 'windows-1252', 1), 1, 0);
+        $pdf->Cell($width/15, 5, iconv('UTF-8', 'windows-1252',  $row["precio"]." €"), 1, 0);
+        $pdf->Cell($width/15, 5, iconv('UTF-8', 'windows-1252',  $row["precio-final"]." €"), 1, 1);
+        if(!empty($row["did"])){
             $pdf->Cell(28, 5, iconv('UTF-8', 'windows-1252', $row["id"]." - ".$row["fecha"]), 1, 0);
-            $pdf->Cell($width/2-60, 5, iconv('UTF-8', 'windows-1252', ucfirst($row["tipo"]) .": ". $row["servicio"]), 1, 0);
-            $pdf->Cell(4, 5, iconv('UTF-8', 'windows-1252', $row["ticket"]?"X":""), 1, 0);
-            $pdf->Cell(4, 5, iconv('UTF-8', 'windows-1252', $row["factura"]?"X":""), 1, 0);
-            $pdf->Cell(4, 5, iconv('UTF-8', 'windows-1252', $row["simplificada"]?"X":""), 1, 0);
-            $pdf->Cell(17, 5, iconv('UTF-8', 'windows-1252', $row["local"]), 1, 0);
-            $pdf->Cell(15, 5, iconv('UTF-8', 'windows-1252', $row["metodo"]), 1, 0);
-            $pdf->Cell(10, 5, iconv('UTF-8', 'windows-1252', $row["descuento"]."%"), 1, 0);
-            $pdf->Cell($width/15, 5, iconv('UTF-8', 'windows-1252', $row["iva"]."%"), 1, 0);
-            $pdf->Cell($width/15, 5, iconv('UTF-8', 'windows-1252',  $row["precio"]." €"), 1, 0);
-            $pdf->Cell($width/15, 5, iconv('UTF-8', 'windows-1252', 1), 1, 0);
-            $pdf->Cell($width/15, 5, iconv('UTF-8', 'windows-1252',  $row["precio"]." €"), 1, 0);
-            $pdf->Cell($width/15, 5, iconv('UTF-8', 'windows-1252',  $row["precio-final"]." €"), 1, 1);
-            if(!empty($row["did"])){
-                $pdf->Cell(28, 5, iconv('UTF-8', 'windows-1252', $row["id"]." - ".$row["fecha"]), 1, 0);
-                $pdf->Cell($width-75.3, 5, iconv('UTF-8', 'windows-1252', "DEVOLUCIÓN"), 1, 0);
-                $pdf->Cell($width/15, 5, iconv('UTF-8', 'windows-1252',  "-".$row["precio-final"]." €"), 1, 1);
-            } else {
-                $final = $row["precio"] - ($row["precio"]/100*$row["descuento"]);
-                $iva = round(($final * $row["iva"])/100, 2);
-                $iva_total+=$iva;
-                //$total_total+=doubleval($row["precio"]);
-                if($row["metodo"] == "Efectivo") {
-                    //$total_efectivo += doubleval($final);
-                    $iva_efectivo += $iva;
-                }
-                if($row["metodo"] == "Tarjeta") {
-                    //$total_tarjeta += doubleval($final);
-                    $iva_tarjeta += $iva;
-                }
+            $pdf->Cell($width-75.3, 5, iconv('UTF-8', 'windows-1252', "DEVOLUCIÓN"), 1, 0);
+            $pdf->Cell($width/15, 5, iconv('UTF-8', 'windows-1252',  "-".$row["precio-final"]." €"), 1, 1);
+        } else {
+            $final = $row["precio"] - ($row["precio"]/100*$row["descuento"]);
+            $iva = round(($final * $row["iva"])/100, 2);
+            $iva_total+=$iva;
+            //$total_total+=doubleval($row["precio"]);
+            if($row["metodo"] == "Efectivo") {
+                //$total_efectivo += doubleval($final);
+                $iva_efectivo += $iva;
             }
-        }else{
-            $pro = explode(";", $row["desc"]);
-            $pre = explode(";", $row["preciosVenta"]);
-            $can = explode(";", $row["cantidadVenta"]);
-            $total = 0;
-            $iva = 0;
-            for($i = 0;$i<count($pro);$i++){
-                if($pro[$i] == null) break;
-                $p = isset($pre[$i]) ? $pre[$i] : 0;
-                $c = isset($can[$i]) ? $can[$i] : 1;
-        
-                $pdf->Cell(28, 5, iconv('UTF-8', 'windows-1252', $row["id"]." - ".$row["fecha"]), 1, 0);
-                $pdf->Cell($width/2-60, 5, iconv('UTF-8', 'windows-1252', ucfirst($row["tipo"]) . ": ". $pro[$i]), 1, 0);
-                $pdf->Cell(4, 5, iconv('UTF-8', 'windows-1252', $row["ticket"]?"X":""), 1, 0);
-                $pdf->Cell(4, 5, iconv('UTF-8', 'windows-1252', $row["factura"]?"X":""), 1, 0);
-                $pdf->Cell(4, 5, iconv('UTF-8', 'windows-1252', $row["simplificada"]?"X":""), 1, 0);
-                $pdf->Cell(17, 5, iconv('UTF-8', 'windows-1252', $row["local"]), 1, 0);
-                $pdf->Cell(15, 5, iconv('UTF-8', 'windows-1252', $row["metodo"]), 1, 0);
-                $pdf->Cell(10, 5, iconv('UTF-8', 'windows-1252', $row["descuento"]."%"), 1, 0);
-                $pdf->Cell($width/15, 5, iconv('UTF-8', 'windows-1252', $row["iva"]."%"), 1, 0);
-                $pdf->Cell($width/15, 5, iconv('UTF-8', 'windows-1252',  doubleval($p)." €"), 1, 0);
-                $pdf->Cell($width/15, 5, iconv('UTF-8', 'windows-1252', $c), 1, 0);
-                $pdf->Cell($width/15, 5, iconv('UTF-8', 'windows-1252',  (intval($c)*doubleval($p))." €"), 1, 0);
-                //descuento
-                $descuento = (doubleval($p)*intval($c))-((doubleval($p)*intval($c))/100*$row["descuento"]);
-                $pdf->Cell($width/15, 5, iconv('UTF-8', 'windows-1252',  ($descuento + (($descuento * $row["iva"])/100)) . " €"), 1, 1);
-                $total += $descuento;
-            }
-            if(!empty($row["did"])){
-                $pdf->Cell(28, 5, iconv('UTF-8', 'windows-1252', $row["id"]." - ".$row["fecha"]), 1, 0);
-                $pdf->Cell($width-75.3, 5, iconv('UTF-8', 'windows-1252', "DEVOLUCIÓN"), 1, 0);
-                $pdf->Cell($width/15, 5, iconv('UTF-8', 'windows-1252',  "-".$row["precio-final"]." €"), 1, 1);
-            } else {
-                //$total_total+=$total;
-                $iva = round(($total * $row["iva"])/100, 2);
-                if($row["metodo"] == "Efectivo") {
-                    //$total_efectivo += $total;
-                    $iva_efectivo += $iva;
-                }
-                if($row["metodo"] == "Tarjeta") {
-                    //$total_tarjeta += $total;
-                    $iva_tarjeta += $iva;
-                }
-                $iva_total+=$iva;
+            if($row["metodo"] == "Tarjeta") {
+                //$total_tarjeta += doubleval($final);
+                $iva_tarjeta += $iva;
             }
         }
         $pdf->Ln(5);

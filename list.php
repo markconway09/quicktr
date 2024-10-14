@@ -9,27 +9,16 @@
                 $id = $_GET["id"];
                 echo '<a href="?pag=list" class="btn btn-secondary mx-2 mt-3"><i class="bi bi-arrow-left"></i> Volver</a>';
                 $row = selectBD($id);
-                if($row["tipo"]=="venta"){
-                    $d = explode(";", $row["desc"]);
-                    $p = explode(";", $row["preciosVenta"]);
-                    $c = explode(";", $row["cantidadVenta"]);
-                    $desc = '<b>Producto(s):</b> ';
-                    for($k = 0; $k<count($d);){
-                        $desc .= "<a href='/almacen/?search=".$d[$k]."' target='_blank'>" . $d[$k] . "</a> (".(isset($p[$k])?$p[$k]."€":"?")." x ".(isset($c[$k])?$c[$k]:"?").")";
-                        $k++;
-                        if(isset($d[$k])){
-                            $desc .= ", ";
-                        }
-                    }
-                } else{
-                    $desc = '<b>Descripción:</b> '.$row["desc"];
-                    $precios = "";
-                    $cant = "";
-                }
-                echo '<a href="execute.php?ticketservicio=1&id='.$id.'" target="_blank" class="btn btn-primary mx-2 mt-3"><i class="bi bi-ticket-detailed"></i> Ticket Efectivo</a>';
-                echo '<a href="execute.php?servicio=1&id='.$id.'" target="_blank" class="btn btn-primary mx-2 mt-3"><i class="bi bi-receipt-cutoff"></i> Factura</a>';
+                
+                $desc = '<b>Descripción:</b> '.$row["desc"];
+                $precios = "";
+                $cant = "";
+
+                echo '<a href="execute.php?ticketservicio=1&id='.$id.'" target="_blank" class="btn btn-primary mx-2 mt-3"><i class="bi bi-ticket-detailed"></i> Imprimir Ticket</a>';
+                echo '<a href="?pag=garantia&id='.$id.'" class="btn btn-primary mx-2 mt-3"><i class="bi bi-file-text"></i> Garantia</a>';
+                /*echo '<a href="execute.php?servicio=1&id='.$id.'" target="_blank" class="btn btn-primary mx-2 mt-3"><i class="bi bi-receipt-cutoff"></i> Factura</a>';
                 echo '<a href="execute.php?servsimp=1&id='.$id.'" target="_blank" class="btn btn-primary mx-2 mt-3"><i class="bi bi-receipt"></i> Factura Simplificada</a>';
-                echo '<button type="button" class="btn btn-success mx-2 mt-3" data-bs-toggle="modal" data-bs-target="#enviarModal"><i class="bi bi-send"></i> Enviar</button>';
+                */echo '<button type="button" class="btn btn-success mx-2 mt-3" data-bs-toggle="modal" data-bs-target="#enviarModal"><i class="bi bi-send"></i> Enviar</button>';
                 echo '<a href="edit.php?id='.$id.'" class="btn btn-success mx-2 mt-3"><i class="bi bi-pencil-square"></i> Editar</a>';
                 if(!empty($row["did"])){
                     echo '<a href="execute.php?deshacer=1&id='.$id.'" class="btn btn-danger mx-2 mt-3"><i class="bi bi-arrow-counterclockwise"></i> Deshacer</a>';
@@ -46,36 +35,35 @@
                     $estado = $pasosLargo[$row["estado"]];
                 }
                 $servicio = "";$ins = "";
-                if($row["tipo"] == "servicio"){
-                    $ser = explode(": ", $row["servicio"]);
-                    $servicio .= '<p class="card-text"><b>Tipo de servicio:</b> '.$ser[0].'</p>';
-                    $servicio .= '<p class="card-text"><b>Servicio:</b> '.$ser[1].'</p>';
-
-                    if($row["insumo_desc"]!=""){
-                        $insumos = explode(";", $row["insumo_desc"]);
-                        $precios = explode(";", $row["insumo_precio"]);
-                        $ins="<li class='list-group-item'><b>Insumo:</b></li>";
-                        for($k = 0; $k<count($insumos);){
-                            $ins .= '<li class="list-group-item mx-3"><b>'.$insumos[$k].'</b> ('.$precios[$k].'€)';
-                            $k++;
-                            if(isset($d[$k])){
-                                $desc .= ", ";
-                            }
+                $ser = explode(": ", $row["servicio"]);
+                $servicio .= '<p class="card-text"><b>Tipo de servicio:</b> '.$ser[0].'</p>';
+                $servicio .= '<p class="card-text"><b>Servicio:</b> '.$ser[1].'</p>';
+                if($row["insumo_desc"]!=""){
+                    $insumos = explode(";", $row["insumo_desc"]);
+                    $precios = explode(";", $row["insumo_precio"]);
+                    $ins="<li class='list-group-item'><b>Insumo:</b></li>";
+                    for($k = 0; $k<count($insumos);){
+                        $ins .= '<li class="list-group-item mx-3"><b>'.$insumos[$k].'</b> ('.$precios[$k].'€)';
+                        $k++;
+                        if(isset($d[$k])){
+                            $desc .= ", ";
                         }
-                    } else {
-                        $ins = '<li class="list-group-item"><b>Insumo:</b> 0';
                     }
-                    if($_SESSION["login"] == "tecnico" || $_SESSION["login"] == "admin") $ins .= ' <a href="index.php?pag=edit_insumo&id='.$id.'" class="btn btn-primary">Editar</a>';
-                    $ins .= '</li>';
+                } else {
+                    $ins = '<li class="list-group-item"><b>Insumo:</b> 0';
                 }
+                if($_SESSION["login"] == "tecnico" || $_SESSION["login"] == "admin") $ins .= ' <a href="index.php?pag=edit_insumo&id='.$id.'" class="btn btn-primary">Editar</a>';
+                $ins .= '</li>';
+                $garantia = "";
+                if($row["garantia"] != 0) $garantia = " | <i class='bi bi-file-text'></i> <a style='text-decoration:none;color:#FFA' href='?pag=list&id=".$row["garantia"]."'>GARANTÍA <i class='bi bi-arrow-right-short'></i></a>";
                 echo '<div class="col-12">
                             <div class="card my-3">
-                                <h5 class="card-header py-3" style="color:white;background-color:'.$colores[$row["estado"]].';">'.ucfirst($row["tipo"]).' # '.$row["id"].'</h5>
+                                <h5 class="card-header py-3" style="color:white;background-color:'.$colores[$row["estado"]].';">'.ucfirst($ser[0]).' # '.$row["id"].$garantia.'</h5>
                                 <div class="card-body">
                                     '.$estado;?>
                                 <br>
-                                <?php if(($row["estado"] < 4 && $_SESSION["login"]=="tecnico")||($_SESSION["login"]=="dependiente"&&$row["estado"]==4)){ if(($row["estado"]-1)>=0){ ?><a href="execute.php?estado=<?php echo $row["estado"]-1 ?>&id=<?php echo $row["id"] ?>&pag=1" class="btn text-light" style="color:black; background-color:<?php echo $colores[$row["estado"]-1] ?>"><i class="bi bi-caret-left-fill"></i> <?php echo $pasos[$row["estado"]-1] ?></a><?php }} ?>
-                                <?php if(($row["estado"] < 3 && $_SESSION["login"]=="tecnico")){ if(($row["estado"]+1)<5){ ?><a href="execute.php?estado=<?php echo $row["estado"]+1 ?>&id=<?php echo $row["id"] ?>&pag=1" class="btn text-light" style="color:black; background-color:<?php echo $colores[$row["estado"]+1] ?>"><?php echo $pasos[$row["estado"]+1] ?> <i class="bi bi-caret-right-fill"></i></a><?php }} ?>
+                                <?php if(($row["estado"] < 4 && $_SESSION["login"]=="tecnico")||($_SESSION["login"]=="dependiente"&&$row["estado"]==4)||($_SESSION["login"]=="dependiente"&&$row["estado"]==2)||($_SESSION["login"]=="dependiente"&&$row["estado"]==1)){ if(($row["estado"]-1)>=0){ ?><a href="execute.php?estado=<?php echo $row["estado"]-1 ?>&id=<?php echo $row["id"] ?>&pag=1" class="btn text-light" style="color:black; background-color:<?php echo $colores[$row["estado"]-1] ?>"><i class="bi bi-caret-left-fill"></i> <?php echo $pasos[$row["estado"]-1] ?></a><?php }} ?>
+                                <?php if(($row["estado"] < 3 && $_SESSION["login"]=="tecnico")||($_SESSION["login"]=="dependiente"&&$row["estado"]==0)||($_SESSION["login"]=="dependiente"&&$row["estado"]==1)){ if(($row["estado"]+1)<5){ ?><a href="execute.php?estado=<?php echo $row["estado"]+1 ?>&id=<?php echo $row["id"] ?>&pag=1" class="btn text-light" style="color:black; background-color:<?php echo $colores[$row["estado"]+1] ?>"><?php echo $pasos[$row["estado"]+1] ?> <i class="bi bi-caret-right-fill"></i></a><?php }} ?>
                                 <?php if($_SESSION["login"]=="admin"){ if(($row["estado"]-1)>=0){ ?><a href="execute.php?estado=<?php echo $row["estado"]-1 ?>&id=<?php echo $row["id"] ?>&pag=1" class="btn text-light" style="color:black; background-color:<?php echo $colores[$row["estado"]-1] ?>"><i class="bi bi-caret-left-fill"></i> <?php echo $pasos[$row["estado"]-1] ?></a><?php }} ?>
                                 <?php if($_SESSION["login"]=="admin"){ if(($row["estado"]+1)<4){ ?><a href="execute.php?estado=<?php echo $row["estado"]+1 ?>&id=<?php echo $row["id"] ?>&pag=1" class="btn text-light" style="color:black; background-color:<?php echo $colores[$row["estado"]+1] ?>"><?php echo $pasos[$row["estado"]+1] ?> <i class="bi bi-caret-right-fill"></i></a><?php }} ?>
                                 <?php if(($_SESSION["login"]=="admin"||$_SESSION["login"]=="dependiente")&&$row["estado"]==3){ ?>
@@ -228,6 +216,24 @@
                             }
                         ?>
                     </li>
+                    <li class="nav-item">
+                        <?php
+                            if(isset($_GET["filter"])&&$_GET["filter"] == "5") {
+                                echo '<a class="nav-link active" href="?pag=list&filter=5">Garantía</a>';
+                            } else {
+                                echo '<a class="nav-link text-light" href="?pag=list&filter=5">Garantía</a>';
+                            }
+                        ?>
+                    </li>
+                    <li class="nav-item">
+                        <?php
+                            if(isset($_GET["filter"])&&$_GET["filter"] == "6") {
+                                echo '<a class="nav-link active" href="?pag=list&filter=6">Devoluciones</a>';
+                            } else {
+                                echo '<a class="nav-link text-light" href="?pag=list&filter=6">Devoluciones</a>';
+                            }
+                        ?>
+                    </li>
                 </ul>
             </div>
             <div class="row">
@@ -258,8 +264,14 @@
                     $stmt->execute();
                 } else {
                     $pdo = connect();
-                    $stmt = $pdo->prepare("SELECT *, i.id as id, d.id as did, DATE_FORMAT(fecha, '%d/%m/%Y') as fecha FROM info_orden i LEFT JOIN devolucion d ON (i.id = d.id_orden) WHERE `estado` = :estado ORDER BY i.id DESC");
-                    $stmt->bindParam(':estado', $_GET["filter"]);
+                    if($_GET["filter"] == 5){
+                        $stmt = $pdo->prepare("SELECT *, i.id as id, d.id as did, DATE_FORMAT(fecha, '%d/%m/%Y') as fecha FROM info_orden i LEFT JOIN devolucion d ON (i.id = d.id_orden) WHERE `garantia` != 0 AND d.id IS NULL ORDER BY i.id DESC");
+                    }else if($_GET["filter"] == 6){
+                        $stmt = $pdo->prepare("SELECT *, i.id as id, d.id as did, DATE_FORMAT(fecha, '%d/%m/%Y') as fecha FROM info_orden i LEFT JOIN devolucion d ON (i.id = d.id_orden) WHERE d.id IS NOT NULL ORDER BY i.id DESC");
+                    }else{
+                        $stmt = $pdo->prepare("SELECT *, i.id as id, d.id as did, DATE_FORMAT(fecha, '%d/%m/%Y') as fecha FROM info_orden i LEFT JOIN devolucion d ON (i.id = d.id_orden) WHERE `estado` = :estado AND d.id IS NULL ORDER BY i.id DESC");
+                        $stmt->bindParam(':estado', $_GET["filter"]);
+                    }
                     $stmt->execute();
                 }
             }else {
@@ -291,6 +303,9 @@
                 if(!empty($row["did"])) {
                     $bg = "text-bg-dark";
                     $dev = " | <i class='bi bi-arrow-counterclockwise'></i> DEVUELTO";
+                } else if($row["garantia"]!=0){
+                    $bg = "text-bg-dark";
+                    $dev = " | <i class='bi bi-file-text'></i> <a style='text-decoration:none;color:#FFA' href='?pag=list&id=".$row["garantia"]."'>GARANTÍA <i class='bi bi-arrow-right-short'></i></a>";
                 } else {
                     $dev = " | ".$pasos[$row["estado"]];
                 }
@@ -309,11 +324,11 @@
                                 <div class="col-2 pt-2 d-inline-block" style="background-color:<?php echo $row["estado"]>=4?$colores[4]:"white"; ?>"></div>
                             </div>
                             <div class="text-center mx-auto">
-                                <i class="bi bi-caret-up-fill px-4" <?php if($row["estado"]!=0){ ?> style="color:#6d747d" <?php } ?>></i>
-                                <i class="bi bi-caret-up-fill px-4" <?php if($row["estado"]!=1){ ?> style="color:#6d747d" <?php } ?>></i>
-                                <i class="bi bi-caret-up-fill px-4" <?php if($row["estado"]!=2){ ?> style="color:#6d747d" <?php } ?>></i>
-                                <i class="bi bi-caret-up-fill px-4" <?php if($row["estado"]!=3){ ?> style="color:#6d747d" <?php } ?>></i>
-                                <i class="bi bi-caret-up-fill px-4" <?php if($row["estado"]!=4){ ?> style="color:#6d747d" <?php } ?>></i>
+                                <i class="bi bi-caret-up-fill px-4" <?php if($row["estado"]!=0){ ?> style="color:rgba(0,0,0,0)" <?php } ?>></i>
+                                <i class="bi bi-caret-up-fill px-4" <?php if($row["estado"]!=1){ ?> style="color:rgba(0,0,0,0)" <?php } ?>></i>
+                                <i class="bi bi-caret-up-fill px-4" <?php if($row["estado"]!=2){ ?> style="color:rgba(0,0,0,0)" <?php } ?>></i>
+                                <i class="bi bi-caret-up-fill px-4" <?php if($row["estado"]!=3){ ?> style="color:rgba(0,0,0,0)" <?php } ?>></i>
+                                <i class="bi bi-caret-up-fill px-4" <?php if($row["estado"]!=4){ ?> style="color:rgba(0,0,0,0)" <?php } ?>></i>
                             </div>
                             <?php
                             echo'
@@ -327,8 +342,8 @@
                             </ul>
                             <div class="card-body">';
                                 ?>
-                                <?php if(($row["estado"] < 4 && $_SESSION["login"]=="tecnico")||($_SESSION["login"]=="dependiente"&&$row["estado"]==4)){ if(($row["estado"]-1)>=0){ ?><a href="execute.php?estado=<?php echo $row["estado"]-1 ?>&id=<?php echo $row["id"] ?>&pag=0" class="btn text-light" style="background-color:<?php echo $colores[$row["estado"]-1] ?>"><i class="bi bi-caret-left-fill"></i> <?php echo $pasos[$row["estado"]-1] ?></a><?php }} ?>
-                                <?php if(($row["estado"] < 3 && $_SESSION["login"]=="tecnico")){ if(($row["estado"]+1)<5){ ?><a href="execute.php?estado=<?php echo $row["estado"]+1 ?>&id=<?php echo $row["id"] ?>&pag=0" class="btn text-light" style="color:black; background-color:<?php echo $colores[$row["estado"]+1] ?>"><?php echo $pasos[$row["estado"]+1] ?> <i class="bi bi-caret-right-fill"></i></a><?php }} ?>
+                                <?php if(($row["estado"] < 4 && $_SESSION["login"]=="tecnico")||($_SESSION["login"]=="dependiente"&&$row["estado"]==4)||($_SESSION["login"]=="dependiente"&&$row["estado"]==2)||($_SESSION["login"]=="dependiente"&&$row["estado"]==1)){ if(($row["estado"]-1)>=0){ ?><a href="execute.php?estado=<?php echo $row["estado"]-1 ?>&id=<?php echo $row["id"] ?>&pag=0" class="btn text-light" style="background-color:<?php echo $colores[$row["estado"]-1] ?>"><i class="bi bi-caret-left-fill"></i> <?php echo $pasos[$row["estado"]-1] ?></a><?php }} ?>
+                                <?php if(($row["estado"] < 3 && $_SESSION["login"]=="tecnico")||($_SESSION["login"]=="dependiente"&&$row["estado"]==0)||($_SESSION["login"]=="dependiente"&&$row["estado"]==1)){ if(($row["estado"]+1)<5){ ?><a href="execute.php?estado=<?php echo $row["estado"]+1 ?>&id=<?php echo $row["id"] ?>&pag=0" class="btn text-light" style="color:black; background-color:<?php echo $colores[$row["estado"]+1] ?>"><?php echo $pasos[$row["estado"]+1] ?> <i class="bi bi-caret-right-fill"></i></a><?php }} ?>
                                 <?php if($_SESSION["login"]=="admin"){ if(($row["estado"]-1)>=0){ ?><a href="execute.php?estado=<?php echo $row["estado"]-1 ?>&id=<?php echo $row["id"] ?>&pag=0" class="btn text-light" style="color:black; background-color:<?php echo $colores[$row["estado"]-1] ?>"><i class="bi bi-caret-left-fill"></i> <?php echo $pasos[$row["estado"]-1] ?></a><?php }} ?>
                                 <?php if($_SESSION["login"]=="admin"){ if(($row["estado"]+1)<5){ ?><a href="execute.php?estado=<?php echo $row["estado"]+1 ?>&id=<?php echo $row["id"] ?>&pag=0" class="btn text-light" style="color:black; background-color:<?php echo $colores[$row["estado"]+1] ?>"><?php echo $pasos[$row["estado"]+1] ?> <i class="bi bi-caret-right-fill"></i></a><?php }} ?>
                                 <?php
