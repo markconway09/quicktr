@@ -35,9 +35,15 @@
                     $estado = $pasosLargo[$row["estado"]];
                 }
                 $servicio = "";$ins = "";
-                $ser = explode(": ", $row["servicio"]);
-                $servicio .= '<p class="card-text"><b>Tipo de servicio:</b> '.$ser[0].'</p>';
-                $servicio .= '<p class="card-text"><b>Servicio:</b> '.$ser[1].'</p>';
+                if(!empty($row["servicio"])){
+                    $ser = explode(": ", $row["servicio"])[0];
+                    $servicio .= '<p class="card-text"><b>Tipo de servicio:</b> '.$ser.'</p>';
+                    $servicio .= '<p class="card-text"><b>Servicio:</b> '.explode(": ", $row["servicio"])[1].'</p>';
+                } else{
+                    $ser = "PENDIENTE MODIFICAR";
+                    $servicio .= '<p class="card-text"><b>Tipo de servicio:</b> </p>';
+                    $servicio .= '<p class="card-text"><b>Servicio:</b> </p>';
+                }
                 if($row["insumo_desc"]!=""){
                     $insumos = explode(";", $row["insumo_desc"]);
                     $precios = explode(";", $row["insumo_precio"]);
@@ -58,7 +64,7 @@
                 if($row["garantia"] != 0) $garantia = " | <i class='bi bi-file-text'></i> <a style='text-decoration:none;color:#FFA' href='?pag=list&id=".$row["garantia"]."'>GARANTÍA <i class='bi bi-arrow-right-short'></i></a>";
                 echo '<div class="col-12">
                             <div class="card my-3">
-                                <h5 class="card-header py-3" style="color:white;background-color:'.$colores[$row["estado"]].';">'.ucfirst($ser[0]).' # '.$row["id"].$garantia.'</h5>
+                                <h5 class="card-header py-3" style="color:white;background-color:'.$colores[$row["estado"]].';">'.$ser.' # '.$row["id"].$garantia.'</h5>
                                 <div class="card-body">
                                     '.$estado;?>
                                 <br>
@@ -116,7 +122,7 @@
                                     <p class="card-text"><b>Método de pago:</b> <?php echo $row["metodo"] ?></p>
                                 </div>
                                 <ul class="list-group list-group-flush mb-3">
-                                    <?php echo $ins ?>
+                                    <?php echo $_SESSION["login"] != "dependiente" ? $ins : "<hr>" ?>
                                     <li class="list-group-item"><b>Precio:</b> <?php echo $row["precio"] ?>€ (- <?php echo $row["descuento"] ?>%) (+ IVA <?php echo $row["iva"] ?>%) = <b><?php echo $row["precio-final"] ?>€</b></li>
                                 </ul>
                             </div>
@@ -285,79 +291,103 @@
                 $stmt->execute();
             }
             $i = 0;
-            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
-                    // RESTRICCIONES POR USUARIO //
-                // DEPENDIENTES SOLO VEN TICKETS DE SU LOCAL
-                if($_SESSION["login"] != "admin" && ($_SESSION["local"]!=null&&$_SESSION["local"] != $row["local"])) continue;
-                // TECNICO SOLO VE PENDIENTES Y TERMINADOS
-                //if($_SESSION["login"] == "tecnico" && $row["estado"] == 4) continue;
+
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                // User restrictions
+                if ($_SESSION["login"] != "admin" && ($_SESSION["local"] != null && $_SESSION["local"] != $row["local"])) continue;
+
+                // Card layout start
+                if ($i == 0) echo '<div class="row">';
+
+                // Prepare description
+                $desc = strlen($row["desc"]) > 25 ? substr($row["desc"], 0, 25) . '...' : $row["desc"];
                 
-                if($i==0) echo '<div class="row">';
-                if(strlen($row["desc"])>25){
-                    $desc = substr($row["desc"], 0, 25) . '...';
-                }else{
-                    $desc = $row["desc"];
-                }
+                // Determine background and status
                 $bg = "text-bg-secondary";
-                $dev = "";
-                if(!empty($row["did"])) {
+                $estado = "";
+                if (!empty($row["did"])) {
                     $bg = "text-bg-dark";
-                    $dev = " | <i class='bi bi-arrow-counterclockwise'></i> DEVUELTO";
-                } else if($row["garantia"]!=0){
+                    $estado = " | <i class='bi bi-arrow-counterclockwise'></i> DEVUELTO";
+                } elseif ($row["garantia"] != 0) {
                     $bg = "text-bg-dark";
-                    $dev = " | <i class='bi bi-file-text'></i> <a style='text-decoration:none;color:#FFA' href='?pag=list&id=".$row["garantia"]."'>GARANTÍA <i class='bi bi-arrow-right-short'></i></a>";
+                    $estado = " | <i class='bi bi-file-text'></i> <a style='text-decoration:none;color:#FFA' href='?pag=list&id=" . $row["garantia"] . "'>GARANTÍA <i class='bi bi-arrow-right-short'></i></a>";
                 } else {
-                    $dev = " | ".$pasos[$row["estado"]];
+                    $estado = " | " . $pasos[$row["estado"]];
                 }
-                $serv = explode(": ", $row["servicio"]);
+
+                // Prepare service information
+                if(!empty($row["servicio"])){
+                    $serv = explode(": ", $row["servicio"])[0];
+                }else{
+                    $serv = "PENDIENTE MODIFICAR";
+                }
+
+                // Generate card HTML
                 echo '
                     <div class="col-lg-4 col-12">
-                        <div class="card '.$bg.' my-3">
-                            <h5 class="card-header py-3" style="color:white;background-color:'.$colores[$row["estado"]].';">'.ucfirst($serv[0]).' # '.$row["id"].'<br><div style="display:inline;margin-right:2px;border-left: 3px solid '.$localColor[$row["local"]=="Barcelona"?0:1].';height: 5px;"></div>'.$row["local"].$dev.'</h5>';
-                            ?>
+                        <div class="card ' . $bg . ' my-3">
+                            <h5 class="card-header py-3" style="color:white;background-color:' . $colores[$row["estado"]] . ';">' . $serv . ' # ' . $row["id"] . '<br><div style="display:inline;margin-right:2px;border-left: 3px solid ' . $localColor[$row["local"] == "Barcelona" ? 0 : 1] . ';height: 5px;"></div>' . $row["local"] . $estado . '</h5>';
+
+                // Display status steps
+                echo '
                             <div class="text-center pt-2">
-                                <b><?php echo $pasosLargo[$row["estado"]]; ?></b><br>
-                                <div class="col-2 pt-2 d-inline-block" style="background-color:<?php echo $row["estado"]>=0?$colores[0]:"white"; ?>"></div>
-                                <div class="col-2 pt-2 d-inline-block" style="background-color:<?php echo $row["estado"]>=1?$colores[1]:"white"; ?>"></div>
-                                <div class="col-2 pt-2 d-inline-block" style="background-color:<?php echo $row["estado"]>=2?$colores[2]:"white"; ?>"></div>
-                                <div class="col-2 pt-2 d-inline-block" style="background-color:<?php echo $row["estado"]>=3?$colores[3]:"white"; ?>"></div>
-                                <div class="col-2 pt-2 d-inline-block" style="background-color:<?php echo $row["estado"]>=4?$colores[4]:"white"; ?>"></div>
+                                <b>' . $pasosLargo[$row["estado"]] . '</b><br>';
+                foreach ($colores as $key => $color) {
+                    echo '<div class="col-2 pt-2 d-inline-block" style="background-color:' . ($row["estado"] >= $key ? $color : "white") . '"></div>';
+                }
+                echo '
                             </div>
-                            <div class="text-center mx-auto">
-                                <i class="bi bi-caret-up-fill px-4" <?php if($row["estado"]!=0){ ?> style="color:rgba(0,0,0,0)" <?php } ?>></i>
-                                <i class="bi bi-caret-up-fill px-4" <?php if($row["estado"]!=1){ ?> style="color:rgba(0,0,0,0)" <?php } ?>></i>
-                                <i class="bi bi-caret-up-fill px-4" <?php if($row["estado"]!=2){ ?> style="color:rgba(0,0,0,0)" <?php } ?>></i>
-                                <i class="bi bi-caret-up-fill px-4" <?php if($row["estado"]!=3){ ?> style="color:rgba(0,0,0,0)" <?php } ?>></i>
-                                <i class="bi bi-caret-up-fill px-4" <?php if($row["estado"]!=4){ ?> style="color:rgba(0,0,0,0)" <?php } ?>></i>
+                            <div class="text-center mx-auto">';
+                for ($j = 0; $j <= 4; $j++) {
+                    echo '<i class="bi bi-caret-up-fill px-4" style="color:' . ($row["estado"] != $j ? 'rgba(0,0,0,0)' : 'inherit') . '"></i>';
+                }
+                echo '
                             </div>
-                            <?php
-                            echo'
                             <div class="card-body">
-                                <p class="card-text"><b>Nombre:</b> '.$row["nombre"].'</p>
-                                <p class="card-text"><b>Dispositivo:</b> '.$row["nombre_dispositivo"].'</p>
-                                <p class="card-text"><b>Descripción:</b> '.$desc.'</p>
+                                <p class="card-text"><b>Nombre:</b> ' . $row["nombre"] . '</p>
+                                <p class="card-text"><b>Dispositivo:</b> ' . $row["nombre_dispositivo"] . '</p>
+                                <p class="card-text"><b>Descripción:</b> ' . $desc . '</p>
+                                <p class="card-text"><b>Fecha:</b> ' . $row["fecha"] . '</p>
                             </div> 
                             <ul class="list-group list-group-flush">
-                                <li class="list-group-item '.$bg.'"><b>Precio:</b> '.$row["precio"].'€ (+ IVA '.$row["iva"].'%) = <b>'.$row["precio-final"].'€</b></li>
+                                <li class="list-group-item ' . $bg . '"><b>Precio:</b> ' . $row["precio"] . '€ (+ IVA ' . $row["iva"] . '%) = <b>' . $row["precio-final"] . '€</b></li>
                             </ul>
                             <div class="card-body">';
-                                ?>
-                                <?php if(($row["estado"] < 4 && $_SESSION["login"]=="tecnico")||($_SESSION["login"]=="dependiente"&&$row["estado"]==4)||($_SESSION["login"]=="dependiente"&&$row["estado"]==2)||($_SESSION["login"]=="dependiente"&&$row["estado"]==1)){ if(($row["estado"]-1)>=0){ ?><a href="execute.php?estado=<?php echo $row["estado"]-1 ?>&id=<?php echo $row["id"] ?>&pag=0" class="btn text-light" style="background-color:<?php echo $colores[$row["estado"]-1] ?>"><i class="bi bi-caret-left-fill"></i> <?php echo $pasos[$row["estado"]-1] ?></a><?php }} ?>
-                                <?php if(($row["estado"] < 3 && $_SESSION["login"]=="tecnico")||($_SESSION["login"]=="dependiente"&&$row["estado"]==0)||($_SESSION["login"]=="dependiente"&&$row["estado"]==1)){ if(($row["estado"]+1)<5){ ?><a href="execute.php?estado=<?php echo $row["estado"]+1 ?>&id=<?php echo $row["id"] ?>&pag=0" class="btn text-light" style="color:black; background-color:<?php echo $colores[$row["estado"]+1] ?>"><?php echo $pasos[$row["estado"]+1] ?> <i class="bi bi-caret-right-fill"></i></a><?php }} ?>
-                                <?php if($_SESSION["login"]=="admin"){ if(($row["estado"]-1)>=0){ ?><a href="execute.php?estado=<?php echo $row["estado"]-1 ?>&id=<?php echo $row["id"] ?>&pag=0" class="btn text-light" style="color:black; background-color:<?php echo $colores[$row["estado"]-1] ?>"><i class="bi bi-caret-left-fill"></i> <?php echo $pasos[$row["estado"]-1] ?></a><?php }} ?>
-                                <?php if($_SESSION["login"]=="admin"){ if(($row["estado"]+1)<5){ ?><a href="execute.php?estado=<?php echo $row["estado"]+1 ?>&id=<?php echo $row["id"] ?>&pag=0" class="btn text-light" style="color:black; background-color:<?php echo $colores[$row["estado"]+1] ?>"><?php echo $pasos[$row["estado"]+1] ?> <i class="bi bi-caret-right-fill"></i></a><?php }} ?>
-                                <?php
-                            echo '
-                                <br><a href="?pag=list&id='.$row["id"].'" class="btn btn-primary mt-2">Detalles <i class="bi bi-caret-right-fill"></i></a>
+
+                // Action buttons based on user role and ticket state
+                if (($_SESSION["login"] == "tecnico" && $row["estado"] < 4) || ($_SESSION["login"] == "dependiente" && in_array($row["estado"], [1, 2, 4]))) {
+                    if (($row["estado"] - 1) >= 0) {
+                        echo '<a href="execute.php?estado=' . ($row["estado"] - 1) . '&id=' . $row["id"] . '&pag=0" class="btn text-light" style="background-color:' . $colores[$row["estado"] - 1] . '"><i class="bi bi-caret-left-fill"></i> ' . $pasos[$row["estado"] - 1] . '</a>';
+                    }
+                }
+                if (($_SESSION["login"] == "tecnico" && $row["estado"] < 3) || ($_SESSION["login"] == "dependiente" && $row["estado"] < 2)) {
+                    if (($row["estado"] + 1) < 5) {
+                        echo '<a href="execute.php?estado=' . ($row["estado"] + 1) . '&id=' . $row["id"] . '&pag=0" class="btn text-light" style="color:black; background-color:' . $colores[$row["estado"] + 1] . '">' . $pasos[$row["estado"] + 1] . ' <i class="bi bi-caret-right-fill"></i></a>';
+                    }
+                }
+                if ($_SESSION["login"] == "admin") {
+                    if (($row["estado"] - 1) >= 0) {
+                        echo '<a href="execute.php?estado=' . ($row["estado"] - 1) . '&id=' . $row["id"] . '&pag=0" class="btn text-light" style="color:black; background-color:' . $colores[$row["estado"] - 1] . '"><i class="bi bi-caret-left-fill"></i> ' . $pasos[$row["estado"] - 1] . '</a>';
+                    }
+                    if (($row["estado"] + 1) < 5) {
+                        echo '<a href="execute.php?estado=' . ($row["estado"] + 1) . '&id=' . $row["id"] . '&pag=0" class="btn text-light" style="color:black; background-color:' . $colores[$row["estado"] + 1] . '">' . $pasos[$row["estado"] + 1] . ' <i class="bi bi-caret-right-fill"></i></a>';
+                    }
+                }
+                
+                echo '
+                                <br><a href="?pag=list&id=' . $row["id"] . '" class="btn btn-primary mt-2">Detalles <i class="bi bi-caret-right-fill"></i></a>
                             </div>
                         </div>
                     </div>';
-                if($i==2){
-                    $i=0;
+                
+                // Close row after 3 columns
+                if ($i == 2) {
                     echo '</div>';
-                }else{
+                    $i = 0;
+                } else {
                     $i++;
                 }
             }
+
             ?>
         </div>

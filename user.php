@@ -10,13 +10,13 @@ if(isset($_POST["editpass"])){
     $stmt->bindParam(':user', $user);
     $stmt->bindParam(':pass', $pass);
 } else {
-    $stmt = $pdo->prepare("INSERT INTO `user` VALUES (null, :user, :pass, null, 'tecnico')");
+    $stmt = $pdo->prepare("INSERT INTO `user` VALUES (null, :user, :pass, 'Barcelona', 'tecnico')");
     if(isset($_POST["insertuser"])){
         $user = $_POST["newuser"];
         $pass = password_hash($_POST["newpass"], PASSWORD_DEFAULT);
     } else {
-        $user = "tecnico";
-        $pass = password_hash("quicktr2024", PASSWORD_DEFAULT);
+        $user = "tecnicobarcelona";
+        $pass = password_hash("Barcelona123", PASSWORD_DEFAULT);
     }
     $stmt->bindParam(':user', $user);
     $stmt->bindParam(':pass', $pass);

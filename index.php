@@ -56,7 +56,7 @@
         <nav class="navbar navbar-light" style="background-color:rgb(43,45,46);">
             <a class="navbar-brand mx-auto" href="index.php">
                 <img class="rounded" src="LOGO.png" alt="logo" height="90">
-                <span class="badge badge-pill bg-danger">1.9.1</span>
+                <span class="badge badge-pill bg-danger">1.9.2</span>
             </a>
             <?php
             if(isset($_SESSION["login"])){
@@ -80,18 +80,20 @@
                                     <i class="bi bi-gear-fill"></i> Admin
                                 </button>
                                 <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" target="_blank" href="/almacen">Almacén</a></li>
                                     <li><a class="dropdown-item" href="?pag=totalventas">Total Ventas</a></li>
                                     <li><a class="dropdown-item" href="?pag=user-admin">Usuarios</a></li>
                                     <li><a class="dropdown-item" href="?pag=infoClientes">Clientes</a></li>
+                                    <li><a class="dropdown-item" href="?pag=infoOrdenes">Exportar Ordenes</a></li>
                                 </ul>
                             </div>
-                            <a class="btn btn-success flex-fill" target="_blank" href="/almacen">
-                                <i class="bi bi-box-fill"></i> Almacén <i class="bi bi-box-arrow-up-right"></i>
-                            </a>
                         <?php } ?>
                         <button class="btn btn-primary flex-fill" type="submit" name="pag" value="form-servicio">
-                            <i class="bi bi-pencil-square"></i> Formulario
+                            <i class="bi bi-pencil-square"></i> Formulario Dependiente
                         </button>
+                        <a class="btn btn-success flex-fill" target="_blank" href="form-cliente.php" type="submit" name="pag" value="form-servicio">
+                            <i class="bi bi-pencil-square"></i> Formulario Cliente
+                        </a>
                         <button class="btn btn-secondary flex-fill" type="submit" name="pag" value="list">
                             <i class="bi bi-columns-gap"></i> Lista
                         </button>
@@ -128,47 +130,6 @@
                 var final = parseFloat(document.getElementById('precio-final').value);
                 let calc = (final/(100+iva))*100;
                 document.getElementById('precio').value = calc.toFixed(2);
-            }
-            function findPrecioTotal(){
-                var productos = document.getElementsByClassName("p-input");
-
-                let total = parseFloat(0);
-
-                var precio = parseFloat(document.getElementById('precio').value);
-                if(isNaN(precio)) precio = 0;
-
-                for(let i=1;i<=productos.length;i++){
-                    let pre = document.getElementById("prec"+i).value;
-                    let can = document.getElementById("cant"+i).value;
-                    if(pre=="")pre = 0;
-                    if(can=="")can = 0;
-                    total += (parseFloat(pre)*can);
-                }
-                
-                if(!isNaN(total)){
-                    document.getElementById('precio').value = total.toFixed(2);
-                }
-                findTotal();
-            }
-
-            var i = 1;
-            function addProd(){
-                var prod = document.getElementById("venta-desc");
-                var clone = document.getElementById("input-prod").cloneNode(true);
-                i++;
-                clone.innerHTML='<div class="form-floating w-50">'+
-                                    '<input type="text" class="form-control" placeholder="Descripción" name="prod'+i+'" id="prod'+i+'">'+
-                                    '<label for="prod'+i+'">Descripción del producto</label>'+
-                                '</div>'+
-                                '<div class="form-floating w-25">'+
-                                    '<input type="number" step="0.01" onblur="findPrecioTotal()" class="form-control" placeholder="Precio" name="prec'+i+'" id="prec'+i+'">'+
-                                    '<label for="prec'+i+'">Precio</label>'+
-                                '</div>'+
-                                '<div class="form-floating w-25">'+
-                                    '<input type="number" onblur="findPrecioTotal()" class="form-control" placeholder="Cantidad" value=1 name="cant'+i+'" id="cant'+i+'">'+
-                                    '<label for="cant'+i+'">Cantidad</label>'+
-                                '</div>';
-                prod.appendChild(clone);
             }
         </script>
     </body>

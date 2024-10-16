@@ -16,15 +16,41 @@ function connect(){
     }
 }
 
+function subirFirma($id){
+    // SUBIR FIRMA
+    $folderPath = "upload/";
+    $image_parts = explode(";base64,", $_POST['sign']);
+    $image_type_aux = explode("image/", $image_parts[0]);
+    $image_type = $image_type_aux[1];
+    $image_base64 = base64_decode($image_parts[1]);
+    $image_id = uniqid() . '.'.$image_type;
+    $file = $folderPath . $image_id;
+    file_put_contents($file, $image_base64);
+    $pdo = connect();
+    $stmt = $pdo->prepare("INSERT INTO firma VALUES (null, :id, :archivo)"); 
+    $stmt->bindParam(':id', $id);
+    $stmt->bindParam(':archivo', $file);
+    try {
+        $stmt->execute();
+    } catch(PDOException $e){
+        echo $e->getMessage();
+    }
+}
+
 function insertarBDS(){
-    $servicio = $_POST["servicio"] . ": " . $_POST["servicio2"];
-    $garantia = 0;
-    $desc = $_POST["motivo"];
-    $pV = "";
-    $cV = "";
-    $doc="";$dir="";$cp="";$email="No especificado";$tel="";$nombre="";$ins_d="";$ins_p=0;$metodo="";$disp="";
+    $servicio="";$garantia = 0;$pV = "";$cV = "";
+    $doc="";$local="";$dir="";$cp="";$email="No especificado";
+    $tel="";$nombre="";$ins_d="";$ins_p=0;$metodo="";
+    $disp="";$precio=0;$descuento=0;$iva=0;$preciofinal=0;
+    $razon="";$dept="";
+    if(isset($_POST["servicio"])&&isset($_POST["servicio2"])) $servicio = $_POST["servicio"] . ": " . $_POST["servicio2"];
     if(isset($_POST["tel"])) $tel = $_POST["countryCode"] . $_POST["tel"];
     if(isset($_POST["doc"])) $doc = $_POST["doc"];
+    if(isset($_POST["local"])) $local = $_POST["local"];
+    if(isset($_POST["razon"])) $razon = $_POST["razon"];
+    if(isset($_POST["local"])) $local = $_POST["local"];
+    if(isset($_POST["dept"])) $dept = $_POST["dept"];
+    if(isset($_POST["motivo"])) $desc = $_POST["motivo"];
     if(isset($_POST["nombre"])) $nombre = $_POST["nombre"];
     if(isset($_POST["direccion"])) $dir = $_POST["direccion"];
     if(isset($_POST["cp"])) $cp = $_POST["cp"];
@@ -33,6 +59,10 @@ function insertarBDS(){
     if(!empty($_POST["insumo_precio"])) $ins_p = $_POST["insumo_precio"];
     if(!empty($_POST["metodo"])) $metodo = $_POST["metodo"];
     if(!empty($_POST["dispositivo"])) $disp = $_POST["dispositivo"];
+    if(!empty($_POST["precio"])) $precio = $_POST["precio"];
+    if(!empty($_POST["descuento"])) $descuento = $_POST["descuento"];
+    if(!empty($_POST["iva"])) $iva = $_POST["iva"];
+    if(!empty($_POST["precio-final"])) $preciofinal = $_POST["precio-final"];
 
     $pdo = connect();
     $stmt = $pdo->prepare("INSERT INTO info_orden VALUES 
@@ -46,21 +76,21 @@ function insertarBDS(){
     $stmt->bindParam(':cp', $cp);
     $stmt->bindParam(':preciosV', $pV);
     $stmt->bindParam(':cantV', $cV);
-    $stmt->bindParam(':precio', $_POST["precio"]);
-    $stmt->bindParam(':descuento', $_POST["descuento"]);
-    $stmt->bindParam(':iva', $_POST["iva"]);
-    $stmt->bindParam(':final', $_POST["precio-final"]);
+    $stmt->bindParam(':precio', $precio);
+    $stmt->bindParam(':descuento', $descuento);
+    $stmt->bindParam(':iva', $iva);
+    $stmt->bindParam(':final', $preciofinal);
     $stmt->bindParam(':ins_d', $ins_d);
     $stmt->bindParam(':ins_p', $ins_p);
     $stmt->bindParam(':metodo', $metodo);
     $stmt->bindParam(':disp', $disp);
     $stmt->bindParam(':descr', $desc);
-    $stmt->bindParam(':loc', $_POST["local"]);
+    $stmt->bindParam(':loc', $local);
     $date = date('Y-m-d');
     $stmt->bindParam(':fecha', $date);
     $stmt->bindParam(':garantia', $garantia);
-    $stmt->bindParam(':razon', $_POST["razon"]);
-    $stmt->bindParam(':dept', $_POST["dept"]);
+    $stmt->bindParam(':razon', $razon);
+    $stmt->bindParam(':dept', $dept);
     try {
         $stmt->execute();
     } catch(PDOException $e){
@@ -879,6 +909,7 @@ function insertFactura($id, $tipo){
 function enviarCorreo($id){
     //---------------RECOGER DATOS---------------//
     $datos = selectBD($id);
+    if(empty($datos["servicio"])) exit;
     $ser = explode(": ", $datos["servicio"]);
 
     // ENVIAR CORREO
@@ -1278,7 +1309,7 @@ function totalVentas($d=0, $m, $y, $local=0){
     $iva_efectivo = 0;
     $iva_tarjeta = 0;
     while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
-        $pdf->Cell(28, 5, iconv('UTF-8', 'windows-1252', $row["id"]." - ".$row["fecha"]), 1, 0);
+        $pdf->Cell(28, 5, iconv('UTF-8', 'windows-1252', $row["id"]." - ".(empty($row["fecha_pago"])?"Sin fecha":$row["fecha_pago"])), 1, 0);
         $pdf->Cell($width/2-60, 5, iconv('UTF-8', 'windows-1252', ucfirst($row["servicio"])), 1, 0);
         $pdf->Cell(4, 5, iconv('UTF-8', 'windows-1252', $row["ticket"]?"X":""), 1, 0);
         $pdf->Cell(4, 5, iconv('UTF-8', 'windows-1252', $row["factura"]?"X":""), 1, 0);

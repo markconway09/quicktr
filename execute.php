@@ -5,15 +5,10 @@ require_once "functions.php";
 // GUARDAR SERVICIO
 if(isset($_POST["guardar-servicio"])){
     $id = insertarBDS();
+    subirFirma($id);
     enviarCorreo($id);
     header('Location: index.php?pag=list&id='.$id);
 }
-// GUARDAR VENTA
-/*if(isset($_POST["guardar-venta"])){
-    $id = insertarBDV();
-    enviarCorreo($id);
-    header('Location: index.php?pag=list&id='.$id);
-}*/
 
 
 // FACTURA SERVICIO
@@ -31,21 +26,6 @@ if(isset($_GET["servsimp"])) {
     crearPDF($_GET["id"],1);
     insertFactura($_GET["id"],1);
 }
-// FACTURA VENTA
-/*if(isset($_GET["venta"])){
-    crearFactura($_GET["id"]);
-    insertFactura($_GET["id"],0);
-}
-// TICKET VENTA
-if(isset($_GET["ticketventa"])) {
-    crearTVenta($_GET["id"]);
-    insertFactura($_GET["id"],2);
-}
-// FACTURA SIMPLIFICADA VENTA
-if(isset($_GET["ventasimp"])) {
-    crearTVenta($_GET["id"],1);
-    insertFactura($_GET["id"],1);
-}*/
 
 
 // ENVIAR AL CLIENTE
