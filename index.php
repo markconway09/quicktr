@@ -25,6 +25,15 @@
         session_destroy();
         header('Location: index.php');
     }
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        if (isset($_POST['valueLocal'])) {
+            if($_POST["valueLocal"]=="Todo"){
+                $_SESSION['local'] = null;
+            } else {
+                $_SESSION['local'] = $_POST['valueLocal']; // Update the session variable
+            }
+        }
+    }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -59,8 +68,17 @@
                 <span class="badge badge-pill bg-danger">1.9.2</span>
             </a>
             <?php
-            if(isset($_SESSION["login"])){
-                echo '<span class="text-light mx-3">'.(!$_SESSION["login"]?"":$_SESSION["login"])." ".(!$_SESSION["local"]?"":$_SESSION["local"]).'</span><a href="index.php?logout=true" class="btn btn-danger mx-2"><i class="bi bi-box-arrow-in-left"></i> Log Out</a>';
+            if(isset($_SESSION["login"])){ ?>
+                <span class="text-light mx-3"><?php echo (!$_SESSION["login"]?"":$_SESSION["login"]); ?></span>
+                <?php if($_SESSION["login"]=="tecnico") { ?>
+                <select id="sessionSelect" onchange="updateSession(this.value)">
+                    <option value="Todo" <?php echo $_SESSION["local"]==null?'selected':''?>>Todo</option>
+                    <option value="Barcelona" <?php echo $_SESSION["local"]=="Barcelona"?'selected':''?>>Barcelona</option>
+                    <option value="Mataró" <?php echo $_SESSION["local"]=="Mataró"?'selected':''?>>Mataró</option>
+                </select>
+                <?php } else { echo $_SESSION["local"]; } ?>
+                <a href="index.php?logout=true" class="btn btn-danger mx-2"><i class="bi bi-box-arrow-in-left"></i> Log Out</a>';
+            <?php
             }
             ?>
         </nav>
@@ -130,6 +148,17 @@
                 var final = parseFloat(document.getElementById('precio-final').value);
                 let calc = (final/(100+iva))*100;
                 document.getElementById('precio').value = calc.toFixed(2);
+            }
+            function updateSession(selectedValue) {
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "index.php", true);
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        location.reload();
+                    }
+                };
+                xhr.send("valueLocal=" + encodeURIComponent(selectedValue));
             }
         </script>
     </body>
