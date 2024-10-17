@@ -536,10 +536,19 @@ function enviarCorreo($id){
             Nombre: '.$datos["nombre"].'
             </p>
             <p>
+            Email: '.$datos["email"].'
+            </p>
+            <p>
             Teléfono: <a href="https://wa.me//'.$datos["telefono"].'" target="_blank">'.$datos["telefono"].'<a>
             </p>
             <p>
             Dni/NIF/NIE: '.$datos["documento"].'
+            </p>
+            <p>
+            Fecha: '.$datos["fecha"].'
+            </p>
+            <p>
+            Local: '.$datos["local"].'
             </p>
             <p>
             Precio: '.$datos["precio"].'
