@@ -109,7 +109,7 @@
                         <button class="btn btn-primary flex-fill" type="submit" name="pag" value="form-servicio">
                             <i class="bi bi-pencil-square"></i> Formulario Dependiente
                         </button>
-                        <a class="btn btn-success flex-fill" target="_blank" href="form-cliente.php" type="submit" name="pag" value="form-servicio">
+                        <a class="btn btn-success flex-fill" target="_blank" href="form-cliente.php?local=<?php echo $_SESSION["local"]; ?>" type="submit" name="pag" value="form-servicio">
                             <i class="bi bi-pencil-square"></i> Formulario Cliente
                         </a>
                         <button class="btn btn-secondary flex-fill" type="submit" name="pag" value="list">

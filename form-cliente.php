@@ -5,6 +5,7 @@ if(isset($_POST["guardar-servicio"])){
     $id = insertarBDS();
     subirFirma($id);
     enviarCorreo($id);
+    echo "<meta http-equiv='refresh' content='0'>";
 }
 ?>
 <!DOCTYPE html>
@@ -121,6 +122,7 @@ if(isset($_POST["guardar-servicio"])){
                         </div>
                     </div>
                 </div>
+                <input type="hidden" name="local" value="<?php echo isset($_GET["local"])?$_GET["local"]:"Barcelona"; ?>">
                 <div class="row">
                     <input type="submit" name="guardar-servicio" class="btn btn-success btn-lg col-5 mx-auto" value="Enviar">
                 </div>

@@ -491,8 +491,14 @@ function insertFactura($id, $tipo){
 function enviarCorreo($id){
     //---------------RECOGER DATOS---------------//
     $datos = selectBD($id);
-    if(empty($datos["servicio"])) exit;
-    $ser = explode(": ", $datos["servicio"]);
+    if(!empty($datos["servicio"])) {
+        $ser = explode(": ", $datos["servicio"]);
+        $ser1 = $ser[0];
+        $ser2 = $ser[1];
+    } else {
+        $ser1 = "Servicio";
+        $ser2 = "Formulario Cliente";
+    }
 
     // ENVIAR CORREO
     $mail = new PHPMailer(true);
@@ -518,8 +524,8 @@ function enviarCorreo($id){
 
         //Content
         $mail->isHTML(true);
-        $mail->Subject = 'Nueva orden de '.$datos["nombre"].' «'.ucfirst($ser[0]).'»';
-        $mail->Body    = '<html><body><h1>'.ucfirst($ser[0]).' # '.$id.' - '.$ser[1].'</h1>
+        $mail->Subject = 'Nueva orden de '.$datos["nombre"].' «'.ucfirst($ser1).'»';
+        $mail->Body    = '<html><body><h1>'.ucfirst($ser1).' # '.$id.' - '.$ser2.'</h1>
             <p>
                 De: '.$datos["nombre"].' (<a href="mailto:'.$datos["email"].'">'.$datos["email"].'<a>)
             </p>

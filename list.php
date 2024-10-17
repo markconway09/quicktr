@@ -305,7 +305,7 @@
                 if ($i == 0) echo '<div class="row">';
 
                 // Prepare description
-                $desc = strlen($row["desc"]) > 25 ? substr($row["desc"], 0, 25) . '...' : $row["desc"];
+                $desc = strlen($row["desc"]) > 22 ? substr($row["desc"], 0, 22) . '...' : $row["desc"];
                 
                 // Determine background and status
                 $bg = "text-bg-secondary";
