@@ -103,9 +103,9 @@ function insertarBDS(){
 function selectBD($id=0){
     $pdo = connect();
     if($id == 0){
-        $stmt = $pdo->prepare("SELECT *, o.id as id, d.id as did, f.id as fid FROM `info_orden` o LEFT JOIN `devolucion` d ON (d.id_orden = o.id) LEFT JOIN `factura` f ON (f.id_orden = o.id)");
+        $stmt = $pdo->prepare("SELECT *, o.id as id, d.id as did, f.id as fid, s.archivo as firma FROM `info_orden` o LEFT JOIN `devolucion` d ON (d.id_orden = o.id) LEFT JOIN `factura` f ON (f.id_orden = o.id) LEFT JOIN `firma` s ON (s.id_orden = o.id)");
     } else{
-        $stmt = $pdo->prepare("SELECT *, o.id as id, d.id as did, f.id as fid FROM `info_orden` o LEFT JOIN `devolucion` d ON (d.id_orden = o.id) LEFT JOIN `factura` f ON (f.id_orden = o.id) WHERE o.`id` = :id");
+        $stmt = $pdo->prepare("SELECT *, o.id as id, d.id as did, f.id as fid, s.archivo as firma FROM `info_orden` o LEFT JOIN `devolucion` d ON (d.id_orden = o.id) LEFT JOIN `factura` f ON (f.id_orden = o.id) LEFT JOIN `firma` s ON (s.id_orden = o.id) WHERE o.`id` = :id");
         $stmt->bindParam(':id', $id);
     }
     try {
@@ -168,7 +168,7 @@ function crearPDF($id, $factura=0 , $enviar=0){
     $pdf->SetFont('Arial','',8);
     $pdf->Cell($width, 5, iconv('UTF-8', 'windows-1252', $datos["local"]),0,1);
     $pdf->Cell($width, 5, iconv('UTF-8', 'windows-1252', $direccion), 0, 1);
-    $pdf->Cell($width, 5, iconv('UTF-8', 'windows-1252', 'Nº Whatsapp: 612 259 631'), 0, 1);
+    if($datos["local"]=="Barcelona") $pdf->Cell($width, 5, iconv('UTF-8', 'windows-1252', 'Nº Whatsapp: 606 46 59 79'), 0, 1);
     $pdf->Cell($width, 5, iconv('UTF-8', 'windows-1252', 'Nº Telefono: 933 496 389'), 0, 1);
     $pdf->Ln();
     // DATOS CLIENTE

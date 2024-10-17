@@ -1,4 +1,12 @@
-<?php session_start() ?>
+<?php
+require_once "functions.php";
+// GUARDAR SERVICIO
+if(isset($_POST["guardar-servicio"])){
+    $id = insertarBDS();
+    subirFirma($id);
+    enviarCorreo($id);
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -18,13 +26,8 @@
         <!-- JQUERY -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-        <!-- SIGNATURE JS -->
-        <script src="jquery.signature.js"></script>
-        <!-- SIGNATURE CSS -->
-        <link href="jquery.signature.css" rel="stylesheet">
-        <style>
-        .kbw-signature { width: 300px; height: 200px; }
-        </style>
+        <!-- jSignature -->
+        <script src="jSignature/jSignature.min.js"></script>
         <style>
             body {
                 font-family: "raleway";
@@ -34,7 +37,7 @@
     </head>
     <body>
         <div class="container my-4">
-            <form action="execute.php" target="_blank" method="POST" class="form-control p-4 text-bg-light">
+            <form action="" method="POST" class="form-control p-4 text-bg-light">
                 <div class="row mb-3 rounded p-3" style="background-color:rgb(43,45,46);">
                     <img src="LOGO.png" alt="logo" class="img-fluid mx-auto w-25">
                 </div>
@@ -78,13 +81,6 @@
                     </div>
                 </div>
                 <div class="row">
-                    <?php
-                    if (!is_null($_SESSION["local"])) {
-                    ?>
-                        <input type="hidden" name="local" id="local" value="<?php echo $_SESSION["local"]; ?>" />
-                    <?php
-                    }
-                    ?>
                     <div class="col-12 mb-3">
                         <div class="form-floating">
                             <select class="form-control form-select" name="razon" id="razon">
@@ -113,21 +109,15 @@
                 <div class="row mb-3">
                     <div class="col-12 col-md-6">
                         <div class="form-floating">
-                            <textarea rows="14" style="height:100%;" class="form-control" placeholder="Descripción" name="motivo" id="motivo"></textarea>
+                            <textarea rows="8" style="height:100%;" class="form-control" placeholder="Descripción" name="motivo" id="motivo"></textarea>
                             <label for="motivo">Descripción</label>
                         </div>
                     </div>
                     <div class="col-12 col-md-6">
                         <div class="form-control">
-                            <p>Firma</p>
-                            <div id="sig"></div>
-                            <p style="clear: both;">
-                                <button class="btn btn-secondary btn-sm" id="clear">
-                                    <span class="material-symbols-outlined pt-1">delete</span>
-                                </button>
-                                <span class="d-none fw-bold" id="borrar">Borrar</span>
-                            </p>
-                            <textarea name="sign" id="sign" style="display: none"></textarea>
+                            <div id="signature"></div>
+                            <input type="hidden" name="sign" id="sign">
+                            <button class="btn btn-secondary btn-sm" id="clear">Borrar</button>
                         </div>
                     </div>
                 </div>
@@ -139,53 +129,30 @@
     </body>
 </html>
 <script>
-    var sig = $('#sig').signature({syncField: '#sign', syncFormat: 'PNG'});
-    $('#clear').click(function(e) {
-        e.preventDefault();
-        sig.signature('clear');
-        $("#sign").val('');
-    });
-    $('#clear').hover(
-        function() {
-            $('#clear').removeClass('btn-secondary').addClass('btn-danger');
-            $('#borrar').removeClass('d-none');
-        },
-        function() {
-            $('#clear').removeClass('btn-danger').addClass('btn-secondary');
-            $('#borrar').addClass('d-none');
+    // jSignature
+    $(document).ready(function() {
+        var $sigdiv = $("#signature").jSignature();
+        
+        $("#clear").click(function() {
+            event.preventDefault(); // Prevent form submission
+            $sigdiv.jSignature("reset");
+        });
+
+        function saveSignature() {
+            event.preventDefault(); // Prevent form submission
+            var data = $sigdiv.jSignature("getData");
+            console.log(data);
+            $("#sign").val(data); // Store it in a hidden field
         }
-    );
-    // Initialize Signature Pad
-    const canvas = document.getElementById('signature-canvas');
-    const signaturePad = new SignaturePad(canvas);
 
-    // Resize canvas for proper drawing
-    function resizeCanvas() {
-        const ratio = Math.max(window.devicePixelRatio || 1, 1);
-        canvas.width = canvas.offsetWidth * ratio;
-        canvas.height = canvas.offsetHeight * ratio;
-        canvas.getContext("2d").scale(ratio, ratio);
-        signaturePad.clear(); // Clear the canvas to redraw
-    }
+        // Trigger save on mouseup
+        $("#signature").on("mouseup", function() {
+            saveSignature();
+        });
 
-    window.addEventListener("resize", resizeCanvas);
-    resizeCanvas();
-
-    // Clear button functionality
-    document.getElementById('clear').addEventListener('click', function() {
-        signaturePad.clear();
-    });
-
-    // Save button functionality
-    document.getElementById('save').addEventListener('click', function() {
-        if (!signaturePad.isEmpty()) {
-            const dataURL = signaturePad.toDataURL(); // Get the signature data URL
-            document.getElementById('signature-data').value = dataURL; // Store it in a hidden field
-            alert("Firma guardada! Puedes enviar los datos ahora.");
-            // Log the data URL for demonstration
-            console.log(dataURL);
-        } else {
-            alert("Por favor, proporciona una firma primero.");
-        }
+        // Optional: Trigger save on touchend for mobile support
+        $("#signature").on("touchend", function() {
+            saveSignature();
+        });
     });
 </script>

@@ -16,12 +16,10 @@
 
                 echo '<a href="execute.php?ticketservicio=1&id='.$id.'" target="_blank" class="btn btn-primary mx-2 mt-3"><i class="bi bi-ticket-detailed"></i> Imprimir Ticket</a>';
                 echo '<a href="?pag=garantia&id='.$id.'" class="btn btn-primary mx-2 mt-3"><i class="bi bi-file-text"></i> Garantia</a>';
-                /*echo '<a href="execute.php?servicio=1&id='.$id.'" target="_blank" class="btn btn-primary mx-2 mt-3"><i class="bi bi-receipt-cutoff"></i> Factura</a>';
-                echo '<a href="execute.php?servsimp=1&id='.$id.'" target="_blank" class="btn btn-primary mx-2 mt-3"><i class="bi bi-receipt"></i> Factura Simplificada</a>';
-                */echo '<button type="button" class="btn btn-success mx-2 mt-3" data-bs-toggle="modal" data-bs-target="#enviarModal"><i class="bi bi-send"></i> Enviar</button>';
+                echo '<button type="button" class="btn btn-success mx-2 mt-3" data-bs-toggle="modal" data-bs-target="#enviarModal"><i class="bi bi-send"></i> Enviar</button>';
                 echo '<a href="edit.php?id='.$id.'" class="btn btn-success mx-2 mt-3"><i class="bi bi-pencil-square"></i> Editar</a>';
                 if(!empty($row["did"])){
-                    echo '<a href="execute.php?deshacer=1&id='.$id.'" class="btn btn-danger mx-2 mt-3"><i class="bi bi-arrow-counterclockwise"></i> Deshacer</a>';
+                    echo '<a href="execute.php?deshacer=1&id='.$id.'" class="btn btn-danger mx-2 mt-3"><i class="bi bi-arrow-counterclockwise"></i> Deshacer devolución</a>';
                 } else {
                     echo '<a href="execute.php?devolucion=1&id='.$id.'" class="btn btn-danger mx-2 mt-3"><i class="bi bi-arrow-counterclockwise"></i> Devolución</a>';
                 }
@@ -117,9 +115,16 @@
                                         </div>
                                     </div>
                                     <hr>
-                                    <p class="card-text"><b>Dispositivo:</b> <?php echo $row["nombre_dispositivo"] ?></p>
-                                    <p class="card-text"><?php echo $desc ?></p>
-                                    <p class="card-text"><b>Método de pago:</b> <?php echo $row["metodo"] ?></p>
+                                    <div class="row">
+                                        <div class="col-md-6 col-12">
+                                            <p class="card-text"><b>Dispositivo:</b> <?php echo $row["nombre_dispositivo"] ?></p>
+                                            <p class="card-text"><?php echo $desc ?></p>
+                                            <p class="card-text"><b>Método de pago:</b> <?php echo $row["metodo"] ?></p>
+                                        </div>
+                                        <div class="col-md-6 col-12">
+                                            <?php if(!empty($row["firma"])) echo '<img src="'. $row["firma"] .'" alt="firma">';?>
+                                        </div>
+                                    </div>
                                 </div>
                                 <ul class="list-group list-group-flush mb-3">
                                     <?php echo $_SESSION["login"] != "dependiente" ? $ins : "<hr>" ?>
