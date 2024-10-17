@@ -294,7 +294,7 @@
 
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 // User restrictions
-                if ($_SESSION["login"] != "admin" && ($_SESSION["local"] != null && $_SESSION["local"] != $row["local"])) continue;
+                if ($_SESSION["local"] != null && $_SESSION["local"] != $row["local"]) continue;
 
                 // Card layout start
                 if ($i == 0) echo '<div class="row">';

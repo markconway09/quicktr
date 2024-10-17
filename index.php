@@ -70,7 +70,7 @@
             <?php
             if(isset($_SESSION["login"])){ ?>
                 <span class="text-light mx-3"><?php echo (!$_SESSION["login"]?"":$_SESSION["login"]); ?></span>
-                <?php if($_SESSION["login"]=="tecnico") { ?>
+                <?php if($_SESSION["login"]=="tecnico"||$_SESSION["login"]=="admin") { ?>
                 <select id="sessionSelect" onchange="updateSession(this.value)">
                     <option value="Todo" <?php echo $_SESSION["local"]==null?'selected':''?>>Todo</option>
                     <option value="Barcelona" <?php echo $_SESSION["local"]=="Barcelona"?'selected':''?>>Barcelona</option>
