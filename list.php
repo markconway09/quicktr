@@ -172,80 +172,39 @@
             }
             ?>
             <div class="row">
-                <ul class="nav nav-tabs bg-dark">
-                    <li class="nav-item">
-                        <?php
-                            if(!isset($_GET["filter"])) {
-                                echo '<a class="nav-link active" href="?pag=list">Todo</a>';
-                            } else {
-                                echo '<a class="nav-link text-light" href="?pag=list">Todo</a>';
-                            }
-                        ?>
-                    </li>
-                    <li class="nav-item">
-                        <?php
-                            if(isset($_GET["filter"])&&$_GET["filter"] == "0") {
-                                echo '<a class="nav-link active" href="?pag=list&filter=0">Diagnóstico</a>';
-                            } else {
-                                echo '<a class="nav-link text-light" href="?pag=list&filter=0">Diagnóstico</a>';
-                            }
-                        ?>
-                    </li>
-                    <li class="nav-item">
-                        <?php
-                            if(isset($_GET["filter"])&&$_GET["filter"] == "1") {
-                                echo '<a class="nav-link active" href="?pag=list&filter=1">Aprobación</a>';
-                            } else {
-                                echo '<a class="nav-link text-light" href="?pag=list&filter=1">Aprobación</a>';
-                            }
-                        ?>
-                    </li>
-                    <li class="nav-item">
-                        <?php
-                            if(isset($_GET["filter"])&&$_GET["filter"] == "2") {
-                                echo '<a class="nav-link active" href="?pag=list&filter=2">Reparación</a>';
-                            } else {
-                                echo '<a class="nav-link text-light" href="?pag=list&filter=2">Reparación</a>';
-                            }
-                        ?>
-                    </li>
-                    <li class="nav-item">
-                        <?php
-                            if(isset($_GET["filter"])&&$_GET["filter"] == "3") {
-                                echo '<a class="nav-link active" href="?pag=list&filter=3">Terminado</a>';
-                            } else {
-                                echo '<a class="nav-link text-light" href="?pag=list&filter=3">Terminado</a>';
-                            }
-                        ?>
-                    </li>
-                    <li class="nav-item">
-                        <?php
-                            if(isset($_GET["filter"])&&$_GET["filter"] == "4") {
-                                echo '<a class="nav-link active" href="?pag=list&filter=4">Entregado</a>';
-                            } else {
-                                echo '<a class="nav-link text-light" href="?pag=list&filter=4">Entregado</a>';
-                            }
-                        ?>
-                    </li>
-                    <li class="nav-item">
-                        <?php
-                            if(isset($_GET["filter"])&&$_GET["filter"] == "5") {
-                                echo '<a class="nav-link active" href="?pag=list&filter=5">Garantía</a>';
-                            } else {
-                                echo '<a class="nav-link text-light" href="?pag=list&filter=5">Garantía</a>';
-                            }
-                        ?>
-                    </li>
-                    <li class="nav-item">
-                        <?php
-                            if(isset($_GET["filter"])&&$_GET["filter"] == "6") {
-                                echo '<a class="nav-link active" href="?pag=list&filter=6">Devoluciones</a>';
-                            } else {
-                                echo '<a class="nav-link text-light" href="?pag=list&filter=6">Devoluciones</a>';
-                            }
-                        ?>
-                    </li>
-                </ul>
+            <ul class="nav nav-tabs bg-dark">
+                <?php
+                    $filters = [
+                        "0" => "Diagnóstico",
+                        "1" => "Aprobación",
+                        "2" => "Reparación",
+                        "3" => "Terminado",
+                        "4" => "Entregado",
+                        "5" => "Garantía",
+                        "6" => "Devoluciones",
+                    ];
+
+                    $tooltip = [
+                        "Pendiente de diagnosticar problema/coste",
+                        "A la espera de la aprobación del cliente",
+                        "Ticket aprovado pendiente de reparación",
+                        "Reparación terminada, a la espera del cliente",
+                        "Ticket cerrado",
+                        "",
+                        ""
+                    ];
+                    
+                    // Default case for "Todo"
+                    echo '<li class="nav-item"><a class="nav-link ' . (!isset($_GET["filter"]) ? 'active' : 'text-light') . '" href="?pag=list">Todo</a></li>';
+
+                    // Iterate through filters
+                    foreach ($filters as $key => $label) {
+                        $activeClass = (isset($_GET["filter"]) && $_GET["filter"] == $key) ? 'active' : 'text-light';
+                        echo '<li class="nav-item"><a class="nav-link ' . $activeClass . '" href="?pag=list&filter=' . $key . '"
+                         data-bs-toggle="tooltip" data-bs-title="'.$tooltip[$key].'">' . $label . '</a></li>';
+                    }
+                ?>
+            </ul>
             </div>
             <div class="row">
                 <div class="col-12 mt-2">
@@ -396,3 +355,8 @@
 
             ?>
         </div>
+
+        <script>
+            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+            const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+        </script>
