@@ -1,31 +1,51 @@
         <div class="container border my-4 px-4 py-2 bg-dark rounded">
             <?php
             $pasos = ["Diagnóstico", "Aprobación", "Reparación", "Terminado", "Entregado"];
-            $pasosLargo = ["Espera del diagnóstico", "Espera aprobación del cliente", "En Reparación", "Reparación terminada", "Entregado"];
+            $pasosLargo = ["Espera del diagnóstico", "Espera aprobación del cliente", "En Reparación", "Reparación terminada", "Entregado al cliente"];
             $colores = ["#f54254", "#e8a31a", "#2f852c", "#4472c4", "#adadad"];
             $localColor = ["blue", "red"];
             
             if(isset($_GET["id"])){
                 $id = $_GET["id"];
-                echo '<a href="?pag=list" class="btn btn-secondary mx-2 mt-3"><i class="bi bi-arrow-left"></i> Volver</a>';
                 $row = selectBD($id);
                 
                 $desc = '<b>Descripción:</b> '.$row["desc"];
                 $precios = "";
                 $cant = "";
-
-                echo '<a href="execute.php?ticketservicio=1&id='.$id.'" target="_blank" class="btn btn-primary mx-2 mt-3"><i class="bi bi-ticket-detailed"></i> Imprimir Ticket</a>';
-                echo '<a href="?pag=garantia&id='.$id.'" class="btn btn-primary mx-2 mt-3"><i class="bi bi-file-text"></i> Garantia</a>';
-                echo '<button type="button" class="btn btn-success mx-2 mt-3" data-bs-toggle="modal" data-bs-target="#enviarModal"><i class="bi bi-send"></i> Enviar</button>';
-                echo '<a href="edit.php?id='.$id.'" class="btn btn-success mx-2 mt-3"><i class="bi bi-pencil-square"></i> Editar</a>';
-                if(!empty($row["did"])){
-                    echo '<a href="execute.php?deshacer=1&id='.$id.'" class="btn btn-danger mx-2 mt-3"><i class="bi bi-arrow-counterclockwise"></i> Deshacer devolución</a>';
-                } else {
-                    echo '<a href="execute.php?devolucion=1&id='.$id.'" class="btn btn-danger mx-2 mt-3"><i class="bi bi-arrow-counterclockwise"></i> Devolución</a>';
-                }
-                if($_SESSION["login"] == "admin"){
-                    echo '<button type="button" class="btn btn-danger mx-2 mt-3" data-bs-toggle="modal" data-bs-target="#elimModal"><i class="bi bi-trash"></i> Eliminar</button>';
-                }      
+                ?>
+                <div class="input-group mt-3">
+                    <a href="?pag=list" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
+                    <a href="execute.php?ticketservicio=1&id=<?php echo $id; ?>" target="_blank" class="btn btn-primary"><i class="bi bi-ticket-detailed"></i> Imprimir Ticket</a>
+                    <a href="?pag=garantia&id=<?php echo $id; ?>" class="btn" 
+                    style="background-color: #007c7a; color: white; transition: background-color 0.3s;" 
+                    onmouseover="this.style.backgroundColor='#006d6b';" 
+                    onmouseout="this.style.backgroundColor='#007c7a';">
+                        <i class="bi bi-file-text"></i> Garantia
+                    </a>
+                    <button type="button" class="btn" 
+                    style="background-color: #fd7e14; color: white; transition: background-color 0.3s;" 
+                    onmouseover="this.style.backgroundColor='#e68a00';" 
+                    onmouseout="this.style.backgroundColor='#fd7e14';" 
+                    data-bs-toggle="modal" data-bs-target="#enviarModal">
+                        <i class="bi bi-send"></i> Enviar
+                    </button>
+                    <a href="edit.php?id=<?php echo $id; ?>" class="btn btn-success"><i class="bi bi-pencil-square"></i> Editar</a>
+                    <?php if (!empty($row["did"])) { ?>
+                        <a href="execute.php?deshacer=1&id=<?php echo $id; ?>" class="btn btn-danger"><i class="bi bi-arrow-counterclockwise"></i> Deshacer devolución</a>
+                    <?php } else { ?>
+                        <a href="execute.php?devolucion=1&id=<?php echo $id; ?>" class="btn btn-danger"><i class="bi bi-arrow-counterclockwise"></i> Devolución</a>
+                    <?php } ?>
+                    <?php if ($_SESSION["login"] == "admin") { ?>
+                        <button type="button" class="btn" 
+                        style="background-color: #c82333; color: white; transition: background-color 0.3s;" 
+                        onmouseover="this.style.backgroundColor='#a71c2b';" 
+                        onmouseout="this.style.backgroundColor='#c82333';" 
+                        data-bs-toggle="modal" data-bs-target="#elimModal">
+                            <i class="bi bi-trash"></i> Eliminar
+                        </button>
+                    <?php } ?>
+                </div>
+                <?php
                 $estado = "";
                 if(!empty($row["did"])) {
                     $estado = "<span class='text-danger'><i class='bi bi-arrow-counterclockwise'></i> DEVUELTO</span>";
@@ -172,39 +192,39 @@
             }
             ?>
             <div class="row">
-            <ul class="nav nav-tabs bg-dark">
-                <?php
-                    $filters = [
-                        "0" => "Diagnóstico",
-                        "1" => "Aprobación",
-                        "2" => "Reparación",
-                        "3" => "Terminado",
-                        "4" => "Entregado",
-                        "5" => "Garantía",
-                        "6" => "Devoluciones",
-                    ];
+                <ul class="nav nav-tabs bg-dark">
+                    <?php
+                        $filters = [
+                            "0" => "Diagnóstico",
+                            "1" => "Aprobación",
+                            "2" => "Reparación",
+                            "3" => "Terminado",
+                            "4" => "Entregado",
+                            "5" => "Garantía",
+                            "6" => "Devoluciones",
+                        ];
 
-                    $tooltip = [
-                        "Pendiente de diagnóstico del problema y coste.",
-                        "Esperando la aprobación del cliente.",
-                        "Ticket aprobado, pendiente de reparación.",
-                        "Reparación finalizada, esperando al cliente.",
-                        "Ticket cerrado.",
-                        "",
-                        ""
-                    ];
-                    
-                    // Default case for "Todo"
-                    echo '<li class="nav-item"><a class="nav-link ' . (!isset($_GET["filter"]) ? 'active' : 'text-light') . '" href="?pag=list">Todo</a></li>';
+                        $tooltip = [
+                            "Pendiente de diagnosticar el problema y dar presupuesto.",
+                            "Esperando la aprobación del cliente.",
+                            "Ticket aprobado, pendiente de reparación.",
+                            "Reparación finalizada, esperando al cliente.",
+                            "Ticket cerrado, entregado al cliente.",
+                            "",
+                            ""
+                        ];
+                        
+                        // Default case for "Todo"
+                        echo '<li class="nav-item"><a class="nav-link ' . (!isset($_GET["filter"]) ? 'active' : 'text-light') . '" href="?pag=list">Todo</a></li>';
 
-                    // Iterate through filters
-                    foreach ($filters as $key => $label) {
-                        $activeClass = (isset($_GET["filter"]) && $_GET["filter"] == $key) ? 'active' : 'text-light';
-                        echo '<li class="nav-item"><a class="nav-link ' . $activeClass . '" href="?pag=list&filter=' . $key . '"
-                         data-bs-toggle="tooltip" data-bs-title="'.$tooltip[$key].'">' . $label . '</a></li>';
-                    }
-                ?>
-            </ul>
+                        // Iterate through filters
+                        foreach ($filters as $key => $label) {
+                            $activeClass = (isset($_GET["filter"]) && $_GET["filter"] == $key) ? 'active' : 'text-light';
+                            echo '<li class="nav-item"><a class="nav-link ' . $activeClass . '" href="?pag=list&filter=' . $key . '"
+                            data-bs-toggle="tooltip" data-bs-title="'.$tooltip[$key].'">' . $label . '</a></li>';
+                        }
+                    ?>
+                </ul>
             </div>
             <div class="row">
                 <div class="col-12 mt-2">
