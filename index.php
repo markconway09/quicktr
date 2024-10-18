@@ -54,6 +54,8 @@
         <!-- JQUERY -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+        <!-- jSignature -->
+        <script src="jSignature/jSignature.min.js"></script>
         <style>
             body{
                 font-family: "Montserrat";
@@ -65,7 +67,7 @@
         <nav class="navbar navbar-light" style="background-color:rgb(43,45,46);">
             <a class="navbar-brand mx-auto" href="index.php">
                 <img class="rounded" src="LOGO.png" alt="logo" height="90">
-                <span class="badge badge-pill bg-danger">1.9.2</span>
+                <span class="badge badge-pill bg-danger">1.9.3</span>
             </a>
             <?php
             if(isset($_SESSION["login"])){ ?>
@@ -107,11 +109,11 @@
                             </div>
                         <?php } ?>
                         <button class="btn btn-primary flex-fill" type="submit" name="pag" value="form-servicio">
-                            <i class="bi bi-pencil-square"></i> Formulario Dependiente
+                            <i class="bi bi-pencil-square"></i> Formulario
                         </button>
-                        <a class="btn btn-success flex-fill" target="_blank" href="form-cliente.php?local=<?php echo $_SESSION["local"]; ?>" type="submit" name="pag" value="form-servicio">
+                        <!--<a class="btn btn-success flex-fill" target="_blank" href="form-cliente.php?local=<?php echo $_SESSION["local"]; ?>" type="submit" name="pag" value="form-servicio">
                             <i class="bi bi-pencil-square"></i> Formulario Cliente
-                        </a>
+                        </a>-->
                         <button class="btn btn-secondary flex-fill" type="submit" name="pag" value="list">
                             <i class="bi bi-columns-gap"></i> Lista
                         </button>
