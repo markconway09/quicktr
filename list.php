@@ -185,11 +185,11 @@
                     ];
 
                     $tooltip = [
-                        "Pendiente de diagnosticar problema/coste",
-                        "A la espera de la aprobación del cliente",
-                        "Ticket aprovado pendiente de reparación",
-                        "Reparación terminada, a la espera del cliente",
-                        "Ticket cerrado",
+                        "Pendiente de diagnóstico del problema y coste.",
+                        "Esperando la aprobación del cliente.",
+                        "Ticket aprobado, pendiente de reparación.",
+                        "Reparación finalizada, esperando al cliente.",
+                        "Ticket cerrado.",
                         "",
                         ""
                     ];
