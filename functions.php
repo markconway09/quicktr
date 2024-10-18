@@ -42,9 +42,16 @@ function insertarBDS(){
     $doc="";$local="";$dir="";$cp="";$email="No especificado";
     $tel="";$nombre="";$ins_d="";$ins_p=0;$metodo="";
     $disp="";$precio=0;$descuento=0;$iva=0;$preciofinal=0;
-    $razon="";$dept="";
+    $razon="";$dept="";$cc="";
+    if(!empty($_POST["countryCode"])){
+        if ($_POST["countryCode"][0] !== '+') {
+            $cc = '+' . $_POST["countryCode"];
+        }
+        if(isset($_POST["tel"])) $tel = $cc . $_POST["tel"];
+    } else {
+        if(isset($_POST["tel"])) $tel = $_POST["tel"];
+    }
     if(isset($_POST["servicio"])&&isset($_POST["servicio2"])) $servicio = $_POST["servicio"] . ": " . $_POST["servicio2"];
-    if(isset($_POST["tel"])) $tel = $_POST["countryCode"] . $_POST["tel"];
     if(isset($_POST["doc"])) $doc = $_POST["doc"];
     if(isset($_POST["local"])) $local = $_POST["local"];
     if(isset($_POST["razon"])) $razon = $_POST["razon"];

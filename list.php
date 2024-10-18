@@ -84,7 +84,22 @@
                             <div class="card my-3">
                                 <h5 class="card-header py-3" style="color:white;background-color:'.$colores[$row["estado"]].';">'.$ser.' # '.$row["id"].$garantia.'</h5>
                                 <div class="card-body">
-                                    '.$estado;?>
+                                    '.$estado;
+                                // PROGRESS BAR
+                                // Example value for estado
+                                $estado = isset($row["estado"]) ? $row["estado"]+1 : 0;
+                                // Define the total number of states
+                                $totalStates = 5;
+                                // Calculate the percentage based on the estado
+                                $percentage = ($estado / $totalStates) * 100;
+                                ?>
+                                <div class="progress mt-3">
+                                    <div class="progress-bar" role="progressbar" style="width: <?php echo $percentage; ?>%;
+                                                background-color:<?php echo $colores[$row["estado"]]; ?>"
+                                        aria-valuenow="<?php echo $estado; ?>" aria-valuemin="0" aria-valuemax="<?php echo $totalStates; ?>">
+                                        <?php echo $estado; ?> / <?php echo $totalStates; // Display current state out of total ?>
+                                    </div>
+                                </div>
                                 <br>
                                 <?php if(($row["estado"] < 4 && $_SESSION["login"]=="tecnico")||($_SESSION["login"]=="dependiente"&&$row["estado"]==4)||($_SESSION["login"]=="dependiente"&&$row["estado"]==2)||($_SESSION["login"]=="dependiente"&&$row["estado"]==1)){ if(($row["estado"]-1)>=0){ ?><a href="execute.php?estado=<?php echo $row["estado"]-1 ?>&id=<?php echo $row["id"] ?>&pag=1" class="btn text-light" style="color:black; background-color:<?php echo $colores[$row["estado"]-1] ?>"><i class="bi bi-caret-left-fill"></i> <?php echo $pasos[$row["estado"]-1] ?></a><?php }} ?>
                                 <?php if(($row["estado"] < 3 && $_SESSION["login"]=="tecnico")||($_SESSION["login"]=="dependiente"&&$row["estado"]==0)||($_SESSION["login"]=="dependiente"&&$row["estado"]==1)){ if(($row["estado"]+1)<5){ ?><a href="execute.php?estado=<?php echo $row["estado"]+1 ?>&id=<?php echo $row["id"] ?>&pag=1" class="btn text-light" style="color:black; background-color:<?php echo $colores[$row["estado"]+1] ?>"><?php echo $pasos[$row["estado"]+1] ?> <i class="bi bi-caret-right-fill"></i></a><?php }} ?>
@@ -142,7 +157,12 @@
                                             <p class="card-text"><b>Método de pago:</b> <?php echo $row["metodo"] ?></p>
                                         </div>
                                         <div class="col-md-6 col-12">
-                                            <?php if(!empty($row["firma"])) echo '<img src="'. $row["firma"] .'" alt="firma">';?>
+                                            <b>Firma:</b>
+                                            <?php if (!empty($row["firma"]) && file_exists($row["firma"])): ?>
+                                                <img src="<?php echo $row["firma"]; ?>" alt="firma">
+                                            <?php else: ?>
+                                                <p>No hay firma disponible.</p>
+                                            <?php endif; ?>
                                         </div>
                                     </div>
                                 </div>
@@ -247,42 +267,39 @@
                 </div>
             </div></i>
             <?php
+            $pdo = connect();
+            $sql = "SELECT *, i.id as id, d.id as did, DATE_FORMAT(fecha, '%d/%m/%Y') as fecha FROM info_orden i
+                    LEFT JOIN devolucion d ON (i.id = d.id_orden)";
             if(!isset($_POST["search"])){
                 if(!isset($_GET["filter"])){
-                    $pdo = connect();
-                    $stmt = $pdo->prepare("SELECT *, i.id as id, d.id as did, DATE_FORMAT(fecha, '%d/%m/%Y') as fecha FROM info_orden i LEFT JOIN devolucion d ON (i.id = d.id_orden) ORDER BY i.id DESC");
-                    $stmt->execute();
+                    $stmt = $pdo->prepare($sql." ORDER BY i.id DESC");
                 } else {
-                    $pdo = connect();
                     if($_GET["filter"] == 5){
-                        $stmt = $pdo->prepare("SELECT *, i.id as id, d.id as did, DATE_FORMAT(fecha, '%d/%m/%Y') as fecha FROM info_orden i LEFT JOIN devolucion d ON (i.id = d.id_orden) WHERE `garantia` != 0 AND d.id IS NULL ORDER BY i.id DESC");
+                        $stmt = $pdo->prepare($sql." WHERE `garantia` != 0 AND d.id IS NULL ORDER BY i.id DESC");
                     }else if($_GET["filter"] == 6){
-                        $stmt = $pdo->prepare("SELECT *, i.id as id, d.id as did, DATE_FORMAT(fecha, '%d/%m/%Y') as fecha FROM info_orden i LEFT JOIN devolucion d ON (i.id = d.id_orden) WHERE d.id IS NOT NULL ORDER BY i.id DESC");
+                        $stmt = $pdo->prepare($sql." WHERE d.id IS NOT NULL ORDER BY i.id DESC");
                     }else{
-                        $stmt = $pdo->prepare("SELECT *, i.id as id, d.id as did, DATE_FORMAT(fecha, '%d/%m/%Y') as fecha FROM info_orden i LEFT JOIN devolucion d ON (i.id = d.id_orden) WHERE `estado` = :estado AND d.id IS NULL ORDER BY i.id DESC");
+                        $stmt = $pdo->prepare($sql." WHERE `estado` = :estado AND d.id IS NULL ORDER BY i.id DESC");
                         $stmt->bindParam(':estado', $_GET["filter"]);
                     }
-                    $stmt->execute();
                 }
             }else {
-                $pdo = connect();
                 echo '<p class="display-5 text-light">Resultados para <i>\''.$_POST["search"].'\'</i></p>';
                 $search = "%".$_POST["search"]."%";
-                $stmt = $pdo->prepare("SELECT *, i.id as id, d.id as did, DATE_FORMAT(fecha, '%d/%m/%Y') as fecha FROM info_orden i LEFT JOIN devolucion d ON (i.id = d.id_orden)
-                WHERE `nombre_dispositivo` LIKE :search OR i.id LIKE :search OR `nombre` LIKE :search OR `local` LIKE :search OR `servicio` LIKE :search
-                ORDER BY i.id DESC");
+                $stmt = $pdo->prepare($sql."WHERE `nombre_dispositivo` LIKE :search OR i.id LIKE :search OR
+                `nombre` LIKE :search OR `local` LIKE :search OR `servicio` LIKE :search ORDER BY i.id DESC");
                 $stmt->bindParam(':search', $search);
-                $stmt->execute();
             }
+            $stmt->execute();
             $i = 0;
 
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 // User restrictions
                 if ($_SESSION["local"] != null && $_SESSION["local"] != $row["local"]) continue;
-
+            
                 // Card layout start
                 if ($i == 0) echo '<div class="row">';
-
+            
                 // Prepare description
                 $desc = strlen($row["desc"]) > 22 ? substr($row["desc"], 0, 22) . '...' : $row["desc"];
                 
@@ -298,20 +315,20 @@
                 } else {
                     $estado = " | " . $pasos[$row["estado"]];
                 }
-
+            
                 // Prepare service information
-                if(!empty($row["servicio"])){
+                if (!empty($row["servicio"])) {
                     $serv = explode(": ", $row["servicio"])[0];
-                }else{
+                } else {
                     $serv = "PENDIENTE MODIFICAR";
                 }
-
+            
                 // Generate card HTML
                 echo '
                     <div class="col-lg-4 col-12">
                         <div class="card ' . $bg . ' my-3">
                             <h5 class="card-header py-3" style="color:white;background-color:' . $colores[$row["estado"]] . ';">' . $serv . ' # ' . $row["id"] . '<br><div style="display:inline;margin-right:2px;border-left: 3px solid ' . $localColor[$row["local"] == "Barcelona" ? 0 : 1] . ';height: 5px;"></div>' . $row["local"] . $estado . '</h5>';
-
+            
                 // Display status steps
                 echo '
                             <div class="text-center pt-2">
@@ -337,29 +354,50 @@
                                 <li class="list-group-item ' . $bg . '"><b>Precio:</b> ' . $row["precio"] . '€ (+ IVA ' . $row["iva"] . '%) = <b>' . $row["precio-final"] . '€</b></li>
                             </ul>
                             <div class="card-body">';
-
+            
                 // Action buttons based on user role and ticket state
-                if (($_SESSION["login"] == "tecnico" && $row["estado"] < 4) || ($_SESSION["login"] == "dependiente" && in_array($row["estado"], [1, 2, 4]))) {
-                    if (($row["estado"] - 1) >= 0) {
-                        echo '<a href="execute.php?estado=' . ($row["estado"] - 1) . '&id=' . $row["id"] . '&pag=0" class="btn text-light" style="background-color:' . $colores[$row["estado"] - 1] . '"><i class="bi bi-caret-left-fill"></i> ' . $pasos[$row["estado"] - 1] . '</a>';
+                echo '<div class="w-100">'; // Start full-width container for buttons
+                    // Create an input group for the buttons
+                    echo '<div class="input-group mb-2">';
+                    // Left button (state -1)
+                    if (($_SESSION["login"] == "tecnico" && $row["estado"] < 4) || ($_SESSION["login"] == "dependiente" && in_array($row["estado"], [1, 2, 4]))) {
+                        if (($row["estado"] - 1) >= 0) {
+                            echo '<a href="execute.php?estado=' . ($row["estado"] - 1) . '&id=' . $row["id"] . '&pag=0" class="btn text-light rounded-0 w-50" style="background-color:' . $colores[$row["estado"] - 1] . '"><i class="bi bi-caret-left-fill"></i> ' . $pasos[$row["estado"] - 1] . '</a>';
+                        } else {
+                            echo '<div class="btn text-light w-50" style="background-color:transparent; opacity:0;"></div>'; // Placeholder
+                        }
+                    } else {
+                        echo '<div class="btn text-light w-50" style="background-color:transparent; opacity:0;"></div>'; // Placeholder
                     }
-                }
-                if (($_SESSION["login"] == "tecnico" && $row["estado"] < 3) || ($_SESSION["login"] == "dependiente" && $row["estado"] < 2)) {
-                    if (($row["estado"] + 1) < 5) {
-                        echo '<a href="execute.php?estado=' . ($row["estado"] + 1) . '&id=' . $row["id"] . '&pag=0" class="btn text-light" style="color:black; background-color:' . $colores[$row["estado"] + 1] . '">' . $pasos[$row["estado"] + 1] . ' <i class="bi bi-caret-right-fill"></i></a>';
+                    // Right button (state +1)
+                    if (($_SESSION["login"] == "tecnico" && $row["estado"] < 3) || ($_SESSION["login"] == "dependiente" && $row["estado"] < 2)) {
+                        if (($row["estado"] + 1) < 5) {
+                            echo '<a href="execute.php?estado=' . ($row["estado"] + 1) . '&id=' . $row["id"] . '&pag=0" class="btn text-light rounded-0 w-50" style="color:black; background-color:' . $colores[$row["estado"] + 1] . '">' . $pasos[$row["estado"] + 1] . ' <i class="bi bi-caret-right-fill"></i></a>';
+                        } else {
+                            echo '<div class="btn text-light w-50" style="background-color:transparent; opacity:0;"></div>'; // Placeholder
+                        }
+                    } else {
+                        echo '<div class="btn text-light w-50" style="background-color:transparent; opacity:0;"></div>'; // Placeholder
                     }
-                }
-                if ($_SESSION["login"] == "admin") {
-                    if (($row["estado"] - 1) >= 0) {
-                        echo '<a href="execute.php?estado=' . ($row["estado"] - 1) . '&id=' . $row["id"] . '&pag=0" class="btn text-light" style="color:black; background-color:' . $colores[$row["estado"] - 1] . '"><i class="bi bi-caret-left-fill"></i> ' . $pasos[$row["estado"] - 1] . '</a>';
+                    // Admin buttons
+                    if ($_SESSION["login"] == "admin") {
+                        if (($row["estado"] - 1) >= 0) {
+                            echo '<a href="execute.php?estado=' . ($row["estado"] - 1) . '&id=' . $row["id"] . '&pag=0" class="btn text-light rounded-0 w-50" style="color:black; background-color:' . $colores[$row["estado"] - 1] . '"><i class="bi bi-caret-left-fill"></i> ' . $pasos[$row["estado"] - 1] . '</a>';
+                        } else {
+                            echo '<div class="btn text-light w-50" style="background-color:transparent; opacity:0;"></div>'; // Placeholder
+                        }
+                        if (($row["estado"] + 1) < 5) {
+                            echo '<a href="execute.php?estado=' . ($row["estado"] + 1) . '&id=' . $row["id"] . '&pag=0" class="btn text-light rounded-0 w-50" style="color:black; background-color:' . $colores[$row["estado"] + 1] . '">' . $pasos[$row["estado"] + 1] . ' <i class="bi bi-caret-right-fill"></i></a>';
+                        } else {
+                            echo '<div class="btn text-light w-50" style="background-color:transparent; opacity:0;"></div>'; // Placeholder
+                        }
                     }
-                    if (($row["estado"] + 1) < 5) {
-                        echo '<a href="execute.php?estado=' . ($row["estado"] + 1) . '&id=' . $row["id"] . '&pag=0" class="btn text-light" style="color:black; background-color:' . $colores[$row["estado"] + 1] . '">' . $pasos[$row["estado"] + 1] . ' <i class="bi bi-caret-right-fill"></i></a>';
-                    }
-                }
-                
-                echo '
-                                <br><a href="?pag=list&id=' . $row["id"] . '" class="btn btn-primary mt-2">Detalles <i class="bi bi-caret-right-fill"></i></a>
+                    // Close the input group
+                    echo '</div>'; // End of input group
+                    echo '
+                                <a href="?pag=list&id=' . $row["id"] . '" class="btn btn-primary rounded-0 w-100"><i class="bi bi-info-circle"></i> Detalles</a>
+                            </div>'; // Close full-width container for buttons
+                    echo '
                             </div>
                         </div>
                     </div>';
