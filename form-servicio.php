@@ -115,17 +115,10 @@
                     </div>
                 </div>
                 <div class="row mb-3">
-                    <div class="col-12 col-md-6">
+                    <div class="col-12">
                         <div class="form-floating">
                             <textarea rows="8" style="height:100%;" class="form-control" placeholder="Descripción" name="motivo" id="motivo"></textarea>
                             <label for="motivo">Descripción</label>
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <div class="form-control">
-                            <div id="signature"></div>
-                            <input type="hidden" name="sign" id="sign">
-                            <button class="btn btn-secondary btn-sm" id="clear">Borrar</button>
                         </div>
                     </div>
                 </div>
@@ -161,33 +154,6 @@
             </form>
 
             <script>
-                // jSignature
-                $(document).ready(function() {
-                    var $sigdiv = $("#signature").jSignature();
-                    
-                    $("#clear").click(function() {
-                        event.preventDefault(); // Prevent form submission
-                        $sigdiv.jSignature("reset");
-                    });
-
-                    function saveSignature() {
-                        event.preventDefault(); // Prevent form submission
-                        var data = $sigdiv.jSignature("getData");
-                        console.log(data);
-                        $("#sign").val(data); // Store it in a hidden field
-                    }
-
-                    // Trigger save on mouseup
-                    $("#signature").on("mouseup", function() {
-                        saveSignature();
-                    });
-
-                    // Optional: Trigger save on touchend for mobile support
-                    $("#signature").on("touchend", function() {
-                        saveSignature();
-                    });
-                });
-
                 function cambiarServicios(tipo){
                     switch(tipo){
                         case "Reparación Móvil":

@@ -5,7 +5,6 @@ require_once "functions.php";
 // GUARDAR SERVICIO
 if(isset($_POST["guardar-servicio"])){
     $id = insertarBDS();
-    subirFirma($id);
     enviarCorreo($id);
     header('Location: index.php?pag=list&id='.$id);
 }
@@ -27,6 +26,11 @@ if(isset($_GET["servsimp"])) {
     insertFactura($_GET["id"],1);
 }
 
+// GUARDAR FOTOS
+if(isset($_POST["guardar-fotos"])){
+    insertarFotos();
+    header('Location: index.php?pag=list&id='.$_POST["id"]);
+}
 
 // ENVIAR AL CLIENTE
 if(isset($_GET["enviar"])) {

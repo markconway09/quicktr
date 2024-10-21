@@ -107,6 +107,37 @@ function insertarBDS(){
     return $pdo->lastInsertId();
 }
 
+function insertarFotos(){
+    $pdo = connect();
+    $stmt = $pdo->prepare("UPDATE info_orden SET `desc` = :d WHERE id = :id");
+    $stmt->bindParam(':id', $_POST["id"]);
+    $stmt->bindParam(':d', $_POST["desc"]);
+    try {
+        $stmt->execute();
+    } catch(PDOException $e){
+        echo $e->getMessage();
+    }
+    $targetDir = "fotos/";
+    foreach ($_FILES['images']['name'] as $key => $name) {
+        $fileTmpPath = $_FILES['images']['tmp_name'][$key];
+        $fileName = basename($name);
+        $targetFilePath = $targetDir . $fileName;
+        // Move the uploaded file to the target directory
+        if (move_uploaded_file($fileTmpPath, $targetFilePath)) {
+            $stmt = $pdo->prepare("INSERT INTO foto (id_orden, archivo) VALUES (:id, :archivo)");
+            $stmt->bindParam(':id', $_POST["id"]);
+            $stmt->bindParam(':archivo', $targetFilePath);
+            try {
+                $stmt->execute();
+            } catch(PDOException $e){
+                echo $e->getMessage();
+            }
+        } else {
+            echo "Error uploading file: " . $name;
+        }
+    }
+}
+
 function selectBD($id=0){
     $pdo = connect();
     if($id == 0){
@@ -812,67 +843,28 @@ function totalVentas($d=0, $m, $y, $local=0){
     if($d == 0){
         if($local === 0){
             $stmt = $pdo->prepare("SELECT *, o.id as id, f.id as fid, d.id as did FROM `info_orden` o left JOIN `factura` f ON (f.id_orden = o.id) left JOIN `devolucion` d ON (o.id = d.id_orden) WHERE MONTH(`fecha`) = :m AND YEAR(`fecha`) = :y");
-            $total_general = $pdo->prepare("SELECT round(sum(`precio`),2) as base, round(sum(`precio-final`),2) as total FROM `info_orden` o left JOIN `factura` f ON (f.id_orden = o.id) left JOIN `devolucion` d ON (o.id = d.id_orden) where d.id IS NULL AND MONTH(`fecha`) = :m AND YEAR(`fecha`) = :y");
-            $total_tarjeta = $pdo->prepare("SELECT round(sum(`precio`),2) as base, round(sum(`precio-final`),2) as total FROM `info_orden` o left JOIN `factura` f ON (f.id_orden = o.id) left JOIN `devolucion` d ON (o.id = d.id_orden) where d.id IS NULL AND metodo='tarjeta' AND MONTH(`fecha`) = :m AND YEAR(`fecha`) = :y");
-            $total_efectivo = $pdo->prepare("SELECT round(sum(`precio`),2) as base, round(sum(`precio-final`),2) as total FROM `info_orden` o left JOIN `factura` f ON (f.id_orden = o.id) left JOIN `devolucion` d ON (o.id = d.id_orden) where d.id IS NULL AND metodo='efectivo' AND MONTH(`fecha`) = :m AND YEAR(`fecha`) = :y");
         } else {
             $stmt = $pdo->prepare("SELECT *, o.id as id, f.id as fid, d.id as did FROM `info_orden` o left JOIN `factura` f ON (f.id_orden = o.id) left JOIN `devolucion` d ON (o.id = d.id_orden) WHERE MONTH(`fecha`) = :m AND YEAR(`fecha`) = :y AND `local` = :loc");
-            $total_general = $pdo->prepare("SELECT round(sum(`precio`),2) as base, round(sum(`precio-final`),2) as total FROM `info_orden` o left JOIN `factura` f ON (f.id_orden = o.id) left JOIN `devolucion` d ON (o.id = d.id_orden) where d.id IS NULL AND MONTH(`fecha`) = :m AND YEAR(`fecha`) = :y AND `local` = :loc");
-            $total_tarjeta = $pdo->prepare("SELECT round(sum(`precio`),2) as base, round(sum(`precio-final`),2) as total FROM `info_orden` o left JOIN `factura` f ON (f.id_orden = o.id) left JOIN `devolucion` d ON (o.id = d.id_orden) where d.id IS NULL AND metodo='tarjeta' AND MONTH(`fecha`) = :m AND YEAR(`fecha`) = :y AND `local` = :loc");
-            $total_efectivo = $pdo->prepare("SELECT round(sum(`precio`),2) as base, round(sum(`precio-final`),2) as total FROM `info_orden` o left JOIN `factura` f ON (f.id_orden = o.id) left JOIN `devolucion` d ON (o.id = d.id_orden) where d.id IS NULL AND metodo='efectivo' AND MONTH(`fecha`) = :m AND YEAR(`fecha`) = :y AND `local` = :loc");
             $stmt->bindParam(':loc', $local);
-            $total_general->bindParam(':loc', $local);
-            $total_tarjeta->bindParam(':loc', $local);
-            $total_efectivo->bindParam(':loc', $local);
         }
         $stmt->bindParam(':m', $m);
         $stmt->bindParam(':y', $y);
-        $total_general->bindParam(':m', $m);
-        $total_general->bindParam(':y', $y);
-        $total_tarjeta->bindParam(':m', $m);
-        $total_tarjeta->bindParam(':y', $y);
-        $total_efectivo->bindParam(':m', $m);
-        $total_efectivo->bindParam(':y', $y);
     } else {
         if($local === 0){
             $stmt = $pdo->prepare("SELECT *, o.id as id, f.id as fid, d.id as did FROM `info_orden` o left JOIN `factura` f ON (f.id_orden = o.id) left JOIN `devolucion` d ON (o.id = d.id_orden) WHERE DAY(`fecha`) = :d AND MONTH(`fecha`) = :m AND YEAR(`fecha`) = :y");
-            $total_general = $pdo->prepare("SELECT round(sum(`precio`),2) as base, round(sum(`precio-final`),2) as total FROM `info_orden` o left JOIN `factura` f ON (f.id_orden = o.id) left JOIN `devolucion` d ON (o.id = d.id_orden) where d.id IS NULL AND DAY(`fecha`) = :d AND MONTH(`fecha`) = :m AND YEAR(`fecha`) = :y");
-            $total_tarjeta = $pdo->prepare("SELECT round(sum(`precio`),2) as base, round(sum(`precio-final`),2) as total FROM `info_orden` o left JOIN `factura` f ON (f.id_orden = o.id) left JOIN `devolucion` d ON (o.id = d.id_orden) where d.id IS NULL AND metodo='tarjeta' AND DAY(`fecha`) = :d AND MONTH(`fecha`) = :m AND YEAR(`fecha`) = :y");
-            $total_efectivo = $pdo->prepare("SELECT round(sum(`precio`),2) as base, round(sum(`precio-final`),2) as total FROM `info_orden` o left JOIN `factura` f ON (f.id_orden = o.id) left JOIN `devolucion` d ON (o.id = d.id_orden) where d.id IS NULL AND metodo='efectivo' AND DAY(`fecha`) = :d AND MONTH(`fecha`) = :m AND YEAR(`fecha`) = :y");
         } else {
             $stmt = $pdo->prepare("SELECT *, o.id as id, f.id as fid, d.id as did FROM `info_orden` o left JOIN `factura` f ON (f.id_orden = o.id) left JOIN `devolucion` d ON (o.id = d.id_orden) WHERE DAY(`fecha`) = :d AND MONTH(`fecha`) = :m AND YEAR(`fecha`) = :y AND `local` = :loc");
-            $total_general = $pdo->prepare("SELECT round(sum(`precio`),2) as base, round(sum(`precio-final`),2) as total FROM `info_orden` o left JOIN `factura` f ON (f.id_orden = o.id) left JOIN `devolucion` d ON (o.id = d.id_orden) where d.id IS NULL AND DAY(`fecha`) = :d AND MONTH(`fecha`) = :m AND YEAR(`fecha`) = :y AND `local` = :loc");
-            $total_tarjeta = $pdo->prepare("SELECT round(sum(`precio`),2) as base, round(sum(`precio-final`),2) as total FROM `info_orden` o left JOIN `factura` f ON (f.id_orden = o.id) left JOIN `devolucion` d ON (o.id = d.id_orden) where d.id IS NULL AND metodo='tarjeta' AND DAY(`fecha`) = :d AND MONTH(`fecha`) = :m AND YEAR(`fecha`) = :y AND `local` = :loc");
-            $total_efectivo = $pdo->prepare("SELECT round(sum(`precio`),2) as base, round(sum(`precio-final`),2) as total FROM `info_orden` o left JOIN `factura` f ON (f.id_orden = o.id) left JOIN `devolucion` d ON (o.id = d.id_orden) where d.id IS NULL AND metodo='efectivo' AND DAY(`fecha`) = :d AND MONTH(`fecha`) = :m AND YEAR(`fecha`) = :y AND `local` = :loc");
             $stmt->bindParam(':loc', $local);
-            $total_general->bindParam(':loc', $local);
-            $total_tarjeta->bindParam(':loc', $local);
-            $total_efectivo->bindParam(':loc', $local);
         }
         $stmt->bindParam(':d', $d);
         $stmt->bindParam(':m', $m);
         $stmt->bindParam(':y', $y);
-        $total_general->bindParam(':d', $d);
-        $total_general->bindParam(':m', $m);
-        $total_general->bindParam(':y', $y);
-        $total_tarjeta->bindParam(':d', $d);
-        $total_tarjeta->bindParam(':m', $m);
-        $total_tarjeta->bindParam(':y', $y);
-        $total_efectivo->bindParam(':d', $d);
-        $total_efectivo->bindParam(':m', $m);
-        $total_efectivo->bindParam(':y', $y);
     }
     try {
         $stmt->execute();
-        $total_general->execute();
-        $total_tarjeta->execute();
-        $total_efectivo->execute();
     } catch(PDOException $e){
         echo $e->getMessage();
     }
-    $total_general = $total_general->fetch(PDO::FETCH_ASSOC);
-    $total_tarjeta = $total_tarjeta->fetch(PDO::FETCH_ASSOC);
-    $total_efectivo = $total_efectivo->fetch(PDO::FETCH_ASSOC);
     
     // CREAR PDF
     $pdf = new FPDF("L");
@@ -894,53 +886,52 @@ function totalVentas($d=0, $m, $y, $local=0){
     $pdf->Cell(28, 5, iconv('UTF-8', 'windows-1252', 'ID - Fecha'), 1, 0);
     $pdf->Cell($width/2-60, 5, iconv('UTF-8', 'windows-1252', 'Descripción'), 1, 0);
     $pdf->Cell(4, 5, iconv('UTF-8', 'windows-1252', 'T'), 1, 0);
-    $pdf->Cell(4, 5, iconv('UTF-8', 'windows-1252', 'F'), 1, 0);
-    $pdf->Cell(4, 5, iconv('UTF-8', 'windows-1252', 'S'), 1, 0);
     $pdf->Cell(17, 5, iconv('UTF-8', 'windows-1252', 'Local'), 1, 0);
     $pdf->Cell(15, 5, iconv('UTF-8', 'windows-1252', 'Método'), 1, 0);
     $pdf->Cell(10, 5, iconv('UTF-8', 'windows-1252', '- %'), 1, 0);
-    $pdf->Cell($width/15, 5, iconv('UTF-8', 'windows-1252', 'IVA'), 1, 0);
-    $pdf->Cell($width/15, 5, iconv('UTF-8', 'windows-1252', 'P.U.'), 1, 0);
-    $pdf->Cell($width/15, 5, iconv('UTF-8', 'windows-1252', 'Cant.'), 1, 0);
-    $pdf->Cell($width/15, 5, iconv('UTF-8', 'windows-1252', 'Base Imp.'), 1, 0);
-    $pdf->Cell($width/15, 5, iconv('UTF-8', 'windows-1252', 'Total'), 1, 1);
+    $pdf->Cell(15, 5, iconv('UTF-8', 'windows-1252', 'IVA'), 1, 0);
+    $pdf->Cell(19, 5, iconv('UTF-8', 'windows-1252', 'P.U.'), 1, 0);
+    $pdf->Cell(11, 5, iconv('UTF-8', 'windows-1252', 'Cant.'), 1, 0);
+    $pdf->Cell(19, 5, iconv('UTF-8', 'windows-1252', 'Base Imp.'), 1, 0);
+    $pdf->Cell(19, 5, iconv('UTF-8', 'windows-1252', 'Total'), 1, 0);
+    $pdf->Cell(15, 5, iconv('UTF-8', 'windows-1252', 'Estado'), 1, 1);
     $pdf->SetFont('Arial','',8);
     
-    //$total_total = 0;
+    $total_total = 0;
     $iva_total = 0;
-    //$total_efectivo = 0;
-    //$total_tarjeta = 0;
+    $total_efectivo = 0;
+    $total_tarjeta = 0;
     $iva_efectivo = 0;
     $iva_tarjeta = 0;
     while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+        $estado = $row["estado"]==4?"Pagado":"Pendiente";
         $pdf->Cell(28, 5, iconv('UTF-8', 'windows-1252', $row["id"]." - ".(empty($row["fecha_pago"])?"Sin fecha":$row["fecha_pago"])), 1, 0);
         $pdf->Cell($width/2-60, 5, iconv('UTF-8', 'windows-1252', ucfirst($row["servicio"])), 1, 0);
         $pdf->Cell(4, 5, iconv('UTF-8', 'windows-1252', $row["ticket"]?"X":""), 1, 0);
-        $pdf->Cell(4, 5, iconv('UTF-8', 'windows-1252', $row["factura"]?"X":""), 1, 0);
-        $pdf->Cell(4, 5, iconv('UTF-8', 'windows-1252', $row["simplificada"]?"X":""), 1, 0);
         $pdf->Cell(17, 5, iconv('UTF-8', 'windows-1252', $row["local"]), 1, 0);
         $pdf->Cell(15, 5, iconv('UTF-8', 'windows-1252', $row["metodo"]), 1, 0);
         $pdf->Cell(10, 5, iconv('UTF-8', 'windows-1252', $row["descuento"]."%"), 1, 0);
-        $pdf->Cell($width/15, 5, iconv('UTF-8', 'windows-1252', $row["iva"]."%"), 1, 0);
-        $pdf->Cell($width/15, 5, iconv('UTF-8', 'windows-1252',  $row["precio"]." €"), 1, 0);
-        $pdf->Cell($width/15, 5, iconv('UTF-8', 'windows-1252', 1), 1, 0);
-        $pdf->Cell($width/15, 5, iconv('UTF-8', 'windows-1252',  $row["precio"]." €"), 1, 0);
-        $pdf->Cell($width/15, 5, iconv('UTF-8', 'windows-1252',  $row["precio-final"]." €"), 1, 1);
+        $pdf->Cell(15, 5, iconv('UTF-8', 'windows-1252', $row["iva"]."%"), 1, 0);
+        $pdf->Cell(19, 5, iconv('UTF-8', 'windows-1252',  $row["precio"]." €"), 1, 0);
+        $pdf->Cell(11, 5, iconv('UTF-8', 'windows-1252', 1), 1, 0);
+        $pdf->Cell(19, 5, iconv('UTF-8', 'windows-1252',  $row["precio"]." €"), 1, 0);
+        $pdf->Cell(19, 5, iconv('UTF-8', 'windows-1252',  $row["precio-final"]." €"), 1, 0);
+        $pdf->Cell(15, 5, iconv('UTF-8', 'windows-1252',  $estado), 1, 1);
         if(!empty($row["did"])){
             $pdf->Cell(28, 5, iconv('UTF-8', 'windows-1252', $row["id"]." - ".$row["fecha"]), 1, 0);
-            $pdf->Cell($width-75.3, 5, iconv('UTF-8', 'windows-1252', "DEVOLUCIÓN"), 1, 0);
-            $pdf->Cell($width/15, 5, iconv('UTF-8', 'windows-1252',  "-".$row["precio-final"]." €"), 1, 1);
+            $pdf->Cell(198.5, 5, iconv('UTF-8', 'windows-1252', "DEVOLUCIÓN"), 1, 0);
+            $pdf->Cell(34, 5, iconv('UTF-8', 'windows-1252',  "-".$row["precio-final"]." €"), 1, 1);
         } else {
             $final = $row["precio"] - ($row["precio"]/100*$row["descuento"]);
             $iva = round(($final * $row["iva"])/100, 2);
             $iva_total+=$iva;
-            //$total_total+=doubleval($row["precio"]);
+            $total_total+=doubleval($row["precio"]);
             if($row["metodo"] == "Efectivo") {
-                //$total_efectivo += doubleval($final);
+                $total_efectivo += doubleval($final);
                 $iva_efectivo += $iva;
             }
             if($row["metodo"] == "Tarjeta") {
-                //$total_tarjeta += doubleval($final);
+                $total_tarjeta += doubleval($final);
                 $iva_tarjeta += $iva;
             }
         }
@@ -953,13 +944,13 @@ function totalVentas($d=0, $m, $y, $local=0){
     $pdf->SetX(10);
     $pdf->Cell($width/6, 5, iconv('UTF-8', 'windows-1252',  "TOTAL"), 0, 1);
     $pdf->Cell($width/6, 5, iconv('UTF-8', 'windows-1252',  "Total (Base Imp.): "), 1, 0);
-    $pdf->Cell($width/5, 5, iconv('UTF-8', 'windows-1252',  $total_general["base"]." €"), 1, 1);
-    $pdf->Cell($width/6, 5, iconv('UTF-8', 'windows-1252',  "Descuento: "), 1, 0);
-    $pdf->Cell($width/5, 5, iconv('UTF-8', 'windows-1252',  ($total_general["total"]-$iva_total-$total_general["base"])." €"), 1, 1);
+    $pdf->Cell($width/5, 5, iconv('UTF-8', 'windows-1252',  $total_total." €"), 1, 1);
+    //$pdf->Cell($width/6, 5, iconv('UTF-8', 'windows-1252',  "Descuento: "), 1, 0);
+    //$pdf->Cell($width/5, 5, iconv('UTF-8', 'windows-1252',  ($total_total-$iva_total-$total_total)." €"), 1, 1);
     $pdf->Cell($width/6, 5, iconv('UTF-8', 'windows-1252',  "Total IVA: "), 1, 0);
     $pdf->Cell($width/5, 5, iconv('UTF-8', 'windows-1252',  $iva_total." €"), 1, 1);
     $pdf->Cell($width/6, 5, iconv('UTF-8', 'windows-1252',  "Total: "), 1, 0);
-    $pdf->Cell($width/5, 5, iconv('UTF-8', 'windows-1252',  $total_general["total"]." €"), 1, 1);
+    $pdf->Cell($width/5, 5, iconv('UTF-8', 'windows-1252',  ($total_total+$iva_total)." €"), 1, 1);
     
     $pdf->Ln(15);
 
@@ -971,11 +962,11 @@ function totalVentas($d=0, $m, $y, $local=0){
     // BASE TARJETA
     $pdf->SetX(10);
     $pdf->Cell($width/6, 5, iconv('UTF-8', 'windows-1252',  "Total (Base Imp.): "), 1, 0);
-    $pdf->Cell($width/5, 5, iconv('UTF-8', 'windows-1252',  $total_tarjeta["base"]." €"), 1, 0);
+    $pdf->Cell($width/5, 5, iconv('UTF-8', 'windows-1252',  $total_tarjeta." €"), 1, 0);
     // BASE EFECTIVO
     $pdf->SetX(122);
     $pdf->Cell($width/6, 5, iconv('UTF-8', 'windows-1252',  "Total (Base Imp.): "), 1, 0);
-    $pdf->Cell($width/5, 5, iconv('UTF-8', 'windows-1252',  $total_efectivo["base"]." €"), 1, 1);
+    $pdf->Cell($width/5, 5, iconv('UTF-8', 'windows-1252',  $total_efectivo." €"), 1, 1);
 
     // IVA TARJETA
     $pdf->SetX(10);
@@ -989,11 +980,11 @@ function totalVentas($d=0, $m, $y, $local=0){
     // TOTAL TARJETA
     $pdf->SetX(10);
     $pdf->Cell($width/6, 5, iconv('UTF-8', 'windows-1252',  "Total: "), 1, 0);
-    $pdf->Cell($width/5, 5, iconv('UTF-8', 'windows-1252',  $total_tarjeta["total"]." €"), 1, 0);
+    $pdf->Cell($width/5, 5, iconv('UTF-8', 'windows-1252',  ($total_tarjeta+$iva_tarjeta)." €"), 1, 0);
     // TOTAL EFECTIVO
     $pdf->SetX(122);
     $pdf->Cell($width/6, 5, iconv('UTF-8', 'windows-1252',  "Total: "), 1, 0);
-    $pdf->Cell($width/5, 5, iconv('UTF-8', 'windows-1252',  $total_efectivo["total"]." €"), 1, 1);
+    $pdf->Cell($width/5, 5, iconv('UTF-8', 'windows-1252',  ($total_efectivo+$iva_efectivo)." €"), 1, 1);
     
     // ABRIR PDF
     $pdf->Output('I', null, true);

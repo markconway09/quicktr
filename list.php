@@ -54,9 +54,9 @@
                 }
                 $servicio = "";$ins = "";
                 if(!empty($row["servicio"])){
-                    $ser = explode(": ", $row["servicio"])[0];
-                    $servicio .= '<p class="card-text"><b>Tipo de servicio:</b> '.$ser.'</p>';
-                    $servicio .= '<p class="card-text"><b>Servicio:</b> '.explode(": ", $row["servicio"])[1].'</p>';
+                    $ser = explode(": ", $row["servicio"]);
+                    $servicio .= '<p class="card-text"><b>Tipo de servicio:</b> '.$ser[0].'</p>';
+                    $servicio .= '<p class="card-text"><b>Servicio:</b> '.$ser[1].'</p>';
                 } else{
                     $ser = "PENDIENTE MODIFICAR";
                     $servicio .= '<p class="card-text"><b>Tipo de servicio:</b> </p>';
@@ -82,7 +82,7 @@
                 if($row["garantia"] != 0) $garantia = " | <i class='bi bi-file-text'></i> <a style='text-decoration:none;color:#FFA' href='?pag=list&id=".$row["garantia"]."'>GARANTÍA <i class='bi bi-arrow-right-short'></i></a>";
                 echo '<div class="col-12">
                             <div class="card my-3">
-                                <h5 class="card-header py-3" style="color:white;background-color:'.$colores[$row["estado"]].';">'.$ser.' # '.$row["id"].$garantia.'</h5>
+                                <h5 class="card-header py-3" style="color:white;background-color:'.$colores[$row["estado"]].';">'.$row["servicio"].' # '.$row["id"].$garantia.'</h5>
                                 <div class="card-body">
                                     '.$estado;
                                 // PROGRESS BAR
@@ -105,8 +105,8 @@
                                 <?php if(($row["estado"] < 3 && $_SESSION["login"]=="tecnico")||($_SESSION["login"]=="dependiente"&&$row["estado"]==0)||($_SESSION["login"]=="dependiente"&&$row["estado"]==1)){ if(($row["estado"]+1)<5){ ?><a href="execute.php?estado=<?php echo $row["estado"]+1 ?>&id=<?php echo $row["id"] ?>&pag=1" class="btn text-light" style="color:black; background-color:<?php echo $colores[$row["estado"]+1] ?>"><?php echo $pasos[$row["estado"]+1] ?> <i class="bi bi-caret-right-fill"></i></a><?php }} ?>
                                 <?php if($_SESSION["login"]=="admin"){ if(($row["estado"]-1)>=0){ ?><a href="execute.php?estado=<?php echo $row["estado"]-1 ?>&id=<?php echo $row["id"] ?>&pag=1" class="btn text-light" style="color:black; background-color:<?php echo $colores[$row["estado"]-1] ?>"><i class="bi bi-caret-left-fill"></i> <?php echo $pasos[$row["estado"]-1] ?></a><?php }} ?>
                                 <?php if($_SESSION["login"]=="admin"){ if(($row["estado"]+1)<4){ ?><a href="execute.php?estado=<?php echo $row["estado"]+1 ?>&id=<?php echo $row["id"] ?>&pag=1" class="btn text-light" style="color:black; background-color:<?php echo $colores[$row["estado"]+1] ?>"><?php echo $pasos[$row["estado"]+1] ?> <i class="bi bi-caret-right-fill"></i></a><?php }} ?>
-                                <?php if(($_SESSION["login"]=="admin"||$_SESSION["login"]=="dependiente")&&$row["estado"]==3){ ?>
-                                    <form action="execute.php" method="get">
+                                <?php if(($_SESSION["login"]=="admin"||$_SESSION["login"]=="dependiente")){ ?>
+                                    <form action="execute.php" class="m-2" method="get">
                                         <input type="hidden" name="pag" value="1">
                                         <input type="hidden" name="id" value="<?php echo $row["id"] ?>">
                                         <div class="form-check form-check-inline">
@@ -120,7 +120,7 @@
                                             <label class="form-check-label" for="metodoEfectivo">
                                                 Efectivo
                                             </label>
-                                        </div>
+                                        </div><br>
                                         <button class="btn btn-secondary" type="submit" name="estado" value="4">Entregado/Cobrar</button>
                                     </form>
                                 <?php } ?>
@@ -159,19 +159,84 @@
                                         <div class="col-md-6 col-12">
                                             <b>Firma:</b>
                                             <?php if (!empty($row["firma"]) && file_exists($row["firma"])): ?>
-                                                <img src="<?php echo $row["firma"]; ?>" alt="firma">
+                                                <img width="100%" src="<?php echo $row["firma"]; ?>" alt="firma">
                                             <?php else: ?>
-                                                <p>No hay firma disponible.</p>
+                                                <p class="card-text">
+                                                    No hay firma disponible.
+                                                </p>
                                             <?php endif; ?>
                                         </div>
                                     </div>
+                                    <a class="btn btn-primary" style="margin-left: 50%;" href="form-firma.php?id=<?php echo $_GET["id"]; ?>" target="_blank">Añadir firma</a>
+                                    <hr>
+                                    
+                                    <ul class="list-group list-group-flush mb-3">
+                                        <?php echo $_SESSION["login"] != "dependiente" ? $ins : "<hr>" ?>
+                                        <li class="list-group-item"><b>Precio:</b> <?php echo $row["precio"] ?>€ (- <?php echo $row["descuento"] ?>%) (+ IVA <?php echo $row["iva"] ?>%) = <b><?php echo $row["precio-final"] ?>€</b></li>
+                                    </ul>
+                                    <hr>
+                                    <div class="row">
+                                        <div class="col-12 mb-3">
+                                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#fotos">Añadir fotos</a>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="gallery">
+                                        <?php
+                                        $pdo = connect();
+                                        $fotos = $pdo->prepare("SELECT * FROM `foto` WHERE id_orden = :id");
+                                        $fotos->bindParam(':id', $_GET["id"]);
+                                        try {
+                                            $fotos->execute();
+                                        } catch(PDOException $e){
+                                            echo $e->getMessage();
+                                        }
+                                        $rowCount = $fotos->rowCount();
+                                        if ($rowCount > 0) {
+                                            while ($img = $fotos->fetch(PDO::FETCH_ASSOC)) {
+                                                echo '
+                                            <a href="'. $img["archivo"] .'" target="_blank">
+                                                <img src="'. $img["archivo"] .'" alt="Foto'. $img["id"] .'">
+                                            </a>
+                                            ';
+                                            }
+                                        }
+                                        ?>
+                                        </div>
+                                    </div>
                                 </div>
-                                <ul class="list-group list-group-flush mb-3">
-                                    <?php echo $_SESSION["login"] != "dependiente" ? $ins : "<hr>" ?>
-                                    <li class="list-group-item"><b>Precio:</b> <?php echo $row["precio"] ?>€ (- <?php echo $row["descuento"] ?>%) (+ IVA <?php echo $row["iva"] ?>%) = <b><?php echo $row["precio-final"] ?>€</b></li>
-                                </ul>
                             </div>
                         </div>
+<!-- IMAGENES -->
+            <div class="modal fade" id="fotos" tabindex="-1" aria-labelledby="fotosLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="fotosLabel">SUBIR FOTOS</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form action="execute.php" method="POST" enctype="multipart/form-data">
+                                <div class="row px-5 mb-3">
+                                    <div class="col-12">
+                                        <input type="hidden" name="id" value="<?php echo $row["id"]; ?>">
+                                        <input type="file" id="imageUpload" accept="image/*" name="images[]" multiple class="form-control form-control-lg">
+                                        <br>
+                                        <div class="form-floating">
+                                            <textarea rows="5" style="height:100%;" class="form-control form-control-lg" placeholder="Actualizar descripción" name="desc" id="desc"><?php echo $row["desc"]; ?></textarea>
+                                            <label for="desc">Actualizar descripción</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <input type="submit" name="guardar-fotos" class="btn btn-success btn-lg col-5 mx-auto" value="Enviar">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+<!-- ELIMINAR -->
             <div class="modal fade" id="elimModal" tabindex="-1" aria-labelledby="elimModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
@@ -189,6 +254,7 @@
                     </div>
                 </div>
             </div>
+<!-- ENVIAR -->
             <div class="modal fade" id="enviarModal" tabindex="-1" aria-labelledby="enviarModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
@@ -413,7 +479,6 @@
 
             ?>
         </div>
-
         <script>
             const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
             const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))

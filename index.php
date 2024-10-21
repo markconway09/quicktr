@@ -54,11 +54,20 @@
         <!-- JQUERY -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-        <!-- jSignature -->
-        <script src="jSignature/jSignature.min.js"></script>
         <style>
             body{
                 font-family: "Montserrat";
+            }
+            .gallery {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            .gallery img {
+                width: 100%;
+                height: auto;
+                max-width: 200px; /* Adjust as needed */
+                cursor: pointer;
             }
         </style>
     </head>
@@ -67,7 +76,7 @@
         <nav class="navbar navbar-light" style="background-color:rgb(43,45,46);">
             <a class="navbar-brand mx-auto" href="index.php">
                 <img class="rounded" src="LOGO.png" alt="logo" height="90">
-                <span class="badge badge-pill bg-danger">1.9.3</span>
+                <span class="badge badge-pill bg-danger">1.10.0</span>
             </a>
             <?php
             if(isset($_SESSION["login"])){ ?>
