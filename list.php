@@ -157,9 +157,9 @@
                                             <p class="card-text"><b>Método de pago:</b> <?php echo $row["metodo"] ?></p>
                                         </div>
                                         <div class="col-md-6 col-12">
-                                            <b>Firma:</b>
+                                            <b>Firma:</b><br>
                                             <?php if (!empty($row["firma"]) && file_exists($row["firma"])): ?>
-                                                <img width="100%" src="<?php echo $row["firma"]; ?>" alt="firma">
+                                                <img height="250px" src="<?php echo $row["firma"]; ?>" alt="firma">
                                             <?php else: ?>
                                                 <p class="card-text">
                                                     No hay firma disponible.
@@ -168,7 +168,9 @@
                                             <?php endif; ?>
                                         </div>
                                     </div>
+                                    <?php if (empty($row["firma"])){ ?>
                                     <a class="btn btn-primary" style="margin-left: 50%;" href="form-firma.php?id=<?php echo $_GET["id"]; ?>" target="_blank">Añadir firma</a>
+                                    <?php } ?>
                                     <hr>
                                     
                                     <ul class="list-group list-group-flush mb-3">

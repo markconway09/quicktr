@@ -37,11 +37,11 @@ if(isset($_POST["guardar-firma"])){
     <body>
         <div class="container my-4">
             <form action="" method="POST" class="form-control text-bg-light">
-                <div class="row m-3 rounded p-3" style="background-color:rgb(43,45,46);">
+                <div class="row m-3 rounded p-3 d-none d-md-block text-center" style="background-color:rgb(43,45,46);">
                     <img src="LOGO.png" alt="logo" class="img-fluid mx-auto w-25">
                 </div>
                 
-                <div class="row px-5 mb-3">
+                <div class="row px-md-5 mb-3">
                     <div class="col-12">
                         <h1 class="display-5 text-center mb-4">FIRMA</h1>
                         <div class="form-control text-center">
@@ -63,11 +63,15 @@ if(isset($_POST["guardar-firma"])){
     // jSignature
     $(document).ready(function() {
         var $sigdiv = $("#signature").jSignature();
-        
-        $("#clear").click(function() {
+        var height = $(".jSignature").width()/2.5;
+        $(".jSignature").height(height);
+        $(".jSignature").attr("height",height);
+        $("#clear").click(borrar());
+        borrar();
+        function borrar() {
             event.preventDefault(); // Prevent form submission
             $sigdiv.jSignature("reset");
-        });
+        }
 
         function saveSignature() {
             event.preventDefault(); // Prevent form submission
