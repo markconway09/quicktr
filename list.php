@@ -13,7 +13,7 @@
                 $precios = "";
                 $cant = "";
                 ?>
-                <div class="input-group mt-3">
+                <div class="input-group sticky-top mt-3 p-2 bg-dark" style="top: 50px;">
                     <a href="?pag=list" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
                     <a href="execute.php?ticketservicio=1&id=<?php echo $id; ?>" target="_blank" class="btn btn-primary"><i class="bi bi-ticket-detailed"></i> Imprimir Ticket</a>
                     <a href="?pag=garantia&id=<?php echo $id; ?>" class="btn" 
