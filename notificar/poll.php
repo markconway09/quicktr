@@ -17,7 +17,6 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $estados.=$row["estado"];
 }
 
-// Simulated database data for demonstration purposes
 $currentData = [
     'lastUpdate' => time(),
     'content' => $estados,
@@ -28,7 +27,7 @@ if (!isset($_SESSION['lastContent'])) {
     $_SESSION['lastContent'] = $currentData['content'];
 }
 
-// Check for specific change (e.g., change in content)
+// Check for specific change
 $notification = '';
 if ($_SESSION['lastContent'] !== $currentData['content']) {
     $notification = 'Un ticket ha cambiado de estado.';
