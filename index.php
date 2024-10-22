@@ -54,6 +54,8 @@
         <!-- JQUERY -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+        <!-- NOTIFICACIÓN -->
+         <script src="notificar/polling.js"></script>
         <style>
             body{
                 font-family: "Montserrat";
@@ -110,6 +112,7 @@
                                 </button>
                                 <ul class="dropdown-menu">
                                     <li><a class="dropdown-item" target="_blank" href="/almacen">Almacén</a></li>
+                                    <li><a class="dropdown-item" target="_blank" href="form-cliente.php">Formulario Cliente</a></li>
                                     <li><a class="dropdown-item" href="?pag=totalventas">Total Ventas</a></li>
                                     <li><a class="dropdown-item" href="?pag=user-admin">Usuarios</a></li>
                                     <li><a class="dropdown-item" href="?pag=infoClientes">Clientes</a></li>
@@ -120,9 +123,6 @@
                         <button class="btn btn-primary flex-fill" type="submit" name="pag" value="form-servicio">
                             <i class="bi bi-pencil-square"></i> Formulario
                         </button>
-                        <!--<a class="btn btn-success flex-fill" target="_blank" href="form-cliente.php?local=<?php echo $_SESSION["local"]; ?>" type="submit" name="pag" value="form-servicio">
-                            <i class="bi bi-pencil-square"></i> Formulario Cliente
-                        </a>-->
                         <button class="btn btn-secondary flex-fill" type="submit" name="pag" value="list">
                             <i class="bi bi-columns-gap"></i> Lista
                         </button>
