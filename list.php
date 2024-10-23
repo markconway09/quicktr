@@ -389,7 +389,6 @@
                     $bg = "text-bg-dark";
                     $estado = " | <i class='bi bi-arrow-counterclockwise'></i> DEVUELTO";
                 } elseif ($row["garantia"] != 0) {
-                    $bg = "text-bg-dark";
                     $estado = " | <i class='bi bi-file-text'></i> <a style='text-decoration:none;color:#FFA' href='?pag=list&id=" . $row["garantia"] . "'>GARANTÍA <i class='bi bi-arrow-right-short'></i></a>";
                 } else {
                     $estado = " | " . $pasos[$row["estado"]];
@@ -401,12 +400,14 @@
                 } else {
                     $serv = "PENDIENTE MODIFICAR";
                 }
-            
+
+                $statusColor = !empty($row["did"])?"black":$colores[$row["estado"]];
+                
                 // Generate card HTML
                 echo '
                     <div class="col-lg-4 col-12">
                         <div class="card ' . $bg . ' my-3">
-                            <h5 class="card-header py-3" style="color:white;background-color:' . $colores[$row["estado"]] . ';">' . $serv . ' # ' . $row["id"] . '<br><div style="display:inline;margin-right:2px;border-left: 3px solid ' . $localColor[$row["local"] == "Barcelona" ? 0 : 1] . ';height: 5px;"></div>' . $row["local"] . $estado . '</h5>';
+                            <h5 class="card-header py-3" style="color:white;background-color:' . $statusColor . ';">' . $serv . ' # ' . $row["id"] . '<br><div style="display:inline;margin-right:2px;border-left: 3px solid ' . $localColor[$row["local"] == "Barcelona" ? 0 : 1] . ';height: 5px;"></div>' . $row["local"] . $estado . '</h5>';
             
                 // Display status steps
                 echo '
