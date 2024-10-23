@@ -29,7 +29,7 @@ function subirFirma($id){
     $pdo = connect();
     $stmt = $pdo->prepare("INSERT INTO firma VALUES (null, :id, :archivo)"); 
     $stmt->bindParam(':id', $id);
-    $stmt->bindParam(':archivo', $file);
+    $stmt->bindParam(':archivo', $image_id);
     try {
         $stmt->execute();
     } catch(PDOException $e){

@@ -168,8 +168,8 @@
                                         </div>
                                         <div class="col-md-6 col-12">
                                             <b>Firma:</b><br>
-                                            <?php if (!empty($row["firma"]) && file_exists($row["firma"])): ?>
-                                                <img class="w-100 h-100" height="250px" src="<?php echo $row["firma"]; ?>" alt="firma">
+                                            <?php if (!empty($row["firma"]) && file_exists("upload/".$row["firma"])): ?>
+                                                <img class="w-100 h-100" height="250px" src="<?php echo "upload/".$row["firma"]; ?>" alt="firma">
                                             <?php else: ?>
                                                 <p class="card-text">
                                                     No hay firma disponible.
@@ -291,7 +291,7 @@
             }
             ?>
             <div class="row">
-                <ul class="nav nav-tabs bg-dark">
+                <ul class="nav nav-tabs bg-dark mt-2">
                     <?php
                         $filters = [
                             "0" => "Diagnóstico",
