@@ -14,34 +14,44 @@
                 $cant = "";
                 ?>
                 <div class="input-group sticky-top mt-3 py-2 bg-dark" style="top: 50px; z-index: 1;">
-                    <a href="?pag=list" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
-                    <a href="execute.php?ticketservicio=1&id=<?php echo $id; ?>" target="_blank" class="btn btn-primary"><i class="bi bi-ticket-detailed"></i> Imprimir Ticket</a>
+                    <a href="?pag=list" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> <span class="d-none d-sm-inline">Volver</span>
+                    </a>
+                    <a href="execute.php?ticketservicio=1&id=<?php echo $id; ?>" target="_blank" class="btn btn-primary">
+                        <i class="bi bi-receipt-cutoff"></i> <span class="d-none d-sm-inline">Imprimir Ticket</span>
+                    </a>
                     <a href="?pag=garantia&id=<?php echo $id; ?>" class="btn" 
                     style="background-color: #007c7a; color: white; transition: background-color 0.3s;" 
                     onmouseover="this.style.backgroundColor='#006d6b';" 
                     onmouseout="this.style.backgroundColor='#007c7a';">
-                        <i class="bi bi-file-text"></i> Garantía
+                        <i class="bi bi-file-text"></i> <span class="d-none d-sm-inline">Garantía</span>
                     </a>
                     <button type="button" class="btn" 
-                    style="background-color: #fd7e14; color: white; transition: background-color 0.3s;" 
-                    onmouseover="this.style.backgroundColor='#e68a00';" 
-                    onmouseout="this.style.backgroundColor='#fd7e14';" 
-                    data-bs-toggle="modal" data-bs-target="#enviarModal">
-                        <i class="bi bi-send"></i> Enviar
+                            style="background-color: #fd7e14; color: white; transition: background-color 0.3s;" 
+                            onmouseover="this.style.backgroundColor='#e68a00';" 
+                            onmouseout="this.style.backgroundColor='#fd7e14';" 
+                            data-bs-toggle="modal" data-bs-target="#enviarModal">
+                        <i class="bi bi-envelope-at"></i> <span class="d-none d-sm-inline">Enviar</span>
                     </button>
-                    <a href="edit.php?id=<?php echo $id; ?>" class="btn btn-success"><i class="bi bi-pencil-square"></i> Editar</a>
+                    <a href="edit.php?id=<?php echo $id; ?>" class="btn btn-success">
+                        <i class="bi bi-pencil-square"></i> <span class="d-none d-sm-inline">Editar</span>
+                    </a>
                     <?php if (!empty($row["did"])) { ?>
-                        <a href="execute.php?deshacer=1&id=<?php echo $id; ?>" class="btn btn-danger"><i class="bi bi-arrow-counterclockwise"></i> Deshacer devolución</a>
+                        <a href="execute.php?deshacer=1&id=<?php echo $id; ?>" class="btn btn-danger">
+                            <i class="bi bi-arrow-counterclockwise"></i> <span class="d-none d-sm-inline">Deshacer devolución</span>
+                        </a>
                     <?php } else { ?>
-                        <a href="execute.php?devolucion=1&id=<?php echo $id; ?>" class="btn btn-danger"><i class="bi bi-arrow-counterclockwise"></i> Devolución</a>
+                        <a href="execute.php?devolucion=1&id=<?php echo $id; ?>" class="btn btn-danger">
+                            <i class="bi bi-arrow-counterclockwise"></i> <span class="d-none d-sm-inline">Devolución</span>
+                        </a>
                     <?php } ?>
                     <?php if ($_SESSION["login"] == "admin") { ?>
                         <button type="button" class="btn" 
-                        style="background-color: #c82333; color: white; transition: background-color 0.3s;" 
-                        onmouseover="this.style.backgroundColor='#a71c2b';" 
-                        onmouseout="this.style.backgroundColor='#c82333';" 
-                        data-bs-toggle="modal" data-bs-target="#elimModal">
-                            <i class="bi bi-trash"></i> Eliminar
+                                style="background-color: #c82333; color: white; transition: background-color 0.3s;" 
+                                onmouseover="this.style.backgroundColor='#a71c2b';" 
+                                onmouseout="this.style.backgroundColor='#c82333';" 
+                                data-bs-toggle="modal" data-bs-target="#elimModal">
+                            <i class="bi bi-trash"></i> <span class="d-none d-sm-inline">Eliminar</span>
                         </button>
                     <?php } ?>
                 </div>
@@ -159,7 +169,7 @@
                                         <div class="col-md-6 col-12">
                                             <b>Firma:</b><br>
                                             <?php if (!empty($row["firma"]) && file_exists($row["firma"])): ?>
-                                                <img height="250px" src="<?php echo $row["firma"]; ?>" alt="firma">
+                                                <img class="w-100 h-100" height="250px" src="<?php echo $row["firma"]; ?>" alt="firma">
                                             <?php else: ?>
                                                 <p class="card-text">
                                                     No hay firma disponible.
@@ -337,7 +347,7 @@
             </div></i>
             <?php
             $pdo = connect();
-            $sql = "SELECT *, i.id as id, d.id as did, DATE_FORMAT(fecha, '%d/%m/%Y') as fecha FROM info_orden i
+            $sql = "SELECT *, i.id as id, d.id as did, DATE_FORMAT(fecha, '%d/%m/%Y') as fecha, fecha as `date` FROM info_orden i
                     LEFT JOIN devolucion d ON (i.id = d.id_orden)";
             if(!isset($_POST["search"])){
                 if(!isset($_GET["filter"])){
@@ -411,13 +421,16 @@
                 for ($j = 0; $j <= 4; $j++) {
                     echo '<i class="bi bi-caret-up-fill px-4" style="color:' . ($row["estado"] != $j ? 'rgba(0,0,0,0)' : 'inherit') . '"></i>';
                 }
+                $pastDate = new DateTime($row["date"]);
+                $now = new DateTime();
+                $daysPassed = $now->diff($pastDate)->days;
                 echo '
                             </div>
                             <div class="card-body">
                                 <p class="card-text"><b>Nombre:</b> ' . $row["nombre"] . '</p>
                                 <p class="card-text"><b>Dispositivo:</b> ' . $row["nombre_dispositivo"] . '</p>
                                 <p class="card-text"><b>Descripción:</b> ' . $desc . '</p>
-                                <p class="card-text"><b>Fecha:</b> ' . $row["fecha"] . '</p>
+                                <p class="card-text"><b>Fecha:</b> ' . $row["fecha"] . ' · hace ' . $daysPassed . ' día(s)</p>
                             </div> 
                             <ul class="list-group list-group-flush">
                                 <li class="list-group-item ' . $bg . '"><b>Precio:</b> ' . $row["precio"] . '€ (+ IVA ' . $row["iva"] . '%) = <b>' . $row["precio-final"] . '€</b></li>
