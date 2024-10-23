@@ -224,12 +224,13 @@ function crearPDF($id, $factura=0 , $enviar=0){
     $pdf->Ln(1);
     $pdf->Cell($width/4, 5, 'Email', 0, 0);
     $pdf->Cell($width/1.5, 5, $datos["email"], 1, 1);
+    /*
     $pdf->Ln(1);
     $pdf->Cell($width/4, 5, iconv('UTF-8', 'windows-1252', 'Dirección'), 0, 0);
     $pdf->Cell($width/1.5, 5, $datos["direccion"], 1, 1);
     $pdf->Ln(1);
     $pdf->Cell($width/4, 5, iconv('UTF-8', 'windows-1252', 'C. Postal'), 0, 0);
-    $pdf->Cell($width/1.5, 5, $datos["cp"], 1, 1);
+    $pdf->Cell($width/1.5, 5, $datos["cp"], 1, 1);*/
 
     $pdf->Ln(5);
 

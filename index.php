@@ -76,14 +76,14 @@
     </head>
     <body class="bg-secondary">
         <!-- NAVBAR -->
-        <nav class="navbar navbar-light" style="background-color:rgb(43,45,46);">
+        <nav class="navbar navbar-light text-light" style="background-color:rgb(43,45,46);">
             <a class="navbar-brand mx-auto" href="index.php">
                 <img class="rounded" src="LOGO.png" alt="logo" height="90">
                 <span class="badge badge-pill bg-danger">1.10.0</span>
             </a>
             <?php
             if(isset($_SESSION["login"])){ ?>
-                <span class="text-light mx-3"><?php echo (!$_SESSION["login"]?"":$_SESSION["login"]); ?></span>
+                <span class="mx-3"><?php echo (!$_SESSION["login"]?"":$_SESSION["login"]); ?></span>
                 <?php if($_SESSION["login"]=="tecnico"||$_SESSION["login"]=="admin") { ?>
                 <select id="sessionSelect" onchange="updateSession(this.value)">
                     <option value="Todo" <?php echo $_SESSION["local"]==null?'selected':''?>>Todo</option>
@@ -91,7 +91,7 @@
                     <option value="Mataró" <?php echo $_SESSION["local"]=="Mataró"?'selected':''?>>Mataró</option>
                 </select>
                 <?php } else { echo $_SESSION["local"]; } ?>
-                <a href="index.php?logout=true" class="btn btn-danger mx-2"><i class="bi bi-box-arrow-in-left"></i> Log Out</a>';
+                <a href="index.php?logout=true" class="btn btn-danger mx-2"><i class="bi bi-box-arrow-in-left"></i> Log Out</a>
             <?php
             }
             ?>

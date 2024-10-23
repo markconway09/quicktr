@@ -1,4 +1,4 @@
-        <div class="container border my-4 px-4 py-2 bg-dark rounded">
+        <div class="container border my-4 px-4 bg-dark rounded">
             <?php
             $pasos = ["Diagnóstico", "Aprobación", "Reparación", "Terminado", "Entregado"];
             $pasosLargo = ["Espera del diagnóstico", "Espera aprobación del cliente", "En Reparación", "Reparación terminada", "Entregado al cliente"];
