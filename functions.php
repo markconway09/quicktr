@@ -264,8 +264,10 @@ function crearPDF($id, $factura=0 , $enviar=0){
     $pdf->Ln(1);
     $pdf->MultiCell($width, 5, iconv('UTF-8', 'windows-1252', 'Método de pago: '.$datos["metodo"]), 0, 0);
     $pdf->Ln(1);
-    $pdf->Image($datos["firma"], null, null, 70, 30);
-    $pdf->Ln(1);
+    if(!empty($datos["firma"])){
+        $pdf->Image($datos["firma"], null, null, 70, 30);
+        $pdf->Ln(1);
+    }
 
     $pdf->Ln(5);
     $str = '¡¡¡¡¡NO PIERDAS TU TICKET

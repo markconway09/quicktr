@@ -102,7 +102,7 @@
             exit();
         }
         ?>
-        <div class="container mx-auto p-2 rounded my-4 text-center sticky-top" style="background-color: rgb(43,45,46);">
+        <div class="container mx-auto p-2 rounded my-4 text-center sticky-top bg-dark">
             <form action="index.php" method="get">
                 <div class="col-12">
                     <div class="input-group d-flex">
