@@ -136,35 +136,40 @@
                                 <?php } ?>
                                     <hr>
                                     <div class="row">
+                                        <h3 class="display-4 mb-4">Datos Cliente</h3>
                                         <div class="col-md-6 col-12">
-                                            <p class="card-text"><b>Nombre:</b> <?php echo $row["nombre"] ?></p>
-                                            <p class="card-text"><b>Documento:</b> <?php echo $row["documento"] ?></p>
-                                            <p class="card-text"><b>Email:</b> <?php echo $row["email"]?></p>
+                                            <p class="card-text"><b>Nombre:</b> <?php echo !empty($row["nombre"])?$row["nombre"]:"No especificado"; ?></p>
+                                            <p class="card-text"><b>Documento:</b> <?php echo !empty($row["documento"])?$row["documento"]:"No especificado"; ?></p>
+                                            <p class="card-text"><b>Email:</b> <?php echo !empty($row["email"])?$row["email"]:"No especificado"; ?></p>
                                         </div>
                                         <div class="col-md-6 col-12">
-                                            <p class="card-text"><b>Dirección:</b> <?php echo $row["direccion"]." - ".$row["cp"] ?></p>
-                                            <p class="card-text"><b>Teléfono:</b> <a href="https://wa.me//<?php echo $row["telefono"] ?>" target="_blank"><?php echo $row["telefono"]?><a></p>
+                                            <p class="card-text"><b>Dirección:</b> <?php echo !empty($row["direccion"])?$row["direccion"]." - ".$row["cp"]:"No especificado"; ?></p>
+                                            <p class="card-text"><b>Teléfono:</b> <?php if(!empty($row["tel"])) { ?> <a href="https://wa.me//<?php echo $row["telefono"] ?>" target="_blank"><?php echo $row["telefono"]?><a><?php } else {echo "No especificado";} ?></p>
                                             <p class="card-text"><b>Cómo nos encontró:</b> <?php echo $row["razon"] ?></p>
                                         </div>
                                     </div>
                                     <hr>
                                     <div class="row">
+                                        <h3 class="display-4 mb-4">Detalles</h3>
                                         <div class="col-md-6 col-12">
-                                            <p class="card-text"><b>Fecha (d/m/y):</b> <?php echo $row["fecha"] ?></p>
-                                            <p class="card-text"><b>Fecha de pago:</b> <?php echo $row["fecha_pago"] ?></p>
-                                            <p class="card-text"><b>Local:</b> <?php echo $row["local"] ?></p>
+                                            <p class="card-text"><b>Fecha de entrada:</b> <?php echo $row["fecha"] ?></p>
+                                            <p class="card-text"><b>Fecha de pago:</b> <?php echo !empty($row["fecha_pago"])?$row["fecha_pago"]:"No pagado"; ?></p>
+                                            <p class="card-text"><b>Método de pago:</b> <?php echo !empty($row["metodo"])?$row["metodo"]:"No pagado"; ?></p>
                                         </div>
                                         <div class="col-md-6 col-12">
-                                            <?php echo $servicio ?>
+                                            <p class="card-text"><b>Local:</b> <?php echo $row["local"] ?></p>
                                             <p class="card-text"><b>Departamento:</b> <?php echo $row["dept"] ?></p>
                                         </div>
                                     </div>
                                     <hr>
                                     <div class="row">
+                                        <h3 class="display-4 mb-4">Servicio</h3>
                                         <div class="col-md-6 col-12">
+                                            <?php echo $servicio ?>
                                             <p class="card-text"><b>Dispositivo:</b> <?php echo $row["nombre_dispositivo"] ?></p>
                                             <p class="card-text"><?php echo $desc ?></p>
-                                            <p class="card-text"><b>Método de pago:</b> <?php echo $row["metodo"] ?></p>
+                                            <p class="card-text"><b>Descripción Técnico:</b> <?php echo !empty($row["desc_tecnico"])?$row["desc_tecnico"]:"Sin descripción" ?></p>
+                                            <?php if($_SESSION["login"] == "tecnico" || $_SESSION["login"] == "admin") echo ' <a href="index.php?pag=edit_insumo&id='.$id.'" class="btn btn-primary">Editar</a>'; ?>
                                         </div>
                                         <div class="col-md-6 col-12">
                                             <b>Firma:</b><br>
@@ -173,14 +178,20 @@
                                             <?php else: ?>
                                                 <p class="card-text">
                                                     No hay firma disponible.
+                                                    <br>
+                                                    Escanea el QR:
+                                                    <br>
+                                                    <br>
                                                     <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://quicktr.es/formulario/form-firma.php?id=<?php echo $_GET["id"]; ?>" alt="QR">
+                                                    <br>
+                                                    <br>o dale clic al siguiente botón para 
+                                                    <?php if (empty($row["firma"])){ ?>
+                                                    <a class="btn btn-primary" href="form-firma.php?id=<?php echo $_GET["id"]; ?>" target="_blank">Añadir firma</a>
+                                                    <?php } ?>
                                                 </p>
                                             <?php endif; ?>
                                         </div>
                                     </div>
-                                    <?php if (empty($row["firma"])){ ?>
-                                    <a class="btn btn-primary" style="margin-left: 50%;" href="form-firma.php?id=<?php echo $_GET["id"]; ?>" target="_blank">Añadir firma</a>
-                                    <?php } ?>
                                     <hr>
                                     
                                     <ul class="list-group list-group-flush mb-3">

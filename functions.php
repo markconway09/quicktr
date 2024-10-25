@@ -73,7 +73,7 @@ function insertarBDS(){
 
     $pdo = connect();
     $stmt = $pdo->prepare("INSERT INTO info_orden VALUES 
-    (null, :nom, :tel, :doc, :ser, :email, :direccion, :cp, :preciosV, :cantV, :precio, :descuento, :iva, :final, :ins_d, :ins_p, :metodo, :disp, :descr, :loc, :fecha, null, :garantia, 0, :razon, :dept)");
+    (null, :nom, :tel, :doc, :ser, :email, :direccion, :cp, :preciosV, :cantV, :precio, :descuento, :iva, :final, :ins_d, :ins_p, :metodo, :disp, :descr, null, :loc, :fecha, null, :garantia, 0, :razon, :dept)");
     $stmt->bindParam(':nom', $nombre);
     $stmt->bindParam(':tel', $tel);
     $stmt->bindParam(':doc', $doc);
@@ -214,7 +214,7 @@ function crearPDF($id, $factura=0 , $enviar=0){
     $pdf->Cell($width, 5, 'DATOS DEL CLIENTE', 0, 1, 'C');
     $pdf->SetFont('Arial','',8);
     $pdf->Cell($width/4, 5, 'Nombre', 0, 0);
-    $pdf->Cell($width/1.5, 5, $datos["nombre"], 1, 1);
+    $pdf->Cell($width/1.5, 5, iconv('UTF-8', 'windows-1252', $datos["nombre"]), 1, 1);
     $pdf->Ln(1);
     $pdf->Cell($width/4, 5, iconv('UTF-8', 'windows-1252', 'Teléfono'), 0, 0);
     $pdf->Cell($width/1.5, 5, $datos["telefono"], 1, 1);

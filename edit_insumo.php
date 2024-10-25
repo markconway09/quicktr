@@ -6,7 +6,7 @@ if(!isset($_SESSION["login"])){
 $datos=selectBD($_GET["id"]);
 $servicio = explode(": ", $datos["servicio"]);
 ?>
-    <form action="execute.php?id=<?php echo $_GET["id"] ?>" method="POST" class="form-control p-4 bg-dark">
+    <form action="execute.php?id=<?php echo $_GET["id"] ?>" method="POST" class="form-control p-4 text-bg-dark">
         <a href="index.php?pag=list&id=<?php echo $datos["id"]; ?>" class="btn btn-secondary mb-4">Volver</a>
         <div class="row mb-3">
             <div class="col-12">
@@ -19,8 +19,19 @@ $servicio = explode(": ", $datos["servicio"]);
         <div class="row">
             <div class="col-12 mb-3">
                 <div class="form-floating">
-                    <textarea rows="2" style="height:100%;" class="form-control" name="desc" id="desc"><?php echo $datos["desc"]; ?></textarea>
+                    <textarea rows="3" style="height:100%;" class="form-control" name="desc" id="desc"><?php echo $datos["desc"]; ?></textarea>
                     <label for="desc">Descripción del servicio</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <h2 class="display-5">Técnico</h2>
+        </div>
+        <div class="row">
+            <div class="col-12 mb-3">
+                <div class="form-floating">
+                    <textarea rows="3" style="height:100%;" class="form-control" name="desc_tecnico" id="desc_tecnico"><?php echo $datos["desc_tecnico"]; ?></textarea>
+                    <label for="desc_tecnico">Descripción técnico</label>
                 </div>
             </div>
         </div>

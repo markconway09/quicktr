@@ -66,9 +66,10 @@ if(isset($_POST["editar_insumo"])){
         }
     }
     $pdo = connect();
-    $stmt = $pdo->prepare("UPDATE `info_orden` SET `insumo_desc` = :insumo_d, `insumo_precio` = :insumo_p, `desc` = :de WHERE `info_orden`.`id` = :id");
+    $stmt = $pdo->prepare("UPDATE `info_orden` SET `insumo_desc` = :insumo_d, `insumo_precio` = :insumo_p, `desc` = :de, `desc_tecnico` = :dt WHERE `info_orden`.`id` = :id");
     $stmt->bindParam(':id', $_GET["id"]);
     $stmt->bindParam(':de', $_POST["desc"]);
+    $stmt->bindParam(':dt', $_POST["desc_tecnico"]);
     $stmt->bindParam(':insumo_d', $i_desc);
     $stmt->bindParam(':insumo_p', $i_prec);
     try {
