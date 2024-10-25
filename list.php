@@ -208,8 +208,8 @@
                                         if ($rowCount > 0) {
                                             while ($img = $fotos->fetch(PDO::FETCH_ASSOC)) {
                                                 echo '
-                                            <a href="'. $img["archivo"] .'" target="_blank">
-                                                <img src="'. $img["archivo"] .'" alt="Foto'. $img["id"] .'">
+                                            <a href="fotos/'. $img["archivo"] .'" target="_blank">
+                                                <img src="fotos/'. $img["archivo"] .'" alt="Foto'. $img["id"] .'">
                                             </a>
                                             ';
                                             }

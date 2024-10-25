@@ -22,7 +22,23 @@ try {
 }
 
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-    $lineData = array($row['id'], $row['nombre'], $row['telefono'], $row['documento'], $row['email'], $row['servicio'], $row["insumo_precio"], $row["precio-final"], $row["metodo"], $row["desc"], $row["local"], $row["fecha"], $row["estado"]);
+    $description = str_replace(array("\r\n", "\n", "\r"), ' ', $row["desc"]);
+    $description = preg_replace('/[\r\n\t]+/', ' ', $row["desc"]);
+    $lineData = array(
+        $row['id'], 
+        $row['nombre'], 
+        $row['telefono'], 
+        $row['documento'], 
+        $row['email'], 
+        $row['servicio'], 
+        $row["insumo_precio"], 
+        $row["precio-final"], 
+        $row["metodo"], 
+        '"' . $description . '"', // Wrap description in quotes
+        $row["local"], 
+        $row["fecha"], 
+        $row["estado"]
+    );
     fputcsv($f, $lineData, $delimiter);
 }
 

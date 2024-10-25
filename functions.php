@@ -126,7 +126,7 @@ function insertarFotos(){
         if (move_uploaded_file($fileTmpPath, $targetFilePath)) {
             $stmt = $pdo->prepare("INSERT INTO foto (id_orden, archivo) VALUES (:id, :archivo)");
             $stmt->bindParam(':id', $_POST["id"]);
-            $stmt->bindParam(':archivo', $targetFilePath);
+            $stmt->bindParam(':archivo', $fileName);
             try {
                 $stmt->execute();
             } catch(PDOException $e){
@@ -691,24 +691,7 @@ function editarEntrada($id){
     if(isset($_POST["metodo"])) $metodo = $_POST["metodo"];
     if(isset($_POST["dispositivo"])) $disp = $_POST["dispositivo"];
 
-    $k = 1;
-    $desc = "";
-    $pV = "";
-    $cV = "";
-    if(!isset($_POST["prod1"])){
-        $desc = $_POST["desc"];
-    }
-    while(isset($_POST["prod".$k]) && $_POST["prod".$k] != ""){
-        $desc .= $_POST["prod".$k];
-        $pV .= $_POST["prec".$k];
-        $cV .= $_POST["cant".$k];
-        $k++;
-        if(isset($_POST["prod".$k]) && $_POST["prod".$k] != ""){
-            $desc .= ";";
-            $pV .= ";";
-            $cV .= ";";
-        }
-    }
+    $desc = $_POST["desc"];
 
     $pdo = connect();
     $stmt = $pdo->prepare("UPDATE `info_orden` SET `nombre` = :nombre, `telefono` = :tel, `documento` = :doc, `servicio` = :servicio, `email` = :email, `direccion` = :direccion, `cp` = :cp, `preciosVenta`=:pV, `cantidadVenta`=:cV, `precio` = :precio, `iva` = :iva, `precio-final` = :preciofinal, `descuento` = :descuento, `metodo` = :metodo, `nombre_dispositivo` = :disp, `desc` = :de, `local` = :loc, `razon` = :razon, `dept` = :dept WHERE `info_orden`.`id` = :id");
