@@ -69,8 +69,16 @@
             .gallery img {
                 width: 100%;
                 height: auto;
-                max-width: 200px; /* Adjust as needed */
+                max-width: 200px;
                 cursor: pointer;
+            }
+            .date-highlight {
+                font-size: 1.1rem;
+                font-weight: bold;
+                background-color: gray;
+                padding: 10px 0;
+                border-radius: 5px;
+                text-align: center;
             }
         </style>
     </head>

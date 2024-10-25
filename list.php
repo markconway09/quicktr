@@ -431,7 +431,7 @@
                                 <p class="card-text"><b>Nombre:</b> ' . $row["nombre"] . '</p>
                                 <p class="card-text"><b>Dispositivo:</b> ' . $row["nombre_dispositivo"] . '</p>
                                 <p class="card-text"><b>Descripción:</b> ' . $desc . '</p>
-                                <p class="card-text"><b>Fecha:</b> ' . $row["fecha"] . ' · hace ' . $daysPassed . ' día(s)</p>
+                                <p class="card-text date-highlight">' . $row["fecha"] . ' · hace ' . $daysPassed . ' día(s)</p>
                             </div> 
                             <ul class="list-group list-group-flush">
                                 <li class="list-group-item ' . $bg . '"><b>Precio:</b> ' . $row["precio"] . '€ (+ IVA ' . $row["iva"] . '%) = <b>' . $row["precio-final"] . '€</b></li>
