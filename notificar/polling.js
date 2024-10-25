@@ -24,7 +24,6 @@ function fetchData() {
                 }
             });
         }
-        location.reload();
     }
     // Poll the server every 5 seconds
     setInterval(fetchData, 5000);
