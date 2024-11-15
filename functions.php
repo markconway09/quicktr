@@ -207,7 +207,8 @@ function crearPDF($id, $factura=0 , $enviar=0){
     $pdf->Cell($width, 5, iconv('UTF-8', 'windows-1252', $datos["local"]),0,1);
     $pdf->Cell($width, 5, iconv('UTF-8', 'windows-1252', $direccion), 0, 1);
     if($datos["local"]=="Barcelona") $pdf->Cell($width, 5, iconv('UTF-8', 'windows-1252', 'Nº Whatsapp: 606 46 59 79'), 0, 1);
-    $pdf->Cell($width, 5, iconv('UTF-8', 'windows-1252', 'Nº Telefono: 933 496 389'), 0, 1);
+    if($datos["local"]=="Mataró") $pdf->Cell($width, 5, iconv('UTF-8', 'windows-1252', 'Nº Whatsapp: 612 25 96 31'), 0, 1);
+    if($datos["local"]=="Barcelona") $pdf->Cell($width, 5, iconv('UTF-8', 'windows-1252', 'Nº Telefono: 933 496 389'), 0, 1);
     $pdf->Ln();
     // DATOS CLIENTE
     $pdf->SetFont('Arial','B',8);
@@ -241,10 +242,10 @@ function crearPDF($id, $factura=0 , $enviar=0){
     $pdf->Cell($width/4, 5, iconv('UTF-8', 'windows-1252', 'Descripción'), 0, 0);
     $pdf->MultiCell($width/1.5, 5, $motivo, 1, 1);
     $pdf->Ln(1);
-    $pdf->Cell($width/4, 5, 'Fecha', 0, 0);
-    $pdf->Cell($width/1.5, 5, date('d/m/Y'), 1, 1);
+    $pdf->Cell($width/4, 5, 'Dispositivo', 0, 0);
+    $pdf->Cell($width/1.5, 5, $datos["nombre_dispositivo"], 1, 1);
     $pdf->Ln(1);
-    $pdf->Cell($width/4, 5, 'Precio', 0, 0);
+    $pdf->Cell($width/4, 5, 'Precio Aprox.', 0, 0);
     $pdf->Cell($width/1.5, 5, iconv('UTF-8', 'windows-1252', $datos["precio"]." €"), 1, 1);
     $pdf->Ln(1);
     if($datos["descuento"]>0){
@@ -259,7 +260,7 @@ function crearPDF($id, $factura=0 , $enviar=0){
         $pdf->Cell($width/4, 5, iconv('UTF-8', 'windows-1252', 'Devolución'), 0, 0);
         $pdf->Cell($width/1.5, 5, iconv('UTF-8', 'windows-1252', "-".$datos["precio-final"]." €"), 1, 1);
     } else {
-        $pdf->Cell($width/4, 5, 'Precio Final', 0, 0);
+        $pdf->Cell($width/4, 5, 'Precio Sgdo.', 0, 0);
         $pdf->Cell($width/1.5, 5, iconv('UTF-8', 'windows-1252', $datos["precio-final"]." €"), 1, 1);
     }
     $pdf->Ln(1);
@@ -280,77 +281,33 @@ function crearPDF($id, $factura=0 , $enviar=0){
     $str = iconv('UTF-8', 'windows-1252', $str);
     $pdf->MultiCell($width, 5, $str, null, 'C');
 
+    // TEXTO LEGAL
+    $pdf->SetFont('Arial','',6);
     $pdf->SetXY($width*1.1, 10);
-    $txt1 = iconv('UTF-8', 'windows-1252', 'Políticas de Recogida y Almacenaje del Terminal:
-    1. Horario de Atención:
-    Estamos disponibles para atender sus
-    necesidades de lunes a viernes en dos
-    bloques horarios: de 10:00 a 13:00 y de 17:00
-    a 20:00. Le pedimos a nuestros clientes que
-    coordinen la recogida y entrega dentro de
-    estos horarios para garantizar una atención
-    eficiente y personalizada.
-    2. Diagnóstico Gratuito:
-    Nos complace ofrecer un servicio de
-    diagnóstico gratuito para evaluar el estado de
-    su dispositivo. Nos comprometemos a
-    completar este proceso en un plazo máximo
-    de 48 horas. En el caso de que se prevea una
-    demora, nos comunicaremos previamente
-    con el cliente para proporcionar información
-    actualizada y transparente.
-    3. Tiempo de Reparación:
-    El tiempo necesario para la reparación puede
-    variar según la complejidad del problema
-    identificado durante el diagnóstico. Nuestro
-    equipo informará a los clientes sobre el
-    tiempo estimado para la reparación una vez
-    finalizado el diagnóstico, brindando una
-    expectativa realista del proceso.
-    4. Almacenaje Post-Reparación:
-    Después de completar la reparación, los
-    dispositivos podrán permanecer en nuestro
-    almacén seguro durante un periodo de hasta
-    15 días. En caso de que el cliente necesite
-    más tiempo de almacenaje, le pedimos que
-    se comunique con nosotros para hacer los
-    arreglos necesarios. Pasado este plazo y sin
-    previa comunicación, los dispositivos serán
-    transferidos a nuestro almacén de reciclaje.');
-    $pdf->MultiCell(null, 5, $txt1, null);
+    $txt = iconv('UTF-8', 'windows-1252', '
+1. TERMINOS Y CONDICIONES GENERALES DE ACEPTACION DE LA ORDEN DE REPARACION Y CUSTODIA DEL TERMINAL: El Cliente, mediante la firma del presente documento (en adelante, orden de reparación), encarga en nombre propio al Centro (según se identifica abajo) la reparación de su dispositivo, con simultánea entrega del mismo. Se hace constar que la reparación será realizada en un plazo estimado que corresponda a la fecha prevista de entrega, arriba indicada. Si el servicio requerido no pudiera ser realizado por el Centro, este lo remitirá a su proveedor (Quick Tech Repair), encargándose por cuenta del cliente la reparación, asumiendo el Centro el correspondiente transporte. El Cliente reconoce y acepta que el Centro no será responsable de eventuales pérdidas o extravío de datos o informaciones contenidas en el dispositivo cuando sean supuestos directamente imputables o de dolo o negligencia; por tanto, se recomienda al cliente realizar la correspondiente copia de seguridad antes de la entrega. La apertura o intento de reparación puede conllevar riesgos, como encender humedad, daños en placa base a nivel de microelectrónica (IS, taps, procesador, etc.), chasis doblados o dañados por golpe, implicando el riesgo de derivar en daños secundarios, incluso de no volver a encender el dispositivo. El cliente es concedor de estos riesgos, y el Centro adoptará todos sus esfuerzos, recursos y la mejor técnica, para minimizar estos riesgos utilizando herramientas de última tecnología.
 
-    $pdf->SetXY($width*2.025, 16);
-    $txt2 = '5. Recuperación de Datos:
-    Es importante señalar que en situaciones que
-    involucren formateo o reparación de disco, no
-    podemos garantizar la recuperación total de
-    datos. La viabilidad de la recuperación
-    dependerá en gran medida del estado del
-    disco o dispositivo. Recomendamos
-    encarecidamente a nuestros clientes realizar
-    copias de seguridad antes de someter sus
-    dispositivos a procesos que puedan afectar la
-    integridad de los datos almacenados.
-    6. Daños por Almacenaje y Envío:
-    Aunque tomamos precauciones rigurosas en
-    el manejo y almacenamiento de los
-    dispositivos, no nos hacemos responsables
-    de los daños que puedan ocurrir durante el
-    almacenaje en nuestras instalaciones o
-    durante el proceso de envío. Aconsejamos a
-    los clientes asegurar adecuadamente sus
-    dispositivos antes de la entrega para
-    reparación, especialmente si hay
-    preocupaciones sobre su fragilidad.
-    Nota Importante:
-    Al solicitar nuestros servicios, los clientes
-    aceptan y reconocen las condiciones
-    descritas en estas políticas de recogida y
-    almacenaje, las cuales están diseñadas para
-    garantizar la transparencia, la eficiencia y el
-    cuidado de sus dispositivos.';
-    $txt2 = iconv('UTF-8', 'windows-1252', $txt2);
-    $pdf->MultiCell(null, 5, $txt2, null);
+2. TERMINOS Y CONDICIONES GENERALES DE VENTA: El presente documento recoge en su correspondiente apartado una breve descripción del servicio requerido y el precio imponible a tratar según acuerden las partes. Para analizar la recopilación de dicha información, se muestran todos los datos introducidos al cliente, quien deberá revisarlo antes de suscribir la orden de reparación. El ticket o la factura se emitirán al realizar el correspondiente pago.
+
+3. TÉRMINOS Y CONDICIONES GENERALES DE REPARACIONES: El dispositivo se entrega sin ningún tipo de accesorios, como por ejemplo batería. Para permitir la reparación del dispositivo, se recomienda además eliminar o desactivar los códigos PIN y/o códigos de desbloqueo o bien facilitar dichos códigos al momento de la entrega del dispositivo. El Cliente acepta que, tras la aceptación del dispositivo, el Centro o, en su caso, el proveedor pueda realizar fotografías que revelen el estado real del dispositivo y/o del proceso de reparación, y que en productos clasificados IP67-IP68 o modelos posteriores no será posible en su caso recuperar la capacidad y las funciones submarinas en cuanto a las que hayan sido dañadas por la ruptura causada por el cliente. Las fotografías no se difundirán a terceros, pero podrán ser incorporadas a la correspondiente ficha que acompaña el proceso de reparación realizado.
+
+4. TIPOLOGÍA DE PIEZAS DE RECAMBIO UTILIZADAS Y GARANTÍA POST REPARACIÓN:
+    1. El Centro pone a disposición del Cliente justificación documental referente al origen, naturaleza y precio de las piezas de repuesto utilizadas para las reparaciones. De ser solicitada dicha justificación, la misma podrá ser entregada al Cliente. No serán utilizadas piezas de recambio de baja calidad, no conformes, no apropiadas o de calidad inferior al estándar original. Las piezas de recambio OEM son compatibles, de igual calidad y con las mismas características que las de un original.
+    2. Los productos objeto de reparación gozarán de la correspondiente garantía de reparación que cubrirá los mismos durante un plazo de tres meses, según detalle indicado en la correspondiente hoja técnica (pantallas, baterías, LCD restaurados, soldaduras, etc.). En cualquier caso, la garantía no cubrirá los defectos comunicados fuera del periodo de garantía. El Centro no reparará ni reemplazará ninguna pieza que haya sido modificada o reparada por terceros. Asimismo, el Centro no se responsabiliza de la avería sobrevenida cuando el fallo se derive de la no aceptación por parte del Cliente de la reparación de averías ocultas previamente comunicadas y cuando la referida falta de aceptación se haga constar en la factura. En general, la garantía no tendrá validez si existen pruebas de uso negligente o mal uso. Dicha garantía está sujeta a lo dispuesto en el artículo 6 del Real Decreto 58/1988, de 29 de enero, sobre Protección de los Derechos del Consumidor en el servicio de reparación de Aparatos de Uso Doméstico, que establece la obligación de garantizar, durante un plazo mínimo de tres meses, las reparaciones o instalaciones efectuadas en cualquier servicio de asistencia técnica. El Cliente deberá conservar el comprobante de reparación (ticket de reparación y/o factura) para realizar posibles reclamaciones sujetas a garantía. En caso de que el Cliente encargue servicios de reparación y/o asistencia en un dispositivo cubierto por la garantía comercial del fabricante, el Centro no asume ningún tipo de responsabilidad respecto a la eventual pérdida de dicha garantía del fabricante, ya que el Cliente está al corriente de que, al solicitar un servicio de reparación o asistencia a una entidad que no se corresponde con el fabricante, la garantía del fabricante puede quedar anulada o reducida, si bien seguirá teniendo la garantía legal dada por nosotros como vendedores. Las piezas del aparato que hayan sido sustituidas, a los efectos del art. 4.3 del Real Decreto 58/1988, podrán ser restituidas al cliente en el caso de que este lo requiera.
+    3. En el caso de que el Cliente haya adquirido un producto, será asimismo aplicable la garantía legal prevista en tales supuestos de venta que cubre el producto durante un plazo de tres años. Sin perjuicio de lo anterior, si dicho producto es de segunda mano, el vendedor y el Cliente podrán pactar un plazo menor, que no podrá ser inferior a un año desde la entrega. En caso de reparación, dicha garantía cubrirá también las piezas nuevas, que sean relevantes para el producto reparado, que hayan sido implementadas en sustitución de otras. En cualquier caso, la garantía no cubrirá los defectos comunicados fuera del periodo de garantía. El Centro no reparará ni reemplazará ninguna pieza que haya sido modificada o reparada por terceros.
+
+5. DERECHO DE RECUPERACIÓN: El derecho de recuperación del dispositivo entregado para su reparación prescribirá un año después del momento de la entrega. Transcurrido dicho plazo, el dispositivo podrá ser considerado como abandonado, por lo tanto, el Centro podrá disponer del mismo libremente, pudiendo incluso deshacerse o resetearlo, eliminando cualquier tipo de información y ponerlo a la venta como aparato de segunda mano.
+
+6. LEGISLACIÓN Y COMPETENCIA: Resultará de aplicación el Real Decreto Legislativo 1/2007, de 16 de noviembre, por el que se aprueba el texto refundido de la Ley General para la Defensa de los Consumidores y Usuarios y otras leyes complementarias, así como el Real Decreto 58/1988, de 29 de enero, sobre protección de los derechos del consumidor en el servicio de reparación de aparatos de uso doméstico, en todo lo que dichas normativas establezcan con carácter inderogable a favor de los consumidores y usuarios. En caso de controversias, resultarán competentes los tribunales que correspondan al domicilio del consumidor y usuario.
+
+POLITICA DE PRIVACIDAD: De acuerdo con el Reglamento (UE) 2016/679, de 27 de abril de 2016 del Parlamento Europeo, el titular queda informado y, en caso de que firme en el apósito espacio indicado al final de la presente clausula, presta su consentimiento a la incorporación de sus datos a los cheros, automatizados o no, de la sociedad QUICK T&R, S.L. con sede legal en Calle Puigcerda,
+    130 de Barcelona, con CIF: B63667570 y al tratamiento automatizado de los mismos, para las calidades de comercialización de sus productos y servicios, de envío de comunicaciones promocionales, incluidas las comunicaciones electrónicas, a los efectos de lo establecido en los artículos 21 y 22 de la Ley 34/2002, de 11 de julio de Servicios de la Sociedad de la información y de Comercio electrónico, y cuya cumplimentación es necesaria para la aplicación de los puntos y premios correspondientes. Asimismo, queda informado de la posibilidad de ejercer sus derechos de acceso, rectificación, oposición, olvido, limitación del tratamiento y portabilidad en la forma prevista en la legislación vigente, debiendo remitir escrito a la sociedad QUICK T&R, S.L., a la dirección info@quicktr.es. Todo ello, en estricta aplicación de los cánones y requisitos aplicables según la normativa ya referenciada. Los dichos datos personales a los que el Centro tendrá acceso serán aquéllos que el Cliente facilite voluntariamente y su recogida y tratamiento se realizara de conformidad con lo previsto en la LOPD. El Cliente queda informado de su derecho de acceso, rectificación, oposición, olvido, limitación del tratamiento y portabilidad, respecto de sus datos personales en los términos previstos en la Ley, pudiendo ejercitar estos derechos por escrito mediante carta, acompañada de copia del Documento de Identidad, y dirigida al Centro (cuyos datos constan en el correspondiente apanado de este mismo documento).
+
+PROTECCIÓN DE DATOS: QUICK T&R, S.L. es el Responsable del tratamiento de los datos personales del Interesado y le informa de que estos datos serán tratados de conformidad con lo dispuesto en el Reglamento (UE) 2016/679, de 27 de abril (GDPR), y la Ley Orgánica 3/2018, de 5 de diciembre (LOPDGDD). Dicho tratamiento se realizará para mantener una relación comercial (por interés legítimo del responsable, art. 6.1.f GDPR) y envío de comunicaciones de productos o servicios (con el consentimiento del interesado, art. 6.1.a GDPR). Los datos se conservarán durante no más tiempo del necesario para mantener el fin del tratamiento o mientras existan prescripciones legales que dictaminen su custodia. No está previsto comunicar los datos a terceros (salvo obligación legal), y si fuera necesario hacerlo para la ejecución del contrato, se informará previamente al Interesado.
+    Se informa al Interesado de que podrá ejercer los derechos de acceso, rectificación, supresión y portabilidad de sus datos, y los de limitación u oposición al tratamiento dirigiéndose a QUICK T&R, S.L...
+    Carrer Puigcerdà, 130 - 08019 Barcelona. E-mail: info@quicktr.es, y si considera que el tratamiento de datos personales no se ajusta a la normativa vigente, también tiene derecho a presentar una reclamación ante la Autoridad de control (www.aepd.es).
+');
+    $pdf->MultiCell(null, 2.75, $txt, null);
     
     //---------------END CREAR PDF---------------//
     if($enviar != 0){
@@ -408,8 +365,9 @@ function crearFServicio($id, $enviar=0){
     $pdf->Cell($width/2, 5, 'NIF: B19359082', 0, 1);
     $pdf->SetFont('Arial','',8);
     $pdf->Cell($width/2, 5, iconv('UTF-8', 'windows-1252', $direccion), 0, 1);
-    $pdf->Cell($width/2, 5, iconv('UTF-8', 'windows-1252', 'Nº Whatsapp: 612 259 631'), 0, 1);
-    $pdf->Cell($width/2, 5, iconv('UTF-8', 'windows-1252', 'Nº Telefono: 933 496 389'), 0, 1);
+    if($datos["local"]=="Barcelona") $pdf->Cell($width, 5, iconv('UTF-8', 'windows-1252', 'Nº Whatsapp: 606 46 59 79'), 0, 1);
+    if($datos["local"]=="Mataró") $pdf->Cell($width, 5, iconv('UTF-8', 'windows-1252', 'Nº Whatsapp: 612 25 96 31'), 0, 1);
+    if($datos["local"]=="Barcelona") $pdf->Cell($width, 5, iconv('UTF-8', 'windows-1252', 'Nº Telefono: 933 496 389'), 0, 1);
     $pdf->Ln();
 
     // DATOS CLIENTE
@@ -449,7 +407,7 @@ function crearFServicio($id, $enviar=0){
     $pdf->Cell($width/10, 5, iconv('UTF-8', 'windows-1252', 'Cant.'), 1, 0);
     $pdf->Cell($width/10, 5, iconv('UTF-8', 'windows-1252', 'Base Imp.'), 1, 1);
 
-    $pdf->Cell($width/2, 5, iconv('UTF-8', 'windows-1252', $datos["desc"]), 1, 0);
+    $pdf->Cell($width/2, 5, iconv('UTF-8', 'windows-1252', $datos["desc_tecnico"]), 1, 0);
     $pdf->Cell($width/10, 5, iconv('UTF-8', 'windows-1252', $datos["iva"]."%"), 1, 0);
     $pdf->Cell($width/10, 5, iconv('UTF-8', 'windows-1252',  $datos["precio"]." €"), 1, 0);
     $pdf->Cell($width/10, 5, iconv('UTF-8', 'windows-1252', 1), 1, 0);
@@ -540,7 +498,7 @@ function enviarCorreo($id){
         $ser2 = $ser[1];
     } else {
         $ser1 = "Servicio";
-        $ser2 = "Formulario Cliente";
+        $ser2 = "";
     }
 
     // ENVIAR CORREO
@@ -552,15 +510,15 @@ function enviarCorreo($id){
         //Server settings
         $mail->SMTPDebug = SMTP::DEBUG_OFF;
         $mail->isSMTP();
-        $mail->Host       = 'mail.quicktr.com';
+        $mail->Host       = 'mail.quicktr.es';
         $mail->SMTPAuth   = true;
-        $mail->Username   = 'info@quicktr.com';
-        $mail->Password   = 'Barcelona2024';
+        $mail->Username   = 'mail@quicktr.es';
+        $mail->Password   = 'Barcelon@2024.';
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
         $mail->Port       = 465;
 
         //Recipients
-        $mail->setFrom('info@quicktr.com');
+        $mail->setFrom('info@quicktr.es');
         $mail->addAddress('sistemas@dvagroup.es');
         crearPDF($id, 0, 1);
         $mail->addAttachment('doc.pdf');
@@ -568,45 +526,51 @@ function enviarCorreo($id){
         //Content
         $mail->isHTML(true);
         $mail->Subject = 'Nueva orden de '.$datos["nombre"].' «'.ucfirst($ser1).'»';
-        $mail->Body    = '<html><body><h1>'.ucfirst($ser1).' # '.$id.' - '.$ser2.'</h1>
-            <p>
-                De: '.$datos["nombre"].' (<a href="mailto:'.$datos["email"].'">'.$datos["email"].'<a>)
-            </p>
-            <p>
-            Asunto: '.$datos["servicio"].'
-            </p>
-            <p>
-            Nombre: '.$datos["nombre"].'
-            </p>
-            <p>
-            Email: '.$datos["email"].'
-            </p>
-            <p>
-            Teléfono: <a href="https://wa.me//'.$datos["telefono"].'" target="_blank">'.$datos["telefono"].'<a>
-            </p>
-            <p>
-            Dni/NIF/NIE: '.$datos["documento"].'
-            </p>
-            <p>
-            Fecha: '.$datos["fecha"].'
-            </p>
-            <p>
-            Local: '.$datos["local"].'
-            </p>
-            <p>
-            Precio: '.$datos["precio"].'
-            <br>
-            IVA: '.$datos["iva"].'
-            <br>
-            Precio Total: '.$datos["precio-final"].'
-            </p>
-            <p>
-            Servicio Reportado '.$datos["servicio"].'
-            </p>
-            <p>
-            Observaciones: '.$datos["desc"].'
-            </p>
-            </body></html>';
+        $mail->AddEmbeddedImage('LOGO.png', 'logo_qtr');
+        $mail->Body    = '
+                <body>
+                    <div style="background-color: #f4f4f4; color: #333; margin: 0; max-width: 900px; margin: 20px auto; border: 2px solid #ddd; border-radius: 10px; background-color: #ffffff; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); ">
+                        <div style="display: flex; align-items: flex-start; padding: 30px; border-bottom: 2px solid #007bff; background: linear-gradient(0deg, rgba(255,255,255,1) 45%, rgba(37,190,212,0.7) 100%);">
+                        <img src="cid:logo_qtr" alt="logo" style="width: 180px; height: 100%; margin-left: 40px; margin-top: 15px;">
+                            <div style="margin-left: 20%;">
+                            <p style="font-weight: bold;">QUICK T&R, S.L.</p>
+                            <p>Carrer de València, 235</p>
+                            <p>Principal, 1 Eixample</p>
+                            <p>08007 Barcelona</p>
+                            <p>Teléfono Barcelona: 933 496 389</p>
+                            <p>Whatsapp Barcelona: 606 46 59 79</p>
+                            <p>Whatsapp Mataró: 612 25 96 31</p>
+                            <br>
+                            <p><strong>Fecha:</strong> '.$datos["fecha"].'</p>
+                            </div>
+                        </div>
+                        <div>
+                            <h1 style="text-align: center; color: #0056b3;">'.ucfirst($ser1).' # '.$id.' - '.$ser2.'</h1>
+                        </div>
+                        <div style="padding: 30px">
+                            <div style="flex: 1; min-width: 200px;">
+                            <h2>Detalles del Cliente</h2>
+                            <p><strong>Nombre:</strong> '.$datos["nombre"].'</p>
+                            <p><strong>Email:</strong> '.$datos["email"].'</p>
+                            <p><strong>Teléfono:</strong> <a href="https://wa.me//'.$datos["telefono"].'" target="_blank">'.$datos["telefono"].'<a></a></p>
+                            <p><strong>Documento:</strong> '.$datos["documento"].'</p>
+                            </div>
+                            <div>
+                            <h2>Detalles del Servicio</h2>
+                            <p><strong>Tipo de servicio:</strong> '.$ser1.'</p>
+                            <p><strong>Servicio Reportado:</strong> '.$ser2.'</p>
+                            <p><strong>Descripción:</strong> '.$datos["desc"].'</p>
+                            </div>
+                        </div>
+                        <div style="padding: 30px; background-color: #f9f9f9;">  
+                            <h2>Costos</h2>
+                            <p>Precio: '.$datos["precio"].'€</p>
+                            <p>IVA: '.$datos["iva"].'%</p>
+                            <p><strong>Precio Total:</strong> '.$datos["precio-final"].'€</p>
+                        </div>
+                    </div>
+                </body>
+        ';
 
         $mail->send();
     } catch (Exception $e) {
@@ -617,7 +581,14 @@ function enviarCorreo($id){
 function enviarCorreoCliente($id){
     //---------------RECOGER DATOS---------------//
     $datos = selectBD($id);
-    $ser = explode(": ", $datos["servicio"]);
+    if(!empty($datos["servicio"])) {
+        $ser = explode(": ", $datos["servicio"]);
+        $ser1 = $ser[0];
+        $ser2 = $ser[1];
+    } else {
+        $ser1 = "Servicio";
+        $ser2 = "";
+    }
 
     // ENVIAR CORREO
     $mail = new PHPMailer(true);
@@ -628,53 +599,67 @@ function enviarCorreoCliente($id){
         //Server settings
         $mail->SMTPDebug = SMTP::DEBUG_OFF;
         $mail->isSMTP();
-        $mail->Host       = 'mail.quicktr.com';
+        $mail->Host       = 'mail.quicktr.es';
         $mail->SMTPAuth   = true;
-        $mail->Username   = 'info@quicktr.com';
-        $mail->Password   = 'Barcelona2024';
+        $mail->Username   = 'mail@quicktr.es';
+        $mail->Password   = 'Barcelon@2024.';
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
         $mail->Port       = 465;
 
         //Recipients
-        $mail->setFrom('info@quicktr.com');
-        $mail->addAddress('sistemas@dvagroup.es');
+        $mail->setFrom('info@quicktr.es');
         $mail->addAddress($datos["email"]);
         crearPDF($id, 0, 1);
         $mail->addAttachment('doc.pdf');
 
         //Content
         $mail->isHTML(true);
-        $mail->Subject = 'Nueva orden de '.$datos["nombre"].' «'.ucfirst($ser[0]).'»';
-        $mail->Body    = '<html><body><h1>'.ucfirst($ser[0]).' # '.$id.' - '.$ser[1].'</h1>
-            <p>
-                De: '.$datos["nombre"].' (<a href="mailto:'.$datos["email"].'">'.$datos["email"].'<a>)
-            </p>
-            <p>
-            Asunto: '.$datos["servicio"].'
-            </p>
-            <p>
-            Nombre: '.$datos["nombre"].'
-            </p>
-            <p>
-            Teléfono: <a href="https://wa.me//'.$datos["telefono"].'" target="_blank">'.$datos["telefono"].'<a>
-            </p>
-            <p>
-            Dni/NIF/NIE: '.$datos["documento"].'
-            </p>
-            <p>
-            Precio: '.$datos["precio"].'
-            <br>
-            IVA: '.$datos["iva"].'
-            <br>
-            Precio Total: '.$datos["precio-final"].'
-            </p>
-            <p>
-            Servicio Reportado '.$datos["servicio"].'
-            </p>
-            <p>
-            Observaciones: '.$datos["desc"].'
-            </p>
-            </body></html>';
+        $mail->Subject = 'Quick Tech Repair «'.ucfirst($ser1).'»';
+        $mail->AddEmbeddedImage('LOGO.png', 'logo_qtr');
+        $mail->Body    = '
+                <body>
+                    <div style="background-color: #f4f4f4; color: #333; margin: 0; max-width: 900px; margin: 20px auto; border: 2px solid #ddd; border-radius: 10px; background-color: #ffffff; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); ">
+                        <div style="display: flex; align-items: flex-start; padding: 30px; border-bottom: 2px solid #007bff; background: linear-gradient(0deg, rgba(255,255,255,1) 45%, rgba(37,190,212,0.7) 100%);">
+                        <img src="cid:logo_qtr" alt="logo" style="width: 180px; height: 100%; margin-left: 40px; margin-top: 15px;">
+                            <div style="margin-left: 20%;">
+                            <p style="font-weight: bold;">QUICK T&R, S.L.</p>
+                            <p>Carrer de València, 235</p>
+                            <p>Principal, 1 Eixample</p>
+                            <p>08007 Barcelona</p>
+                            <p>Teléfono Barcelona: 933 496 389</p>
+                            <p>Whatsapp Barcelona: 606 46 59 79</p>
+                            <p>Whatsapp Mataró: 612 25 96 31</p>
+                            <br>
+                            <p><strong>Fecha:</strong> '.$datos["fecha"].'</p>
+                            </div>
+                        </div>
+                        <div>
+                            <h1 style="text-align: center; color: #0056b3;">'.ucfirst($ser1).' # '.$id.' - '.$ser2.'</h1>
+                        </div> 
+                        <div style="padding: 30px">
+                            <div style="flex: 1; min-width: 200px;">
+                            <h2>Detalles del Cliente</h2>
+                            <p><strong>Nombre:</strong> '.$datos["nombre"].'</p>
+                            <p><strong>Email:</strong> '.$datos["email"].'</p>
+                            <p><strong>Teléfono:</strong> <a href="https://wa.me//'.$datos["telefono"].'" target="_blank">'.$datos["telefono"].'<a></a></p>
+                            <p><strong>Documento:</strong> '.$datos["documento"].'</p>
+                            </div>
+                            <div>
+                            <h2>Detalles del Servicio</h2>
+                            <p><strong>Tipo de servicio:</strong> '.$ser1.'</p>
+                            <p><strong>Servicio Reportado:</strong> '.$ser2.'</p>
+                            <p><strong>Descripción:</strong> '.$datos["desc"].'</p>
+                            </div>
+                        </div>
+                        <div style="padding: 30px; background-color: #f9f9f9;">  
+                            <h2>Costos</h2>
+                            <p>Precio: '.$datos["precio"].'€</p>
+                            <p>IVA: '.$datos["iva"].'%</p>
+                            <p><strong>Precio Total:</strong> '.$datos["precio-final"].'€</p>
+                        </div>
+                    </div>
+                </body>
+        ';
 
         $mail->send();
     } catch (Exception $e) {
@@ -909,11 +894,11 @@ function totalVentas($d=0, $m, $y, $local=0){
             $pdf->Cell(28, 5, iconv('UTF-8', 'windows-1252', $row["id"]." - ".$row["fecha"]), 1, 0);
             $pdf->Cell(198.5, 5, iconv('UTF-8', 'windows-1252', "DEVOLUCIÓN"), 1, 0);
             $pdf->Cell(34, 5, iconv('UTF-8', 'windows-1252',  "-".$row["precio-final"]." €"), 1, 1);
-        } else {
+        } else if(!empty($row["fecha_pago"])) {
             $final = $row["precio"] - ($row["precio"]/100*$row["descuento"]);
             $iva = round(($final * $row["iva"])/100, 2);
             $iva_total+=$iva;
-            $total_total+=doubleval($row["precio"]);
+            $total_total+=doubleval($final+$iva);
             if($row["metodo"] == "Efectivo") {
                 $total_efectivo += doubleval($final);
                 $iva_efectivo += $iva;

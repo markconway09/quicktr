@@ -21,6 +21,13 @@
             }
         }
     }
+    if(isset($_SESSION["login"])){
+        if($_SESSION["login"] == "repartidor"){
+            $default = "entregas";
+        } else {
+            $default = "form-servicio";
+        }
+    }
     if(isset($_GET["logout"])){
         session_destroy();
         header('Location: index.php');
@@ -79,15 +86,16 @@
                 padding: 10px 0;
                 border-radius: 5px;
                 text-align: center;
+                text-shadow: 0 0 3px rgba(0, 0, 0, 1);
             }
         </style>
     </head>
     <body class="bg-secondary">
         <!-- NAVBAR -->
         <nav class="navbar navbar-light text-light" style="background-color:rgb(43,45,46);">
-            <a class="navbar-brand mx-auto" href="index.php">
+            <a class="navbar-brand mx-auto" href="">
                 <img class="rounded" src="LOGO.png" alt="logo" height="90">
-                <span class="badge badge-pill bg-danger">1.10.0</span>
+                <span class="badge badge-pill bg-danger">1.11.0</span>
             </a>
             <?php
             if(isset($_SESSION["login"])){ ?>
@@ -110,6 +118,7 @@
             exit();
         }
         ?>
+        <?php if($_SESSION["login"] != "repartidor"){ ?>
         <div class="container mx-auto p-2 rounded my-4 text-center sticky-top bg-dark">
             <form action="index.php" method="get">
                 <div class="col-12">
@@ -139,6 +148,7 @@
                 </div>
             </form>
         </div>
+        <?php } ?>
 
 
         <!-- CONTENIDO -->
@@ -147,7 +157,7 @@
                 if(isset($_GET["pag"])){
                     include_once $_GET["pag"].'.php';
                 } else {
-                    include_once 'form-servicio.php';
+                    include_once $default . '.php';
                 }
             ?>
         </div>

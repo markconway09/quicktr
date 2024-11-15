@@ -330,6 +330,7 @@
                             var newOptions = {
                                 "Otros": "",
                                 "Cambio de pantalla": "",
+                                "Cambio de batería": "",
                                 "Reparación de tapa": "",
                                 "Reparación de flex de carga": "",
                                 "Reparación de altavoces y microfonos": "",

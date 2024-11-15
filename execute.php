@@ -6,6 +6,7 @@ require_once "functions.php";
 if(isset($_POST["guardar-servicio"])){
     $id = insertarBDS();
     enviarCorreo($id);
+    enviarCorreoCliente($id);
     header('Location: index.php?pag=list&id='.$id);
 }
 

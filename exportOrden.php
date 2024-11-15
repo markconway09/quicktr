@@ -9,7 +9,7 @@ $delimiter = ",";
 $f = fopen('php://memory', 'w'); 
 fputs($f, $bom =( chr(0xEF) . chr(0xBB) . chr(0xBF) ));
 
-$fields = array('ID', 'Nombre', 'Telefono', 'Documento', 'Email', 'Servicio', 'Insumo', 'Precio Final', 'Metodo', 'Descripción', 'Local', 'Fecha', 'Estado'); 
+$fields = array('ID', 'Nombre', 'Telefono', 'Documento', 'Email', 'Dispositivo', 'Servicio', 'Insumo', 'Precio Final', 'Metodo', 'Descripción', 'Local', 'Fecha Entrada', 'Fecha Pago', 'Estado'); 
 
 fputcsv($f, $fields, $delimiter); 
 
@@ -30,6 +30,7 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         $row['telefono'], 
         $row['documento'], 
         $row['email'], 
+        $row['nombre_dispositivo'], 
         $row['servicio'], 
         $row["insumo_precio"], 
         $row["precio-final"], 
@@ -37,6 +38,7 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         '"' . $description . '"', // Wrap description in quotes
         $row["local"], 
         $row["fecha"], 
+        $row["fecha_pago"], 
         $row["estado"]
     );
     fputcsv($f, $lineData, $delimiter);

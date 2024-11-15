@@ -4,6 +4,7 @@
             $pasosLargo = ["Espera del diagnóstico", "Espera aprobación del cliente", "En Reparación", "Reparación terminada", "Entregado al cliente"];
             $colores = ["#f54254", "#e8a31a", "#2f852c", "#4472c4", "#adadad"];
             $localColor = ["blue", "red"];
+            $colorDias = ["white", "#f5dcdc", "#f5b1b1", "#f36767", "#f13535"];
             
             if(isset($_GET["id"])){
                 $id = $_GET["id"];
@@ -19,6 +20,9 @@
                     </a>
                     <a href="execute.php?ticketservicio=1&id=<?php echo $id; ?>" target="_blank" class="btn btn-primary">
                         <i class="bi bi-receipt-cutoff"></i> <span class="d-none d-sm-inline">Imprimir Ticket</span>
+                    </a>
+                    <a href="execute.php?servicio=1&id=<?php echo $id; ?>" target="_blank" class="btn btn-primary">
+                        <i class="bi bi-receipt-cutoff"></i> <span class="d-none d-sm-inline">Imprimir Factura</span>
                     </a>
                     <a href="?pag=garantia&id=<?php echo $id; ?>" class="btn" 
                     style="background-color: #007c7a; color: white; transition: background-color 0.3s;" 
@@ -86,7 +90,7 @@
                 } else {
                     $ins = '<li class="list-group-item"><b>Insumo:</b> 0';
                 }
-                if($_SESSION["login"] == "tecnico" || $_SESSION["login"] == "admin") $ins .= ' <a href="index.php?pag=edit_insumo&id='.$id.'" class="btn btn-primary">Editar</a>';
+                //if($_SESSION["login"] == "tecnico" || $_SESSION["login"] == "admin") $ins .= ' <a href="index.php?pag=edit_insumo&id='.$id.'" class="btn btn-primary">Editar</a>';
                 $ins .= '</li>';
                 $garantia = "";
                 if($row["garantia"] != 0) $garantia = " | <i class='bi bi-file-text'></i> <a style='text-decoration:none;color:#FFA' href='?pag=list&id=".$row["garantia"]."'>GARANTÍA <i class='bi bi-arrow-right-short'></i></a>";
@@ -144,7 +148,7 @@
                                         </div>
                                         <div class="col-md-6 col-12">
                                             <p class="card-text"><b>Dirección:</b> <?php echo !empty($row["direccion"])?$row["direccion"]." - ".$row["cp"]:"No especificado"; ?></p>
-                                            <p class="card-text"><b>Teléfono:</b> <?php if(!empty($row["tel"])) { ?> <a href="https://wa.me//<?php echo $row["telefono"] ?>" target="_blank"><?php echo $row["telefono"]?><a><?php } else {echo "No especificado";} ?></p>
+                                            <p class="card-text"><b>Teléfono:</b> <?php if(!empty($row["telefono"])) { ?> <a href="https://wa.me//<?php echo $row["telefono"] ?>" target="_blank"><?php echo $row["telefono"]?><a><?php } else {echo "No especificado";} ?></p>
                                             <p class="card-text"><b>Cómo nos encontró:</b> <?php echo $row["razon"] ?></p>
                                         </div>
                                     </div>
@@ -169,7 +173,7 @@
                                             <p class="card-text"><b>Dispositivo:</b> <?php echo $row["nombre_dispositivo"] ?></p>
                                             <p class="card-text"><?php echo $desc ?></p>
                                             <p class="card-text"><b>Descripción Técnico:</b> <?php echo !empty($row["desc_tecnico"])?$row["desc_tecnico"]:"Sin descripción" ?></p>
-                                            <?php if($_SESSION["login"] == "tecnico" || $_SESSION["login"] == "admin") echo ' <a href="index.php?pag=edit_insumo&id='.$id.'" class="btn btn-primary">Editar</a>'; ?>
+                                            <?php if($_SESSION["login"] == "tecnico" || $_SESSION["login"] == "admin") echo ' <br><a href="index.php?pag=edit_insumo&id='.$id.'" class="btn btn-primary">Editar insumo y descripción técnico</a>'; ?>
                                         </div>
                                         <div class="col-md-6 col-12">
                                             <b>Firma:</b><br>
@@ -333,7 +337,10 @@
                             echo '<li class="nav-item"><a class="nav-link ' . $activeClass . '" href="?pag=list&filter=' . $key . '"
                             data-bs-toggle="tooltip" data-bs-title="'.$tooltip[$key].'">' . $label . '</a></li>';
                         }
+                        if($_SESSION["login"] == "admin" || $_SESSION["login"] == "repartidor"){
                     ?>
+                    <li class="nav-item"><a class="nav-link" href="?pag=entregas">Entregas</a></li>
+                    <?php } ?>
                 </ul>
             </div>
             <div class="row">
@@ -436,13 +443,16 @@
                 $pastDate = new DateTime($row["date"]);
                 $now = new DateTime();
                 $daysPassed = $now->diff($pastDate)->days;
+
+                $index = $daysPassed > 4 ? 4 : $daysPassed;
+                $colD = $row["estado"] < 4 ? (empty($row["did"]) ? $colorDias[$index] : "white") : "white";
                 echo '
                             </div>
                             <div class="card-body">
                                 <p class="card-text"><b>Nombre:</b> ' . $row["nombre"] . '</p>
                                 <p class="card-text"><b>Dispositivo:</b> ' . $row["nombre_dispositivo"] . '</p>
                                 <p class="card-text"><b>Descripción:</b> ' . $desc . '</p>
-                                <p class="card-text date-highlight">' . $row["fecha"] . ' · hace ' . $daysPassed . ' día(s)</p>
+                                <p class="card-text date-highlight">' . $row["fecha"] . ' · <span style="color:'.$colD.'">hace ' . $daysPassed . ' día(s)</span></p>
                             </div> 
                             <ul class="list-group list-group-flush">
                                 <li class="list-group-item ' . $bg . '"><b>Precio:</b> ' . $row["precio"] . '€ (+ IVA ' . $row["iva"] . '%) = <b>' . $row["precio-final"] . '€</b></li>
