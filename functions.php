@@ -266,7 +266,7 @@ function crearPDF($id, $factura=0 , $enviar=0){
     $pdf->Ln(1);
     $pdf->MultiCell($width, 5, iconv('UTF-8', 'windows-1252', 'Método de pago: '.$datos["metodo"]), 0, 0);
     $pdf->Ln(1);
-    if(!empty($datos["firma"])){
+    if(!empty($datos["firma"]) && file_exists("upload/".$datos["firma"])){
         $pdf->Image('upload/'.$datos["firma"], null, null, 70, 30);
         $pdf->Ln(1);
     }
@@ -489,6 +489,71 @@ function insertFactura($id, $tipo){
     }
 }
 
+function correoReview($id){
+    //---------------RECOGER DATOS---------------//
+    $datos = selectBD($id);
+    if(!empty($datos["servicio"])) {
+        $ser = explode(": ", $datos["servicio"]);
+        $ser1 = $ser[0];
+    } else {
+        $ser1 = "Servicio";
+    }
+
+    // ENVIAR CORREO
+    $mail = new PHPMailer(true);
+    $mail->CharSet = "UTF-8";
+    $mail->Encoding = 'base64';
+
+    try {
+        //Server settings
+        $mail->SMTPDebug = SMTP::DEBUG_OFF;
+        $mail->isSMTP();
+        $mail->Host       = 'mail.quicktr.es';
+        $mail->SMTPAuth   = true;
+        $mail->Username   = 'mail@quicktr.es';
+        $mail->Password   = 'Barcelon@2024.';
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+        $mail->Port       = 465;
+
+        //Recipients
+        $mail->setFrom('info@quicktr.es');
+        $mail->addAddress($datos["email"]);
+
+        //Content
+        $mail->isHTML(true);
+        $mail->Subject = '¡Gracias por confiar en nosotros! «'.ucfirst($ser1).'»';
+        $mail->AddEmbeddedImage('estrellas.png', 'estrellas');
+        $mail->Body    = '
+            <body style="font-family: Arial, sans-serif; background-color: #f9f9f9; color: #333; margin: 10; padding: 10;">
+
+                <div style="width: 100%; max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <h1 style="color: #25BED4; font-size: 24px;">¡Gracias por confiar en nosotros!</h1>
+                    </div>
+                    <div style="font-size: 16px; line-height: 1.5; margin-bottom: 20px;">
+                        <p>Estimado/a '.$datos["nombre"].',</p>
+                        <p>Esperamos que el servicio de reparación de su dispositivo ('.$datos["nombre_dispositivo"].') haya sido de su satisfacción. Para nosotros, es muy importante conocer tu experiencia y saber si podemos mejorar en algo. Tu opinión es fundamental para poder seguir brindando un excelente servicio.</p>
+                        <p>Si pudieras dedicar unos minutos para dejarnos una reseña, te estaríamos muy agradecidos. Solo tienes que hacer clic en el botón de abajo para compartir tu experiencia.</p>
+                        <p style="text-align: center;">
+                            <img src="cid:estrellas" alt="estrellas" style="width: 180px; height: 100%; text-align:center;"><br>
+                            <a href="https://admin.trustindex.io/api/googleWriteReview?place-id=ChIJd8ieUSOjpBIRuTHGH3C64Fs" style="display: inline-block; padding: 10px 20px; background-color: #25BED4; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">Deja tu reseña aquí</a>
+                        </p>
+                    </div>
+                    <div style="text-align: center; font-size: 14px; color: #777;">
+                        <p>Gracias por elegirnos. Si tienes alguna pregunta o necesitas asistencia adicional, no dudes en contactarnos.</p>
+                        <p>Atentamente, <br> El equipo de Quick TR</p>
+                    </div>
+                </div>
+
+            </body>
+        ';
+
+        $mail->send();
+    } catch (Exception $e) {
+        echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+    }
+}
+
 function enviarCorreo($id){
     //---------------RECOGER DATOS---------------//
     $datos = selectBD($id);
@@ -526,12 +591,12 @@ function enviarCorreo($id){
         //Content
         $mail->isHTML(true);
         $mail->Subject = 'Nueva orden de '.$datos["nombre"].' «'.ucfirst($ser1).'»';
-        $mail->AddEmbeddedImage('LOGO.png', 'logo_qtr');
+        $mail->AddEmbeddedImage('LogoCorreo.png', 'logo_qtr');
         $mail->Body    = '
                 <body>
                     <div style="background-color: #f4f4f4; color: #333; margin: 0; max-width: 900px; margin: 20px auto; border: 2px solid #ddd; border-radius: 10px; background-color: #ffffff; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); ">
                         <div style="display: flex; align-items: flex-start; padding: 30px; border-bottom: 2px solid #007bff; background: linear-gradient(0deg, rgba(255,255,255,1) 45%, rgba(37,190,212,0.7) 100%);">
-                        <img src="cid:logo_qtr" alt="logo" style="width: 180px; height: 100%; margin-left: 40px; margin-top: 15px;">
+                        <img src="cid:logo_qtr" alt="logo" style="width: 240px; height: 100%; margin-left: 40px; margin-top: 15px;">
                             <div style="margin-left: 20%;">
                             <p style="font-weight: bold;">QUICK T&R, S.L.</p>
                             <p>Carrer de València, 235</p>
@@ -615,12 +680,12 @@ function enviarCorreoCliente($id){
         //Content
         $mail->isHTML(true);
         $mail->Subject = 'Quick Tech Repair «'.ucfirst($ser1).'»';
-        $mail->AddEmbeddedImage('LOGO.png', 'logo_qtr');
+        $mail->AddEmbeddedImage('LogoCorreo.png', 'logo_qtr');
         $mail->Body    = '
                 <body>
                     <div style="background-color: #f4f4f4; color: #333; margin: 0; max-width: 900px; margin: 20px auto; border: 2px solid #ddd; border-radius: 10px; background-color: #ffffff; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); ">
                         <div style="display: flex; align-items: flex-start; padding: 30px; border-bottom: 2px solid #007bff; background: linear-gradient(0deg, rgba(255,255,255,1) 45%, rgba(37,190,212,0.7) 100%);">
-                        <img src="cid:logo_qtr" alt="logo" style="width: 180px; height: 100%; margin-left: 40px; margin-top: 15px;">
+                        <img src="cid:logo_qtr" alt="logo" style="width: 240px; height: 100%; margin-left: 40px; margin-top: 15px;">
                             <div style="margin-left: 20%;">
                             <p style="font-weight: bold;">QUICK T&R, S.L.</p>
                             <p>Carrer de València, 235</p>
@@ -795,6 +860,7 @@ function cambiarEstado($id, $estado, $redirect, $metodo=null){
     } catch (PDOException $e){
         echo '<p class="text-light">'.$e->getMessage().'</p>';
     }
+    if($estado == 4) correoReview($id);
     if($redirect==0){
         header('Location: index.php?pag=list');
     } else {
