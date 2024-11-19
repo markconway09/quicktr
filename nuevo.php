@@ -1,14 +1,11 @@
 <?php
-if(isset($_POST["garantia"])){
-    garantia($_GET["id"]);
-}
 $datos=selectBD($_GET["id"]);
 $servicio = explode(": ", $datos["servicio"]);
 ?>
         <!-- FORM -->
-        <form action="" method="POST" class="form-control p-4 bg-dark">
-                <a href="index.php?pag=list&id=<?php echo $datos["id"]; ?>" class="btn btn-secondary mb-4">Volver</a>
-                <h1 class="display-5 text-light text-center mb-4">GARANTÍA PARA # <?php echo $datos["id"] ?></h1>
+        <form action="?pag=list" method="POST" class="form-control p-4 bg-dark">
+                <a href="index.php?pag=list&id=<?php echo $datos["id"]; ?>" class="btn btn-secondary">Volver</a>
+                <h1 class="display-5 text-light text-center mb-4">Retorno de cliente</h1>
                 <div class="row">
                     <div class="col-12 col-md-4 mb-3">
                         <div class="form-floating">
@@ -74,7 +71,6 @@ $servicio = explode(": ", $datos["servicio"]);
                             <div class="col-12 col-md-6 mb-3">
                                 <div class="form-floating">
                                     <select class="form-control form-select" name="servicio" id="servicio">
-                                        <option value="<?php echo $servicio[0];?>">Actual: <?php echo $servicio[0];?></option>
                                         <option value="Reparación Móvil">Reparación Móvil</option>
                                         <option value="Reparación Ordenador">Reparación Ordenador</option>
                                         <option value="Reparación Consola">Reparación Consola</option>
@@ -88,7 +84,6 @@ $servicio = explode(": ", $datos["servicio"]);
                             <div class="col-12 col-md-6 mb-3">
                                 <div class="form-floating">
                                     <select class="form-control form-select" name="servicio2" id="servicio2">
-                                        <option value="<?php echo $servicio[1];?>" selected>Actual: <?php echo $servicio[1];?></option>
                                     </select>
                                     <label for="servicio2">Servicio</label>
                                 </div>
@@ -97,7 +92,7 @@ $servicio = explode(": ", $datos["servicio"]);
                         <div class="row mb-3">
                             <div class="col-12">
                                 <div class="form-floating">
-                                    <input class="form-control" placeholder="Dispositivo" type="text" name="dispositivo" id="dispositivo" value="<?php echo $datos["nombre_dispositivo"]; ?>">
+                                    <input class="form-control" placeholder="Dispositivo" type="text" name="dispositivo" id="dispositivo">
                                     <label for="dispositivo">Dispositivo</label>
                                 </div>
                             </div>
@@ -105,15 +100,15 @@ $servicio = explode(": ", $datos["servicio"]);
                         <div class="row">
                             <div class="col-12 mb-3">
                                 <div class="form-floating">
-                                    <textarea rows="2" style="height:100%;" class="form-control" name="desc" id="desc"><?php echo $datos["desc"]; ?></textarea>
-                                    <label for="desc">Descripción del servicio</label>
+                                    <textarea rows="2" style="height:100%;" class="form-control" name="motivo" id="motivo"></textarea>
+                                    <label for="motivo">Descripción del servicio</label>
                                 </div>
                             </div>
                         </div>
                 <div class="row">
                     <div class="col-12 col-md-4 mb-3">
                         <div class="form-floating">
-                            <input class="form-control" onblur="findTotal()" placeholder="Precio" type="number" step="0.01" name="precio" id="precio" value=0 required>
+                            <input class="form-control" onblur="findTotal()" placeholder="Precio" type="number" step="0.01" name="precio" id="precio" value=0>
                             <label for="precio">Precio €</label>
                         </div>
                     </div>
@@ -125,20 +120,20 @@ $servicio = explode(": ", $datos["servicio"]);
                     </div>
                     <div class="col-12 col-md-2 mb-3">
                         <div class="form-floating">
-                            <input class="form-control" onblur="findTotal()" placeholder="Iva 21%" type="number" step="0.1" value=21 name="iva" id="iva" value="<?php echo $datos["iva"] ?>" required>
+                            <input class="form-control" onblur="findTotal()" placeholder="Iva 21%" type="number" step="0.1" value=21 name="iva" id="iva">
                             <label for="iva">Iva 21%</label>
                         </div>
                     </div>
                     <div class="col-12 col-md-4 mb-3">
                         <div class="form-floating">
-                            <input class="form-control" onblur="findPrecio()" placeholder="Precio Final" step="0.01" type="number" name="precio-final" id="precio-final" value=0 required>
+                            <input class="form-control" onblur="findPrecio()" placeholder="Precio Final" step="0.01" type="number" name="precio-final" id="precio-final" value=0>
                             <label for="precio-final">Precio Final €</label>
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-12">
-                        <input type="submit" name="garantia" class="btn btn-primary col-12 mx-auto" value="Crear Ticket Garantia">
+                        <input type="submit" name="nuevo" class="btn btn-primary col-12 mx-auto" value="Crear Ticket">
                     </div>
                 </div>
             </form>

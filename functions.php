@@ -51,17 +51,17 @@ function insertarBDS(){
     } else {
         if(isset($_POST["tel"])) $tel = $_POST["tel"];
     }
-    if(isset($_POST["servicio"])&&isset($_POST["servicio2"])) $servicio = $_POST["servicio"] . ": " . $_POST["servicio2"];
-    if(isset($_POST["doc"])) $doc = $_POST["doc"];
-    if(isset($_POST["local"])) $local = $_POST["local"];
-    if(isset($_POST["razon"])) $razon = $_POST["razon"];
-    if(isset($_POST["local"])) $local = $_POST["local"];
-    if(isset($_POST["dept"])) $dept = $_POST["dept"];
-    if(isset($_POST["motivo"])) $desc = $_POST["motivo"];
-    if(isset($_POST["nombre"])) $nombre = $_POST["nombre"];
-    if(isset($_POST["direccion"])) $dir = $_POST["direccion"];
-    if(isset($_POST["cp"])) $cp = $_POST["cp"];
-    if(isset($_POST["email"])) $email = $_POST["email"];
+    if(!empty($_POST["servicio"])&&isset($_POST["servicio2"])) $servicio = $_POST["servicio"] . ": " . $_POST["servicio2"];
+    if(!empty($_POST["doc"])) $doc = $_POST["doc"];
+    if(!empty($_POST["local"])) $local = $_POST["local"];
+    if(!empty($_POST["razon"])) $razon = $_POST["razon"];
+    if(!empty($_POST["local"])) $local = $_POST["local"];
+    if(!empty($_POST["dept"])) $dept = $_POST["dept"];
+    if(!empty($_POST["motivo"])) $desc = $_POST["motivo"];
+    if(!empty($_POST["nombre"])) $nombre = $_POST["nombre"];
+    if(!empty($_POST["direccion"])) $dir = $_POST["direccion"];
+    if(!empty($_POST["cp"])) $cp = $_POST["cp"];
+    if(!empty($_POST["email"])) $email = $_POST["email"];
     if(!empty($_POST["insumo_desc"])) $ins_d = $_POST["insumo_desc"];
     if(!empty($_POST["insumo_precio"])) $ins_p = $_POST["insumo_precio"];
     if(!empty($_POST["metodo"])) $metodo = $_POST["metodo"];
@@ -70,6 +70,7 @@ function insertarBDS(){
     if(!empty($_POST["descuento"])) $descuento = $_POST["descuento"];
     if(!empty($_POST["iva"])) $iva = $_POST["iva"];
     if(!empty($_POST["precio-final"])) $preciofinal = $_POST["precio-final"];
+    if(empty($_POST["motivo"])) $desc = "Sin descripción";
 
     $pdo = connect();
     $stmt = $pdo->prepare("INSERT INTO info_orden VALUES 

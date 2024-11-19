@@ -1,5 +1,9 @@
         <div class="container border my-4 px-4 bg-dark rounded">
             <?php
+            if(isset($_POST["nuevo"])){
+                insertarBDS();
+            }
+            
             $pasos = ["Diagnóstico", "Aprobación", "Reparación", "Terminado", "Entregado"];
             $pasosLargo = ["Espera del diagnóstico", "Espera aprobación del cliente", "En Reparación", "Reparación terminada", "Entregado al cliente"];
             $colores = ["#f54254", "#e8a31a", "#2f852c", "#4472c4", "#adadad"];
@@ -17,6 +21,12 @@
                 <div class="input-group sticky-top mt-3 py-2 bg-dark" style="top: 50px; z-index: 1;">
                     <a href="?pag=list" class="btn btn-secondary">
                         <i class="bi bi-arrow-left"></i> <span class="d-none d-sm-inline">Volver</span>
+                    </a>
+                    <a href="?pag=nuevo&id=<?php echo $id; ?>" class="btn" 
+                    style="background-color: #6c0892; color: white; transition: background-color 0.3s;" 
+                    onmouseover="this.style.backgroundColor='#550673';" 
+                    onmouseout="this.style.backgroundColor='#6c0892';">
+                        <i class="bi bi-plus"></i> <span class="d-none d-sm-inline">Nuevo</span>
                     </a>
                     <a href="execute.php?ticketservicio=1&id=<?php echo $id; ?>" target="_blank" class="btn btn-primary">
                         <i class="bi bi-receipt-cutoff"></i> <span class="d-none d-sm-inline">Imprimir Ticket</span>
