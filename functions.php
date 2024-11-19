@@ -595,9 +595,8 @@ function enviarCorreo($id){
         $mail->Body    = '
                 <body>
                     <div style="background-color: #f4f4f4; color: #333; margin: 0; max-width: 900px; margin: 20px auto; border: 2px solid #ddd; border-radius: 10px; background-color: #ffffff; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); ">
-                        <div style="display: flex; align-items: flex-start; padding: 30px; border-bottom: 2px solid #007bff; background: linear-gradient(0deg, rgba(255,255,255,1) 45%, rgba(37,190,212,0.7) 100%);">
-                        <img src="cid:logo_qtr" alt="logo" style="width: 240px; height: 100%; margin-left: 40px; margin-top: 15px;">
-                            <div style="margin-left: 20%;">
+                        <div style="padding: 30px; border-bottom: 2px solid #007bff;">
+                            <img src="cid:logo_qtr" alt="logo" style="width: 240px; height: auto; margin: auto;">
                             <p style="font-weight: bold;">QUICK T&R, S.L.</p>
                             <p>Carrer de València, 235</p>
                             <p>Principal, 1 Eixample</p>
@@ -607,7 +606,6 @@ function enviarCorreo($id){
                             <p>Whatsapp Mataró: 612 25 96 31</p>
                             <br>
                             <p><strong>Fecha:</strong> '.$datos["fecha"].'</p>
-                            </div>
                         </div>
                         <div>
                             <h1 style="text-align: center; color: #0056b3;">'.ucfirst($ser1).' # '.$id.' - '.$ser2.'</h1>
@@ -684,9 +682,8 @@ function enviarCorreoCliente($id){
         $mail->Body    = '
                 <body>
                     <div style="background-color: #f4f4f4; color: #333; margin: 0; max-width: 900px; margin: 20px auto; border: 2px solid #ddd; border-radius: 10px; background-color: #ffffff; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); ">
-                        <div style="display: flex; align-items: flex-start; padding: 30px; border-bottom: 2px solid #007bff; background: linear-gradient(0deg, rgba(255,255,255,1) 45%, rgba(37,190,212,0.7) 100%);">
-                        <img src="cid:logo_qtr" alt="logo" style="width: 240px; height: 100%; margin-left: 40px; margin-top: 15px;">
-                            <div style="margin-left: 20%;">
+                        <div style="padding: 30px; border-bottom: 2px solid #007bff;">
+                            <img src="cid:logo_qtr" alt="logo" style="width: 240px; height: auto; margin: auto;">
                             <p style="font-weight: bold;">QUICK T&R, S.L.</p>
                             <p>Carrer de València, 235</p>
                             <p>Principal, 1 Eixample</p>
@@ -696,7 +693,6 @@ function enviarCorreoCliente($id){
                             <p>Whatsapp Mataró: 612 25 96 31</p>
                             <br>
                             <p><strong>Fecha:</strong> '.$datos["fecha"].'</p>
-                            </div>
                         </div>
                         <div>
                             <h1 style="text-align: center; color: #0056b3;">'.ucfirst($ser1).' # '.$id.' - '.$ser2.'</h1>
