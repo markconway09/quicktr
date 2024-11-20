@@ -37,44 +37,66 @@ function subirFirma($id){
     }
 }
 
-function insertarBDS(){
-    $servicio="";$garantia = 0;$pV = "";$cV = "";
-    $doc="";$local="";$dir="";$cp="";$email="No especificado";
-    $tel="";$nombre="";$ins_d="";$ins_p=0;$metodo="";
-    $disp="";$precio=0;$descuento=0;$iva=0;$preciofinal=0;
-    $razon="";$dept="";$cc="";
-    if(!empty($_POST["countryCode"])){
-        if ($_POST["countryCode"][0] !== '+') {
-            $cc = '+' . $_POST["countryCode"];
-        }
-        if(isset($_POST["tel"])) $tel = $cc . $_POST["tel"];
-    } else {
-        if(isset($_POST["tel"])) $tel = $_POST["tel"];
-    }
-    if(!empty($_POST["servicio"])&&isset($_POST["servicio2"])) $servicio = $_POST["servicio"] . ": " . $_POST["servicio2"];
-    if(!empty($_POST["doc"])) $doc = $_POST["doc"];
-    if(!empty($_POST["local"])) $local = $_POST["local"];
-    if(!empty($_POST["razon"])) $razon = $_POST["razon"];
-    if(!empty($_POST["local"])) $local = $_POST["local"];
-    if(!empty($_POST["dept"])) $dept = $_POST["dept"];
-    if(!empty($_POST["motivo"])) $desc = $_POST["motivo"];
-    if(!empty($_POST["nombre"])) $nombre = $_POST["nombre"];
-    if(!empty($_POST["direccion"])) $dir = $_POST["direccion"];
-    if(!empty($_POST["cp"])) $cp = $_POST["cp"];
-    if(!empty($_POST["email"])) $email = $_POST["email"];
-    if(!empty($_POST["insumo_desc"])) $ins_d = $_POST["insumo_desc"];
-    if(!empty($_POST["insumo_precio"])) $ins_p = $_POST["insumo_precio"];
-    if(!empty($_POST["metodo"])) $metodo = $_POST["metodo"];
-    if(!empty($_POST["dispositivo"])) $disp = $_POST["dispositivo"];
-    if(!empty($_POST["precio"])) $precio = $_POST["precio"];
-    if(!empty($_POST["descuento"])) $descuento = $_POST["descuento"];
-    if(!empty($_POST["iva"])) $iva = $_POST["iva"];
-    if(!empty($_POST["precio-final"])) $preciofinal = $_POST["precio-final"];
-    if(empty($_POST["motivo"])) $desc = "Sin descripción";
+function insertarBDS($garantia=0) {
+    // Initialize variables with default values
+    $servicio = "No especificado";
+    $pV = null;
+    $cV = null;
+    $doc = "No especificado";
+    $local = "No especificado";
+    $dir = "No especificado";
+    $cp = "No especificado";
+    $email = "No especificado";
+    $tel = "";
+    $nombre = "No especificado";
+    $ins_d = "";
+    $ins_p = 0;
+    $metodo = "";
+    $disp = "No especificado";
+    $precio = 0;
+    $descuento = 0;
+    $iva = 0;
+    $preciofinal = 0;
+    $razon = "No especificado";
+    $dept = "No especificado";
+    $desc = "Sin descripción";
 
+    // Handle phone number with country code
+    if (!empty($_POST["countryCode"])) {
+        $cc = ($_POST["countryCode"][0] !== '+') ? '+' . $_POST["countryCode"] : $_POST["countryCode"];
+        if (isset($_POST["tel"])) $tel = $cc . $_POST["tel"];
+    } else {
+        if (isset($_POST["tel"])) $tel = $_POST["tel"];
+    }
+
+    // Handle other POST variables
+    if (!empty($_POST["servicio"]) && isset($_POST["servicio2"])) $servicio = $_POST["servicio"] . ": " . $_POST["servicio2"];
+    $doc = $_POST["doc"] ?? $doc;
+    $local = $_POST["local"] ?? $local;
+    $razon = $_POST["razon"] ?? $razon;
+    $dept = $_POST["dept"] ?? $dept;
+    $desc = $_POST["motivo"] ?? $desc;
+    $nombre = $_POST["nombre"] ?? $nombre;
+    $dir = $_POST["direccion"] ?? $dir;
+    $cp = $_POST["cp"] ?? $cp;
+    $email = $_POST["email"] ?? $email;
+    $ins_d = $_POST["insumo_desc"] ?? $ins_d;
+    $ins_p = $_POST["insumo_precio"] ?? $ins_p;
+    $metodo = $_POST["metodo"] ?? $metodo;
+    $disp = $_POST["dispositivo"] ?? $disp;
+    $precio = $_POST["precio"] ?? $precio;
+    $descuento = $_POST["descuento"] ?? $descuento;
+    $iva = $_POST["iva"] ?? $iva;
+    $preciofinal = $_POST["precio-final"] ?? $preciofinal;
+
+    // Prepare database connection and insert query
     $pdo = connect();
-    $stmt = $pdo->prepare("INSERT INTO info_orden VALUES 
-    (null, :nom, :tel, :doc, :ser, :email, :direccion, :cp, :preciosV, :cantV, :precio, :descuento, :iva, :final, :ins_d, :ins_p, :metodo, :disp, :descr, null, :loc, :fecha, null, :garantia, 0, :razon, :dept)");
+    $stmt = $pdo->prepare("INSERT INTO info_orden 
+        VALUES (null, :nom, :tel, :doc, :ser, :email, :direccion, :cp, :preciosV,
+                :cantV, :precio, :descuento, :iva, :final, :ins_d, :ins_p, null, :disp,
+                :descr, null, :loc, :fecha, null, :garantia, 0, :razon, :dept)");
+    
+    // Bind parameters
     $stmt->bindParam(':nom', $nombre);
     $stmt->bindParam(':tel', $tel);
     $stmt->bindParam(':doc', $doc);
@@ -90,7 +112,6 @@ function insertarBDS(){
     $stmt->bindParam(':final', $preciofinal);
     $stmt->bindParam(':ins_d', $ins_d);
     $stmt->bindParam(':ins_p', $ins_p);
-    $stmt->bindParam(':metodo', $metodo);
     $stmt->bindParam(':disp', $disp);
     $stmt->bindParam(':descr', $desc);
     $stmt->bindParam(':loc', $local);
@@ -99,13 +120,17 @@ function insertarBDS(){
     $stmt->bindParam(':garantia', $garantia);
     $stmt->bindParam(':razon', $razon);
     $stmt->bindParam(':dept', $dept);
+
+    // Execute the statement and handle any errors
     try {
         $stmt->execute();
-    } catch(PDOException $e){
-        echo $e->getMessage()."<br>";
-        $stmt->debugDumpParams();
+    } catch (PDOException $e) {
+        error_log($e->getMessage()); // Log error message
+        error_log($stmt->queryString); // Log SQL query for debugging
+        echo "An error occurred. Please try again later.";
     }
-    return $pdo->lastInsertId();
+
+    return $pdo->lastInsertId(); // Return last inserted ID
 }
 
 function insertarFotos(){
@@ -769,61 +794,6 @@ function editarEntrada($id){
     }
     
     header('Location: index.php?pag=list&id='.$id);
-}
-
-function garantia($id){
-    $servicio = $_POST["servicio"] . ": " . $_POST["servicio2"];
-    $garantia = $id;
-    $desc = "";
-    $pV = "";
-    $cV = "";
-    $doc="";$dir="";$cp="";$email="No especificado";$tel="";$nombre="";$ins_d="";$ins_p=0;$metodo="";$disp="";
-    if(isset($_POST["tel"])) $tel = $_POST["tel"];
-    if(isset($_POST["desc"])) $desc = $_POST["desc"];
-    if(isset($_POST["doc"])) $doc = $_POST["doc"];
-    if(isset($_POST["nombre"])) $nombre = $_POST["nombre"];
-    if(isset($_POST["direccion"])) $dir = $_POST["direccion"];
-    if(isset($_POST["cp"])) $cp = $_POST["cp"];
-    if(isset($_POST["email"])) $email = $_POST["email"];
-    if(!empty($_POST["insumo_desc"])) $ins_d = $_POST["insumo_desc"];
-    if(!empty($_POST["insumo_precio"])) $ins_p = $_POST["insumo_precio"];
-    if(!empty($_POST["metodo"])) $metodo = $_POST["metodo"];
-    if(!empty($_POST["dispositivo"])) $disp = $_POST["dispositivo"];
-
-    $pdo = connect();
-    $stmt = $pdo->prepare("INSERT INTO info_orden VALUES 
-    (null, :nom, :tel, :doc, :ser, :email, :direccion, :cp, :preciosV, :cantV, :precio, :descuento, :iva, :final, :ins_d, :ins_p, :metodo, :disp, :descr, :loc, :fecha, null, :garantia, 0, :razon, :dept)");
-    $stmt->bindParam(':nom', $nombre);
-    $stmt->bindParam(':tel', $tel);
-    $stmt->bindParam(':doc', $doc);
-    $stmt->bindParam(':ser', $servicio);
-    $stmt->bindParam(':email', $email);
-    $stmt->bindParam(':direccion', $dir);
-    $stmt->bindParam(':cp', $cp);
-    $stmt->bindParam(':preciosV', $pV);
-    $stmt->bindParam(':cantV', $cV);
-    $stmt->bindParam(':precio', $_POST["precio"]);
-    $stmt->bindParam(':descuento', $_POST["descuento"]);
-    $stmt->bindParam(':iva', $_POST["iva"]);
-    $stmt->bindParam(':final', $_POST["precio-final"]);
-    $stmt->bindParam(':ins_d', $ins_d);
-    $stmt->bindParam(':ins_p', $ins_p);
-    $stmt->bindParam(':metodo', $metodo);
-    $stmt->bindParam(':disp', $disp);
-    $stmt->bindParam(':descr', $desc);
-    $stmt->bindParam(':loc', $_POST["local"]);
-    $date = date('Y-m-d');
-    $stmt->bindParam(':fecha', $date);
-    $stmt->bindParam(':garantia', $garantia);
-    $stmt->bindParam(':razon', $_POST["razon"]);
-    $stmt->bindParam(':dept', $_POST["dept"]);
-    try {
-        $stmt->execute();
-    } catch(PDOException $e){
-        echo $e->getMessage()."<br>";
-        $stmt->debugDumpParams();
-    }
-    return $pdo->lastInsertId();
 }
 
 function devolucion($id, $des = 0){

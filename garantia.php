@@ -1,6 +1,6 @@
 <?php
 if(isset($_POST["garantia"])){
-    garantia($_GET["id"]);
+    insertarBDS($_GET["id"]);
 }
 $datos=selectBD($_GET["id"]);
 $servicio = explode(": ", $datos["servicio"]);
