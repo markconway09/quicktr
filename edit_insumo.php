@@ -35,6 +35,7 @@ $servicio = explode(": ", $datos["servicio"]);
                 </div>
             </div>
         </div>
+        <?php if($_SESSION["login"]=="admin"): ?>
         <div class="row">
             <div class="col-12" id="insumo">
                 <?php
@@ -63,6 +64,7 @@ $servicio = explode(": ", $datos["servicio"]);
                 <button type="button" class="btn btn-secondary" onclick="crear()">+ Añadir Insumo</button>
             </div>
         </div>
+        <?php endif; ?>
         <div class="row">
             <input type="submit" name="editar_insumo" class="btn btn-primary col-4 mx-auto" value="Guardar Cambios">
         </div>

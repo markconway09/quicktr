@@ -26,7 +26,7 @@
                     style="background-color: #6c0892; color: white; transition: background-color 0.3s;" 
                     onmouseover="this.style.backgroundColor='#550673';" 
                     onmouseout="this.style.backgroundColor='#6c0892';">
-                        <i class="bi bi-plus"></i> <span class="d-none d-sm-inline">Nuevo</span>
+                        <i class="bi bi-plus"></i> <span class="d-none d-sm-inline">Autorellenar</span>
                     </a>
                     <a href="execute.php?ticketservicio=1&id=<?php echo $id; ?>" target="_blank" class="btn btn-primary">
                         <i class="bi bi-receipt-cutoff"></i> <span class="d-none d-sm-inline">Imprimir Ticket</span>
@@ -155,11 +155,13 @@
                                             <p class="card-text"><b>Nombre:</b> <?php echo !empty($row["nombre"])?$row["nombre"]:"No especificado"; ?></p>
                                             <p class="card-text"><b>Documento:</b> <?php echo !empty($row["documento"])?$row["documento"]:"No especificado"; ?></p>
                                             <p class="card-text"><b>Email:</b> <?php echo !empty($row["email"])?$row["email"]:"No especificado"; ?></p>
+                                            <p class="card-text"><b>Fecha Nacimiento:</b> <?php echo !empty($row["fecha_nacimiento"])?$row["fecha_nacimiento"]:"No especificado"; ?></p>
                                         </div>
                                         <div class="col-md-6 col-12">
                                             <p class="card-text"><b>Dirección:</b> <?php echo !empty($row["direccion"])?$row["direccion"]." - ".$row["cp"]:"No especificado"; ?></p>
                                             <p class="card-text"><b>Teléfono:</b> <?php if(!empty($row["telefono"])) { ?> <a href="https://wa.me//<?php echo $row["telefono"] ?>" target="_blank"><?php echo $row["telefono"]?><a><?php } else {echo "No especificado";} ?></p>
                                             <p class="card-text"><b>Cómo nos encontró:</b> <?php echo $row["razon"] ?></p>
+                                            <p class="card-text"><b>Código:</b> <?php echo !empty($row["codigo_socio"])?$row["codigo_socio"]:"No es socio"; ?></p>
                                         </div>
                                     </div>
                                     <hr>
@@ -173,6 +175,7 @@
                                         <div class="col-md-6 col-12">
                                             <p class="card-text"><b>Local:</b> <?php echo $row["local"] ?></p>
                                             <p class="card-text"><b>Departamento:</b> <?php echo $row["dept"] ?></p>
+                                            <p class="card-text"><b>Código Usado:</b> <?php echo $row["codigo_usado"] ?></p>
                                         </div>
                                     </div>
                                     <hr>
@@ -183,7 +186,8 @@
                                             <p class="card-text"><b>Dispositivo:</b> <?php echo $row["nombre_dispositivo"] ?></p>
                                             <p class="card-text"><?php echo $desc ?></p>
                                             <p class="card-text"><b>Descripción Técnico:</b> <?php echo !empty($row["desc_tecnico"])?$row["desc_tecnico"]:"Sin descripción" ?></p>
-                                            <?php if($_SESSION["login"] == "tecnico" || $_SESSION["login"] == "admin") echo ' <br><a href="index.php?pag=edit_insumo&id='.$id.'" class="btn btn-primary">Editar insumo y descripción técnico</a>'; ?>
+                                            <?php if($_SESSION["login"] == "admin") echo ' <br><a href="index.php?pag=edit_insumo&id='.$id.'" class="btn btn-primary">Editar insumo y descripción técnico</a>'; ?>
+                                            <?php if($_SESSION["login"] == "tecnico") echo ' <br><a href="index.php?pag=edit_insumo&id='.$id.'" class="btn btn-primary">Editar descripción técnico</a>'; ?>
                                         </div>
                                         <div class="col-md-6 col-12">
                                             <b>Firma:</b><br>
@@ -209,7 +213,7 @@
                                     <hr>
                                     
                                     <ul class="list-group list-group-flush mb-3">
-                                        <?php echo $_SESSION["login"] != "dependiente" ? $ins : "<hr>" ?>
+                                        <?php echo $_SESSION["login"] == "admin" ? $ins : "<hr>" ?>
                                         <li class="list-group-item"><b>Precio:</b> <?php echo $row["precio"] ?>€ (- <?php echo $row["descuento"] ?>%) (+ IVA <?php echo $row["iva"] ?>%) = <b><?php echo $row["precio-final"] ?>€</b></li>
                                     </ul>
                                     <hr>

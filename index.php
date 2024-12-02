@@ -49,6 +49,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="shortcut icon" href="favicon.ico"/>
         <title>Orden de reparación</title>
+        <!-- CHOICES -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css"/>
         <!-- GFONTS -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -95,7 +97,7 @@
         <nav class="navbar navbar-light text-light" style="background-color:rgb(43,45,46);">
             <a class="navbar-brand mx-auto" href="">
                 <img class="rounded" src="LOGO.png" alt="logo" height="90">
-                <span class="badge badge-pill bg-danger">1.11.0</span>
+                <span class="badge badge-pill bg-danger">1.12.0</span>
             </a>
             <?php
             if(isset($_SESSION["login"])){ ?>
@@ -135,6 +137,7 @@
                                     <li><a class="dropdown-item" href="?pag=user-admin">Usuarios</a></li>
                                     <li><a class="dropdown-item" href="?pag=infoClientes">Clientes</a></li>
                                     <li><a class="dropdown-item" href="?pag=infoOrdenes">Exportar Ordenes</a></li>
+                                    <li><a class="dropdown-item" href="?pag=referencias">Referencias</a></li>
                                 </ul>
                             </div>
                         <?php } ?>

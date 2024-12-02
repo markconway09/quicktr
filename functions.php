@@ -10,7 +10,7 @@ require('fpdf186/fpdf.php');
 function connect(){
     try {
         $db = "mysql:host=localhost;dbname=quicktrc_formulario";
-        return new PDO($db, 'quicktrc_admin', 'quicktr2024');
+        return new PDO($db, 'uvzcmq8ynnon4', 'quicktr2024');
     } catch (PDOException $e){
         echo $e->getMessage();
     }
@@ -60,6 +60,7 @@ function insertarBDS($garantia=0) {
     $razon = "No especificado";
     $dept = "No especificado";
     $desc = "Sin descripción";
+    $cod_ref = null;
 
     // Handle phone number with country code
     if (!empty($_POST["countryCode"])) {
@@ -88,13 +89,26 @@ function insertarBDS($garantia=0) {
     $descuento = $_POST["descuento"] ?? $descuento;
     $iva = $_POST["iva"] ?? $iva;
     $preciofinal = $_POST["precio-final"] ?? $preciofinal;
+    if(isset($_POST["cod_ref"])) if($_POST["cod_ref"]!="") $cod_ref = $_POST["cod_ref"];
+
+    if(isset($_POST["socio"])&&!empty($_POST["nacimiento"])){
+        $nac = $_POST["nacimiento"];
+        $caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        $codigo = '';
+        for ($i = 0; $i < 10; $i++) {
+            $codigo .= $caracteres[random_int(0, strlen($caracteres) - 1)];
+        }
+    } else {
+        $nac = null;
+        $codigo = null;
+    }
 
     // Prepare database connection and insert query
     $pdo = connect();
     $stmt = $pdo->prepare("INSERT INTO info_orden 
-        VALUES (null, :nom, :tel, :doc, :ser, :email, :direccion, :cp, :preciosV,
+        VALUES (null, :nom, :tel, :doc, :ser, :email, :direccion, :cp, :nac, :preciosV,
                 :cantV, :precio, :descuento, :iva, :final, :ins_d, :ins_p, null, :disp,
-                :descr, null, :loc, :fecha, null, :garantia, 0, :razon, :dept)");
+                :descr, null, :loc, :fecha, null, :garantia, 0, :razon, :dept, :codigo, :cod_ref)");
     
     // Bind parameters
     $stmt->bindParam(':nom', $nombre);
@@ -104,6 +118,7 @@ function insertarBDS($garantia=0) {
     $stmt->bindParam(':email', $email);
     $stmt->bindParam(':direccion', $dir);
     $stmt->bindParam(':cp', $cp);
+    $stmt->bindParam(':nac', $nac);
     $stmt->bindParam(':preciosV', $pV);
     $stmt->bindParam(':cantV', $cV);
     $stmt->bindParam(':precio', $precio);
@@ -120,6 +135,8 @@ function insertarBDS($garantia=0) {
     $stmt->bindParam(':garantia', $garantia);
     $stmt->bindParam(':razon', $razon);
     $stmt->bindParam(':dept', $dept);
+    $stmt->bindParam(':codigo', $codigo);
+    $stmt->bindParam(':cod_ref', $cod_ref);
 
     // Execute the statement and handle any errors
     try {
@@ -591,6 +608,11 @@ function enviarCorreo($id){
         $ser1 = "Servicio";
         $ser2 = "";
     }
+    if(!is_null($datos["codigo_socio"])){
+        $socio = "<p><strong>CÓDIGO DE SOCIO:</strong> ".$datos["codigo_socio"]."</p>";
+    } else {
+        $socio = null;
+    }
 
     // ENVIAR CORREO
     $mail = new PHPMailer(true);
@@ -649,6 +671,7 @@ function enviarCorreo($id){
                             <p><strong>Tipo de servicio:</strong> '.$ser1.'</p>
                             <p><strong>Servicio Reportado:</strong> '.$ser2.'</p>
                             <p><strong>Descripción:</strong> '.$datos["desc"].'</p>
+                            '.$socio.'
                             </div>
                         </div>
                         <div style="padding: 30px; background-color: #f9f9f9;">  
@@ -677,6 +700,11 @@ function enviarCorreoCliente($id){
     } else {
         $ser1 = "Servicio";
         $ser2 = "";
+    }
+    if(!is_null($datos["codigo_socio"])){
+        $socio = "<p><strong>CÓDIGO DE SOCIO:</strong> ".$datos["codigo_socio"]."</p>";
+    } else {
+        $socio = null;
     }
 
     // ENVIAR CORREO
@@ -736,6 +764,7 @@ function enviarCorreoCliente($id){
                             <p><strong>Tipo de servicio:</strong> '.$ser1.'</p>
                             <p><strong>Servicio Reportado:</strong> '.$ser2.'</p>
                             <p><strong>Descripción:</strong> '.$datos["desc"].'</p>
+                            '.$socio.'
                             </div>
                         </div>
                         <div style="padding: 30px; background-color: #f9f9f9;">  

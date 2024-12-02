@@ -80,11 +80,26 @@
                         </div>
                     </div>
                 </div>
+                
+                <div class="row">
+                    <div class="col-12 col-md-3">
+                        <div class="form-check form-switch">
+                            <input onchange="registroSocio()" type="checkbox" name="socio" id="socio" class="form-check-input">
+                            <label for="socio" class="text-light">Registrar Socio</label>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-9 d-none" id="regSocio">
+                        <div class="form-floating">
+                            <input class="form-control" placeholder="Fecha de nacimiento" type="date" name="nacimiento" id="nacimiento">
+                            <label for="nacimiento">Fecha de nacimiento</label>
+                        </div>
+                    </div>
+                </div>
 
                 <hr class="text-light pb-3">
 
                 <div class="row">
-                    <div class="col-12 col-md-6 mb-3">
+                    <div class="col-12 col-md-4 mb-3">
                         <div class="form-floating">
                             <select class="form-control form-select" name="servicio" id="servicio">
                                 <option value="Reparación Móvil" selected>Reparación Móvil</option>
@@ -97,12 +112,20 @@
                             <label for="servicio">Tipo de Servicio</label>
                         </div>
                     </div>
-                    <div class="col-12 col-md-6 mb-3">
+                    <div class="col-12 col-md-4 mb-3">
                         <div class="form-floating">
                             <select class="form-control form-select" name="servicio2" id="servicio2">
                                 <option value="">Selecciona un tipo</option>
                             </select>
                             <label for="servicio2">Servicio</label>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4 mb-3">
+                        <div class="form-floating" style="z-index: 10;">
+                            <!-- The select select_code that Choices.js will enhance -->
+                            <select id="cod_ref" class="form-select" name="cod_ref">
+                                <option value="">Código de referencia</option> <!-- Placeholder option -->
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -153,7 +176,22 @@
                 </div>
             </form>
 
+            <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
             <script>
+                // REGISTRO SOCIO
+                function registroSocio() {
+                    let s = $("#regSocio");
+                    if (s.hasClass("d-none")) {
+                        s.removeClass("d-none");
+                        s.removeAttr("required");
+                        s.val("");
+                    } else {
+                        s.addClass("d-none");
+                        s.attr("required", true);
+                    }
+                }
+
+                // SELECT SERVICIOS
                 function cambiarServicios(tipo){
                     switch(tipo){
                         case "Reparación Móvil":
@@ -247,12 +285,44 @@
                         .attr("value", key).text(key));
                     });
                 }
-
                 $('#servicio').on('change', function() {
                     cambiarServicios(this.value)
                 });
 
+                // ON READY
                 $( document ).ready(function() {
+                    // CODIGO REFERENCIA
+                    const select_code = document.getElementById("cod_ref");
+                    const availableItems = [];
+                    $.ajax({
+                        url: 'ajax_codigos.php',  // The PHP file that returns data
+                        type: 'GET',       // Method of the request
+                        dataType: 'json',  // Expected data type (JSON)
+                        success: function(data) {
+                            data.forEach(function(item) {
+                                availableItems.push(item["codigo_socio"]);
+                            });
+                            
+                            for (let i = 0; i < availableItems.length; i++) {
+                                var opt = document.createElement('option');
+                                opt.value = availableItems[i];
+                                opt.innerHTML = availableItems[i];
+                                select_code.appendChild(opt);
+                            }
+                            const choices = new Choices(select_code, {
+                                searchEnabled: true,          // Enable searching
+                                removeItemButton: true,       // Enable remove button for selected items
+                                searchResultLimit: 10,        // Limit the number of search results
+                                searchFloor: 1,               // Start searching after 1 character
+                                maxItemCount: 5,              // Max number of items allowed in the select
+                            });
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('AJAX Error: ' + status + ' - ' + error);
+                        }
+                    });
+
+                    // CAMBIAR SERVICIO DEFAULT
                     cambiarServicios("Reparación Móvil");
                 });
             </script>
