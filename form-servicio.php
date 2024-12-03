@@ -47,7 +47,8 @@
                                     <?php
                                 } else {
                                 ?>
-                                <option value="Barcelona">Barcelona</option>
+                                <option value="Barcelona Oficina">Barcelona Oficina (Valencia)</option>
+                                <option value="Barcelona">Barcelona (Entença)</option>
                                 <option value="Mataró">Mataró</option>
                                 <?php
                                 }

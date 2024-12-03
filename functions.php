@@ -204,6 +204,10 @@ function crearPDF($id, $factura=0 , $enviar=0){
     // DIRECCIÓN
     switch($datos["local"]){
         case 'Barcelona':
+            $direccion = 'Carrer d\'Entença, 117, Local-1, 08015';
+            $id = '0002 - '.$id;
+            break;
+        case 'Barcelona Oficina':
             $direccion = 'Carrer de Valencia, 235 P-1, 08007';
             $id = '0002 - '.$id;
             break;
@@ -212,7 +216,7 @@ function crearPDF($id, $factura=0 , $enviar=0){
             $id = '0003 - '.$id;
             break;
         default:
-            $direccion = 'Carrer de Valencia, 235 P-1, 08007';
+            $direccion = 'Carrer d\'Entença, 117, Local-1, 08015';
             break;
     }
 
@@ -249,9 +253,15 @@ function crearPDF($id, $factura=0 , $enviar=0){
     $pdf->SetFont('Arial','',8);
     $pdf->Cell($width, 5, iconv('UTF-8', 'windows-1252', $datos["local"]),0,1);
     $pdf->Cell($width, 5, iconv('UTF-8', 'windows-1252', $direccion), 0, 1);
-    if($datos["local"]=="Barcelona") $pdf->Cell($width, 5, iconv('UTF-8', 'windows-1252', 'Nº Whatsapp: 606 46 59 79'), 0, 1);
+    if($datos["local"]=="Barcelona") {
+        $pdf->Cell($width, 5, iconv('UTF-8', 'windows-1252', 'Nº Whatsapp: 650 01 04 38'), 0, 1);
+        $pdf->Cell($width, 5, iconv('UTF-8', 'windows-1252', 'Nº Telefono: 934 960 016'), 0, 1);
+    }
+    if($datos["local"]=="Barcelona Oficina") {
+        $pdf->Cell($width, 5, iconv('UTF-8', 'windows-1252', 'Nº Whatsapp: 606 46 59 79'), 0, 1);
+        $pdf->Cell($width, 5, iconv('UTF-8', 'windows-1252', 'Nº Telefono: 933 496 389'), 0, 1);
+    }
     if($datos["local"]=="Mataró") $pdf->Cell($width, 5, iconv('UTF-8', 'windows-1252', 'Nº Whatsapp: 612 25 96 31'), 0, 1);
-    if($datos["local"]=="Barcelona") $pdf->Cell($width, 5, iconv('UTF-8', 'windows-1252', 'Nº Telefono: 933 496 389'), 0, 1);
     $pdf->Ln();
     // DATOS CLIENTE
     $pdf->SetFont('Arial','B',8);
@@ -268,13 +278,6 @@ function crearPDF($id, $factura=0 , $enviar=0){
     $pdf->Ln(1);
     $pdf->Cell($width/4, 5, 'Email', 0, 0);
     $pdf->Cell($width/1.5, 5, $datos["email"], 1, 1);
-    /*
-    $pdf->Ln(1);
-    $pdf->Cell($width/4, 5, iconv('UTF-8', 'windows-1252', 'Dirección'), 0, 0);
-    $pdf->Cell($width/1.5, 5, $datos["direccion"], 1, 1);
-    $pdf->Ln(1);
-    $pdf->Cell($width/4, 5, iconv('UTF-8', 'windows-1252', 'C. Postal'), 0, 0);
-    $pdf->Cell($width/1.5, 5, $datos["cp"], 1, 1);*/
 
     $pdf->Ln(5);
 
@@ -408,9 +411,15 @@ function crearFServicio($id, $enviar=0){
     $pdf->Cell($width/2, 5, 'NIF: B19359082', 0, 1);
     $pdf->SetFont('Arial','',8);
     $pdf->Cell($width/2, 5, iconv('UTF-8', 'windows-1252', $direccion), 0, 1);
-    if($datos["local"]=="Barcelona") $pdf->Cell($width, 5, iconv('UTF-8', 'windows-1252', 'Nº Whatsapp: 606 46 59 79'), 0, 1);
+    if($datos["local"]=="Barcelona") {
+        $pdf->Cell($width, 5, iconv('UTF-8', 'windows-1252', 'Nº Whatsapp: 650 01 04 38'), 0, 1);
+        $pdf->Cell($width, 5, iconv('UTF-8', 'windows-1252', 'Nº Telefono: 934 960 016'), 0, 1);
+    }
+    if($datos["local"]=="Barcelona Oficina") {
+        $pdf->Cell($width, 5, iconv('UTF-8', 'windows-1252', 'Nº Whatsapp: 606 46 59 79'), 0, 1);
+        $pdf->Cell($width, 5, iconv('UTF-8', 'windows-1252', 'Nº Telefono: 933 496 389'), 0, 1);
+    }
     if($datos["local"]=="Mataró") $pdf->Cell($width, 5, iconv('UTF-8', 'windows-1252', 'Nº Whatsapp: 612 25 96 31'), 0, 1);
-    if($datos["local"]=="Barcelona") $pdf->Cell($width, 5, iconv('UTF-8', 'windows-1252', 'Nº Telefono: 933 496 389'), 0, 1);
     $pdf->Ln();
 
     // DATOS CLIENTE

@@ -9,12 +9,12 @@ $delimiter = ",";
 $f = fopen('php://memory', 'w'); 
 fputs($f, $bom =( chr(0xEF) . chr(0xBB) . chr(0xBF) ));
 
-$fields = array('ID', 'Nombre', 'Telefono', 'Documento', 'Email', 'Dispositivo', 'Servicio', 'Insumo', 'Precio Final', 'Metodo', 'Descripción', 'Local', 'Fecha Entrada', 'Fecha Pago', 'Estado'); 
+$fields = array('ID', 'Nombre', 'Telefono', 'Documento', 'Email', 'Dispositivo', 'Servicio', 'Insumo', 'Precio Final', 'Metodo', 'Descripción', 'Local', 'Fecha Entrada', 'Fecha Pago', 'Estado', 'Razon'); 
 
 fputcsv($f, $fields, $delimiter); 
 
 $pdo = connect();
-$stmt = $pdo->prepare("SELECT * FROM InfoOrden");
+$stmt = $pdo->prepare("SELECT * FROM info_orden");
 try {
     $stmt->execute();
 } catch(PDOException $e){
@@ -39,7 +39,8 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         $row["local"], 
         $row["fecha"], 
         $row["fecha_pago"], 
-        $row["estado"]
+        $row["estado"],
+        $row["razon"]
     );
     fputcsv($f, $lineData, $delimiter);
 }
