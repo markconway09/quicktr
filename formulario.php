@@ -1,7 +1,7 @@
 <?php
 // LOGICA PARA DECIDIR QUÉ FORMULARIO MOSTRAR
     $action = 'controller/execute.php';
-    $target = 'target="_blank"';
+    $target = '';
     $title = '<h1 class="display-5 text-light text-center mb-4">SERVICIO</h1>';
     $submit = '<input type="submit" name="guardar-servicio" class="w-100 btn btn-success col-5 mx-auto" value="Guardar">';
     if(isset($_GET["id"])) $backbtn = '<a href="index.php?pag=list&id='. $_GET["id"] .'" class="btn btn-secondary">Volver</a>';

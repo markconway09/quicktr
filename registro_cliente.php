@@ -12,18 +12,14 @@ if(isset($_GET["form"])){
 ?>
 
 <div class="row">
-    <div class="col-12 mb-3">
+    <div class="col-12 col-md-2 mb-3">
         <div class="form-floating" style="z-index: 10;">
-            <!-- The select select_code that Choices.js will enhance -->
             <select onchange="selectCliente(this.value)" id="cliente_select" class="form-select" name="cliente_select">
-                <option value="">Nombre Cliente</option> <!-- Placeholder option -->
+                <option value="">Buscar cliente...</option>
             </select>
         </div>
     </div>
-</div>
-<hr class="text-light mb-4">
-<div class="row">
-    <div class="col-12 col-md-7 mb-3">
+    <div class="col-12 col-md-6 mb-3">
         <div class="form-floating">
             <input class="form-control" placeholder="Nombre" type="text" name="nombre" id="nombre"
                 <?php if($rellenar) : ?>
@@ -33,7 +29,7 @@ if(isset($_GET["form"])){
             <label for="nombre">Nombre</label>
         </div>
     </div>
-    <div class="col-12 col-md-5 mb-3">
+    <div class="col-12 col-md-4 mb-3">
         <div class="form-floating">
             <input class="form-control" placeholder="DNI/NIF/NIE" type="text" name="doc" id="doc"
                 <?php if($rellenar) : ?>
@@ -227,6 +223,7 @@ if(isset($_GET["form"])){
                     searchResultLimit: 10, // Limit the number of search results
                     searchFloor: 1, // Start searching after 1 character
                     maxItemCount: 5, // Max number of items allowed in the select
+                    itemSelectText: ""
                 });
             },
             error: function(xhr, status, error) {
