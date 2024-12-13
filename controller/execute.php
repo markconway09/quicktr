@@ -5,9 +5,10 @@ require_once "functions.php";
 // GUARDAR SERVICIO
 if(isset($_POST["guardar-servicio"])){
     $id = insertarBDS();
+    if(isset($_POST["sign"])) subirFirma($id);
+    if(!empty($_FILES['images'])) insertarFotos($id);
     enviarCorreo($id);
-    enviarCorreoCliente($id);
-    header('Location: index.php?pag=list&id='.$id);
+    header('Location: ../index.php?pag=list&id='.$id);
 }
 
 
@@ -21,35 +22,45 @@ if(isset($_GET["ticketservicio"])) {
     crearPDF($_GET["id"]);
     insertFactura($_GET["id"],2);
 }
-// FACTURA SIMPLIFICADA SERVICIO
-if(isset($_GET["servsimp"])) {
-    crearPDF($_GET["id"],1);
-    insertFactura($_GET["id"],1);
-}
 
 // GUARDAR FOTOS
 if(isset($_POST["guardar-fotos"])){
     insertarFotos();
-    header('Location: index.php?pag=list&id='.$_POST["id"]);
+    header('Location: ../index.php?pag=list&id='.$_POST["id"]);
 }
 
 // ENVIAR AL CLIENTE
 if(isset($_GET["enviar"])) {
-    enviarCorreoCliente($_GET["id"]);
-    header('Location: index.php?pag=list&id='.$_GET["id"]);
+    enviarCorreo($_GET["id"]);
+    header('Location: ../index.php?pag=list&id='.$_GET["id"]);
 }
 // DEVOLUCION
-if(isset($_GET["devolucion"])) devolucion($_GET["id"]);
-if(isset($_GET["deshacer"])) devolucion($_GET["id"],1);
+if(isset($_GET["devolucion"])){
+    devolucion($_GET["id"]);
+    header('Location: ../index.php?pag=list&id='.$_GET["id"]);
+}
+if(isset($_GET["deshacer"])){
+    devolucion($_GET["id"],1);
+    header('Location: ../index.php?pag=list&id='.$_GET["id"]);
+}
 // ELIMINAR
-if(isset($_GET["eliminar"])) eliminarEntrada($_GET["id"]);
+if(isset($_GET["eliminar"])){
+    eliminarEntrada($_GET["id"]);
+    header('Location: ../index.php?pag=list');
+}
 
 // CAMBIAR ESTADO
 if(isset($_GET["estado"])){
     if(!isset($_GET["metodo"])){
-        cambiarEstado($_GET["id"], $_GET["estado"], $_GET["pag"]);
+        cambiarEstado($_GET["id"], $_GET["estado"]);
     } else {
-        cambiarEstado($_GET["id"],$_GET["estado"], $_GET["pag"],$_GET["metodo"]);
+        cambiarEstado($_GET["id"],$_GET["estado"],$_GET["metodo"]);
+    }
+    
+    if ($_GET["pag"] == 0) {
+        header('Location: ../index.php?pag=list');
+    } else {
+        header('Location: ../index.php?pag=list&id=' . $_GET["id"]);
     }
 }
 
@@ -79,5 +90,5 @@ if(isset($_POST["editar_insumo"])){
         echo '<p class="text-light">'.$e->getMessage().'</p>';
     }
     
-    header('Location: index.php?pag=list&id='.$_GET["id"]);
+    header('Location: ../index.php?pag=list&id='.$_GET["id"]);
 }

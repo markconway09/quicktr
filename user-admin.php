@@ -3,7 +3,7 @@
     if($_SESSION["login"]=="user") header('Location: index.php');
 
     // IMPORT FUNCTIONS
-    require_once "functions.php";
+    require_once "controller/functions.php";
     $pdo = connect();
     $stmt = $pdo->prepare("SELECT * FROM user");
     try {

@@ -1,5 +1,5 @@
 <?php
-require_once "functions.php";
+require_once "controller/functions.php";
 // GUARDAR DATOS
 if(isset($_POST["guardar-firma"])){
     subirFirma($_GET["id"]);

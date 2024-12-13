@@ -1,5 +1,5 @@
 <?php
-require_once "functions.php";
+require_once "controller/functions.php";
 // GUARDAR SERVICIO
 if(isset($_POST["guardar-servicio"])){
     $id = insertarBDS();

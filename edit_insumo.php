@@ -6,7 +6,7 @@ if(!isset($_SESSION["login"])){
 $datos=selectBD($_GET["id"]);
 $servicio = explode(": ", $datos["servicio"]);
 ?>
-    <form action="execute.php?id=<?php echo $_GET["id"] ?>" method="POST" class="form-control p-4 text-bg-dark">
+    <form action="controller/execute.php?id=<?php echo $_GET["id"] ?>" method="POST" class="form-control p-4 text-bg-dark">
         <a href="index.php?pag=list&id=<?php echo $datos["id"]; ?>" class="btn btn-secondary mb-4">Volver</a>
         <div class="row mb-3">
             <div class="col-12">

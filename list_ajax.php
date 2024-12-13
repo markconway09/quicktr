@@ -10,6 +10,9 @@
                 editarEntrada($_POST["id"]);
             }
 
+            $urgentes = selectUrgente();
+            $countUrgentes = count($urgentes);
+
             // CHANGE CARDS PER PAGE
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (isset($_POST['valuePag'])) {
@@ -369,6 +372,7 @@
                         if($_SESSION["login"] == "admin" || $_SESSION["login"] == "repartidor"){
                     ?>
                     <li class="nav-item"><a class="nav-link" href="?pag=entregas">Entregas</a></li>
+                    <li class="nav-item"><a class="nav-link <?php echo $countUrgentes >= 1 ? "text-danger":"text-light" ?>" href="?pag=list&urgente=1">Urgentes&nbsp;<span class="badge badge-pill bg-danger"><?php echo $countUrgentes; ?></span></a></li>
                     <?php } ?>
                 </ul>
             </div>
@@ -527,139 +531,45 @@
                     echo '</div>'; // Close pagination div
                 }
             }
-
-            // Start looping over the rows
-            $i = 0;
-            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                // User restrictions
-                //if ($_SESSION["local"] != null && $_SESSION["local"] != $row["local"]) continue;
-            
-                // Card layout start
-                if ($i == 0) echo '<div class="row">';
-            
-                // Prepare description
-                $desc = strlen($row["desc"]) > 22 ? substr($row["desc"], 0, 22) . '...' : $row["desc"];
-                
-                // Determine background and status
-                $bg = "text-bg-secondary";
-                $estado = "";
-                if (!empty($row["did"])) {
-                    $bg = "text-bg-dark";
-                    $estado = " | <i class='bi bi-arrow-counterclockwise'></i> DEVUELTO";
-                } elseif ($row["garantia"] != 0) {
-                    $estado = " | <i class='bi bi-file-text'></i> <a style='text-decoration:none;color:#FFA' href='?pag=list&id=" . $row["garantia"] . "'>GARANTÍA <i class='bi bi-arrow-right-short'></i></a>";
-                } else {
-                    $estado = " | " . $pasos[$row["estado"]];
-                }
-            
-                // Prepare service information
-                if (!empty($row["servicio"])) {
-                    $serv = explode(": ", $row["servicio"])[0];
-                } else {
-                    $serv = "PENDIENTE MODIFICAR";
-                }
-
-                $statusColor = !empty($row["did"])?"black":$colores[$row["estado"]];
-                
-                // Generate card HTML
-                echo '
-                    <div class="col-lg-4 col-12">
-                        <div class="card ' . $bg . ' my-3">
-                            <h5 class="card-header py-3" style="color:white;background-color:' . $statusColor . ';">' . $serv . ' # ' . $row["id"] . '<br><div style="display:inline;margin-right:2px;border-left: 3px solid ' . $localColor[$row["local"] == "Barcelona" ? 0 : 1] . ';height: 5px;"></div>' . $row["local"] . $estado . '</h5>';
-            
-                // Display status steps
-                echo '
-                            <div class="text-center pt-2">
-                                <b>' . $pasosLargo[$row["estado"]] . '</b><br>';
-                foreach ($colores as $key => $color) {
-                    echo '<div class="col-2 pt-2 d-inline-block" style="background-color:' . ($row["estado"] >= $key ? $color : "white") . '"></div>';
-                }
-                echo '
-                            </div>
-                            <div class="text-center mx-auto">';
-                for ($j = 0; $j <= 4; $j++) {
-                    echo '<i class="bi bi-caret-up-fill px-4" style="color:' . ($row["estado"] != $j ? 'rgba(0,0,0,0)' : 'inherit') . '"></i>';
-                }
-                $pastDate = new DateTime($row["date"]);
-                $now = new DateTime();
-                $daysPassed = $now->diff($pastDate)->days;
-
-                $index = $daysPassed > 4 ? 4 : $daysPassed;
-                $colD = $row["estado"] < 4 ? (empty($row["did"]) ? $colorDias[$index] : "white") : "white";
-                echo '
-                            </div>
-                            <div class="card-body">
-                                <p class="card-text"><b>Nombre:</b> ' . $row["nombre"] . '</p>
-                                <p class="card-text"><b>Dispositivo:</b> ' . $row["nombre_dispositivo"] . '</p>
-                                <p class="card-text"><b>Descripción:</b> ' . $desc . '</p>
-                                <p class="card-text date-highlight">' . $row["fecha"] . ' · <span style="color:'.$colD.'">hace ' . $daysPassed . ' día(s)</span></p>
-                            </div> 
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item ' . $bg . '"><b>Precio:</b> ' . $row["precio"] . '€ (+ IVA ' . $row["iva"] . '%) = <b>' . $row["precio-final"] . '€</b></li>
-                            </ul>
-                            <div class="card-body">';
-            
-                // Action buttons based on user role and ticket state
-                echo '<div class="w-100">'; // Start full-width container for buttons
-                    // Create an input group for the buttons
-                    echo '<div class="input-group mb-2">';
-                    // Left button (state -1)
-                    if (($_SESSION["login"] == "tecnico" && $row["estado"] < 4) || ($_SESSION["login"] == "dependiente" && in_array($row["estado"], [1, 2, 4]))) {
-                        if (($row["estado"] - 1) >= 0) {
-                            echo '<a href="controller/execute.php?estado=' . ($row["estado"] - 1) . '&id=' . $row["id"] . '&pag=0" class="btn text-light rounded-0 w-50" style="background-color:' . $colores[$row["estado"] - 1] . '"><i class="bi bi-caret-left-fill"></i> ' . $pasos[$row["estado"] - 1] . '</a>';
-                        } else {
-                            echo '<div class="btn text-light w-50" style="background-color:transparent; opacity:0;"></div>'; // Placeholder
-                        }
-                    } else {
-                        echo '<div class="btn text-light w-50" style="background-color:transparent; opacity:0;"></div>'; // Placeholder
-                    }
-                    // Right button (state +1)
-                    if (($_SESSION["login"] == "tecnico" && $row["estado"] < 3) || ($_SESSION["login"] == "dependiente" && $row["estado"] < 2)) {
-                        if (($row["estado"] + 1) < 5) {
-                            echo '<a href="controller/execute.php?estado=' . ($row["estado"] + 1) . '&id=' . $row["id"] . '&pag=0" class="btn text-light rounded-0 w-50" style="color:black; background-color:' . $colores[$row["estado"] + 1] . '">' . $pasos[$row["estado"] + 1] . ' <i class="bi bi-caret-right-fill"></i></a>';
-                        } else {
-                            echo '<div class="btn text-light w-50" style="background-color:transparent; opacity:0;"></div>'; // Placeholder
-                        }
-                    } else {
-                        echo '<div class="btn text-light w-50" style="background-color:transparent; opacity:0;"></div>'; // Placeholder
-                    }
-                    // Admin buttons
-                    if ($_SESSION["login"] == "admin") {
-                        if (($row["estado"] - 1) >= 0) {
-                            echo '<a href="controller/execute.php?estado=' . ($row["estado"] - 1) . '&id=' . $row["id"] . '&pag=0" class="btn text-light rounded-0 w-50" style="color:black; background-color:' . $colores[$row["estado"] - 1] . '"><i class="bi bi-caret-left-fill"></i> ' . $pasos[$row["estado"] - 1] . '</a>';
-                        } else {
-                            echo '<div class="btn text-light w-50" style="background-color:transparent; opacity:0;"></div>'; // Placeholder
-                        }
-                        if (($row["estado"] + 1) < 5) {
-                            echo '<a href="controller/execute.php?estado=' . ($row["estado"] + 1) . '&id=' . $row["id"] . '&pag=0" class="btn text-light rounded-0 w-50" style="color:black; background-color:' . $colores[$row["estado"] + 1] . '">' . $pasos[$row["estado"] + 1] . ' <i class="bi bi-caret-right-fill"></i></a>';
-                        } else {
-                            echo '<div class="btn text-light w-50" style="background-color:transparent; opacity:0;"></div>'; // Placeholder
-                        }
-                    }
-                    // Close the input group
-                    echo '</div>'; // End of input group
-                    echo '
-                                <a href="?pag=list&id=' . $row["id"] . '" class="btn btn-primary rounded-0 w-100"><i class="bi bi-info-circle"></i> Detalles</a>
-                            </div>'; // Close full-width container for buttons
-                    echo '
+            ?>
+            <div class="row">
+                <div class="col-lg-4 col-12">
+                    <div class="card placeholder-glow my-3" style="background-color: lightgray;">
+                        <h5 class="card-header py-3" style="color:white;background-color:#f54254">
+                            <span class="placeholder rounded">Servicio</span> # <span class="placeholder rounded">Servicio 2</span><br>
+                            <div style="color:blue;display:inline;margin-right:2px;border-left: 3px solid;height: 5px;"></div>
+                            <span class="placeholder rounded">Local</span>
+                        </h5>
+                        <div class="text-center m-3 pt-2 placeholder rounded">
+                            <b></b><br>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text placeholder rounded"><b>Nombre:</b> </p>
+                            <p class="card-text placeholder rounded"><b>Dispositivo:</b> </p>
+                            <p class="card-text placeholder rounded"><b>Descripción:</b> </p>
+                            <p class="card-text placeholder rounded">Hace 0 dias</p>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item" style="background-color: lightgray;"><span class="placeholder rounded"><b>Precio:</b> € (+ IVA %) = <b>€</b></span></li>
+                        </ul>
+                        <div class="card-body">
+                            <div class="w-100">
+                                <div class="input-group mb-2">
+                                    <div class="btn text-light w-50" style="background-color:transparent; opacity:0;"></div>
+                                    <div class="btn text-light w-50" style="background-color:transparent; opacity:0;"></div>
+                                </div>
+                                <a href="?pag=list&id=" class="btn btn-primary rounded-0 w-100">
+                                    <span class="placeholder rounded"><i class="bi bi-info-circle"></i> Detalles</span>
+                                </a>
                             </div>
                         </div>
-                    </div>';
-                
-                // Close row after 3 columns
-                if ($i == 2) {
-                    echo '</div>';
-                    $i = 0;
-                } else {
-                    $i++;
-                }
-            }
-
-            ?>
+                    </div>
+                </div>
+            </div>
         </div>
         <script>
-            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-            const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+            // const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+            // const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
             function updatePages(selectedValue) {
                 var xhr = new XMLHttpRequest();
                 xhr.open("POST", "index.php?pag=list", true);
@@ -670,5 +580,46 @@
                     }
                 };
                 xhr.send("valuePag=" + encodeURIComponent(selectedValue));
+            }
+
+            const pasos = ["Diagnóstico", "Aprobación", "Reparación", "Terminado", "Entregado"];
+            const pasosLargo = ["Espera del diagnóstico", "Espera aprobación del cliente", "En Reparación", "Reparación terminada", "Entregado al cliente"];
+            const colores = ["#f54254", "#e8a31a", "#2f852c", "#4472c4", "#adadad"];
+            const colorDias = ["white", "#f5dcdc", "#f5b1b1", "#f36767", "#f13535"];
+            const localColor = ["blue", "red"];
+
+            // ON READY
+            $(document).ready(function() {
+                // LISTA DE SERVICIOS
+                $.ajax({
+                    url: 'controller/ajax_query.php', // The PHP file that returns data
+                    type: 'GET', // Method of the request
+                    data: { call: 0 },
+                    dataType: 'json', // Expected data type (JSON)
+                    success: function(data) {
+                        // Container to hold cards
+                        const container = document.getElementById("card-container");
+                        container.innerHTML="";
+                        let rowOpen = false;
+
+                        data.forEach((row, i) => {
+                            var cardHTML = generateCard(row);
+
+                            container.innerHTML += cardHTML;
+                        });
+
+                        if (rowOpen) container.innerHTML += '</div>'; // Close final row
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('AJAX Error: ' + status + ' - ' + error);
+                    }
+                });
+            });
+
+            function generateCard(row) {
+
+            }
+            function generateButtons(row) {
+                
             }
         </script>

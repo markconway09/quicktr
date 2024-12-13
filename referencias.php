@@ -1,5 +1,5 @@
 <?php
-    require_once 'functions.php';
+    require_once 'controller/functions.php';
     $pdo = connect();
     $stmt = $pdo->prepare("SELECT `nombre`, `codigo_socio` FROM info_orden WHERE `codigo_socio` IS NOT NULL");
     $stmt->execute();

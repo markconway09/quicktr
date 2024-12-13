@@ -1,6 +1,6 @@
 <?php
     // IMPORT FUNCTIONS
-    require_once "functions.php";
+    require_once "controller/functions.php";
 
     session_start();
     if(isset($_POST["login"])){
@@ -16,6 +16,7 @@
             if ($verify) { 
                 $_SESSION["login"] = $row["tipo"];
                 $_SESSION["local"] = $row["local"]!=null?$row["local"]:null;
+                $_SESSION["pag"] = 0;
             } else { 
                 echo '<script>alert("Contraseña incorrecta")</script>'; 
             }
@@ -25,7 +26,7 @@
         if($_SESSION["login"] == "repartidor"){
             $default = "entregas";
         } else {
-            $default = "form-servicio";
+            $default = "formulario";
         }
     }
     if(isset($_GET["logout"])){
@@ -65,7 +66,7 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
         <!-- NOTIFICACIÓN -->
-        <script src="notificar/polling.js"></script>
+        <script src="controller/notificar/polling.js"></script>
         <style>
             body{
                 font-family: "Montserrat";
@@ -97,7 +98,7 @@
         <nav class="navbar navbar-light text-light" style="background-color:rgb(43,45,46);">
             <a class="navbar-brand mx-auto" href="">
                 <img class="rounded" src="LOGO.png" alt="logo" height="90">
-                <span class="badge badge-pill bg-danger">1.12.0</span>
+                <span class="badge badge-pill bg-danger">1.14.0</span>
             </a>
             <?php
             if(isset($_SESSION["login"])){ ?>
@@ -105,7 +106,8 @@
                 <?php if($_SESSION["login"]=="tecnico"||$_SESSION["login"]=="admin") { ?>
                 <select id="sessionSelect" onchange="updateSession(this.value)">
                     <option value="Todo" <?php echo $_SESSION["local"]==null?'selected':''?>>Todo</option>
-                    <option value="Barcelona" <?php echo $_SESSION["local"]=="Barcelona"?'selected':''?>>Barcelona</option>
+                    <option value="Barcelona" <?php echo $_SESSION["local"]=="Barcelona"?'selected':''?>>Barcelona Entença</option>
+                    <option value="Barcelona Oficina" <?php echo $_SESSION["local"]=="Barcelona Oficina"?'selected':''?>>Barcelona Oficina</option>
                     <option value="Mataró" <?php echo $_SESSION["local"]=="Mataró"?'selected':''?>>Mataró</option>
                 </select>
                 <?php } else { echo $_SESSION["local"]; } ?>
@@ -141,7 +143,7 @@
                                 </ul>
                             </div>
                         <?php } ?>
-                        <button class="btn btn-primary flex-fill" type="submit" name="pag" value="form-servicio">
+                        <button class="btn btn-primary flex-fill" type="submit" name="pag" value="formulario">
                             <i class="bi bi-pencil-square"></i> Formulario
                         </button>
                         <button class="btn btn-secondary flex-fill" type="submit" name="pag" value="list">
@@ -164,24 +166,24 @@
                 }
             ?>
         </div>
-        <script type="text/javascript">
-            // CÁLCULOS IVA
-            function findTotal() {
-                var precio = parseFloat(document.getElementById('precio').value);
-                var iva = parseFloat(document.getElementById('iva').value);
-                var final = parseFloat(document.getElementById('precio-final').value);
-                var descuento = parseFloat(document.getElementById('descuento').value);
-                let calc = precio - ((precio*descuento)/100);
-                calc = calc + (calc*(iva/100));
-                document.getElementById('precio-final').value = calc.toFixed(2);
-            }
-            function findPrecio() {
-                var precio = parseFloat(document.getElementById('precio').value);
-                var iva = parseFloat(document.getElementById('iva').value);
-                var final = parseFloat(document.getElementById('precio-final').value);
-                let calc = (final/(100+iva))*100;
-                document.getElementById('precio').value = calc.toFixed(2);
-            }
+        <!-- Toast Container -->
+        <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+            <div id="errorToast" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body" id="toastMessage">
+                        <!-- Error message will be inserted here -->
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+    </body>
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+
+    <script type="text/javascript">
             function updateSession(selectedValue) {
                 var xhr = new XMLHttpRequest();
                 xhr.open("POST", "index.php", true);
@@ -194,5 +196,4 @@
                 xhr.send("valueLocal=" + encodeURIComponent(selectedValue));
             }
         </script>
-    </body>
 </html>

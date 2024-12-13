@@ -1,7 +1,16 @@
 <?php
 require_once 'functions.php';
+
+$call = $_GET["call"];
+
+if($call == 0) {
+    $q = "SELECT * FROM `info_orden` ORDER BY id DESC";
+} else if($call == 1) {
+    $q = "SELECT `codigo_socio` FROM `info_orden` WHERE `codigo_socio` IS NOT NULL";
+}
+
 $pdo = connect();
-$stmt = $pdo->prepare("SELECT `codigo_socio` FROM `info_orden` WHERE `codigo_socio` IS NOT NULL");
+$stmt = $pdo->prepare($q);
 $stmt->execute();
 
 $var = "[";  // Initialize the array
