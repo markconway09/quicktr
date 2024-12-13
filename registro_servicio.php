@@ -74,7 +74,7 @@ if(isset($_GET["form"])){
     <div class="col-12">
         <div class="input-group">
             <label for="imageUpload" class="input-group-text"><i class="bi bi-upload"></i>&nbsp;Subir Fotos:</label>
-            <input type="file" id="imageUpload" accept="image/*" name="images[]" multiple class="form-control form-control-lg">
+            <input type="file" id="imageUpload" accept="image/*" capture="environment" name="images[]" multiple class="form-control form-control-lg">
         </div>
     </div>
 </div>

@@ -251,11 +251,15 @@
                                         $rowCount = $fotos->rowCount();
                                         if ($rowCount > 0) {
                                             while ($img = $fotos->fetch(PDO::FETCH_ASSOC)) {
-                                                echo '
-                                            <a href="fotos/'. $img["archivo"] .'" target="_blank">
-                                                <img src="fotos/'. $img["archivo"] .'" alt="Foto'. $img["id"] .'">
-                                            </a>
-                                            ';
+                                                if (file_exists('fotos/'. $img["archivo"])) {
+                                                    echo '
+                                                    <a href="fotos/'. $img["archivo"] .'" target="_blank">
+                                                        <img src="fotos/'. $img["archivo"] .'" alt="Foto'. $img["id"] .'">
+                                                    </a>
+                                                    ';
+                                                } else {
+                                                    echo "<p>(Foto '".$img["archivo"]."' eliminada)</p>";
+                                                }
                                             }
                                         }
                                         ?>

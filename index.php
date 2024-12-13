@@ -98,7 +98,7 @@
         <nav class="navbar navbar-light text-light" style="background-color:rgb(43,45,46);">
             <a class="navbar-brand mx-auto" href="">
                 <img class="rounded" src="LOGO.png" alt="logo" height="90">
-                <span class="badge badge-pill bg-danger">1.14.0</span>
+                <span class="badge badge-pill bg-danger">1.14.1</span>
             </a>
             <?php
             if(isset($_SESSION["login"])){ ?>
@@ -140,6 +140,7 @@
                                     <li><a class="dropdown-item" href="?pag=infoClientes">Clientes</a></li>
                                     <li><a class="dropdown-item" href="?pag=infoOrdenes">Exportar Ordenes</a></li>
                                     <li><a class="dropdown-item" href="?pag=referencias">Referencias</a></li>
+                                    <li><a class="dropdown-item" href="?pag=imageManager">Gestionar Fotos</a></li>
                                 </ul>
                             </div>
                         <?php } ?>
