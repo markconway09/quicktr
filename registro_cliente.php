@@ -89,8 +89,7 @@ if(isset($_GET["form"])){
                 <?php
                 } else {
                 ?>
-                    <option value="Barcelona Oficina">Barcelona Oficina (Valencia)</option>
-                    <option value="Barcelona">Barcelona (Entença)</option>
+                    <option value="Barcelona">Barcelona</option>
                     <option value="Mataró">Mataró</option>
                 <?php
                 }

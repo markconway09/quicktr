@@ -106,8 +106,7 @@
                 <?php if($_SESSION["login"]=="tecnico"||$_SESSION["login"]=="admin") { ?>
                 <select id="sessionSelect" onchange="updateSession(this.value)">
                     <option value="Todo" <?php echo $_SESSION["local"]==null?'selected':''?>>Todo</option>
-                    <option value="Barcelona" <?php echo $_SESSION["local"]=="Barcelona"?'selected':''?>>Barcelona Entença</option>
-                    <option value="Barcelona Oficina" <?php echo $_SESSION["local"]=="Barcelona Oficina"?'selected':''?>>Barcelona Oficina</option>
+                    <option value="Barcelona" <?php echo $_SESSION["local"]=="Barcelona"?'selected':''?>>Barcelona</option>
                     <option value="Mataró" <?php echo $_SESSION["local"]=="Mataró"?'selected':''?>>Mataró</option>
                 </select>
                 <?php } else { echo $_SESSION["local"]; } ?>

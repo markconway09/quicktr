@@ -71,11 +71,9 @@ if(isset($_GET["form"])){
     </div>
 </div>
 <div class="row mb-3">
-    <div class="col-12">
-        <div class="input-group">
-            <label for="imageUpload" class="input-group-text"><i class="bi bi-upload"></i>&nbsp;Subir Fotos:</label>
-            <input type="file" id="imageUpload" accept="image/*" capture="environment" name="images[]" multiple class="form-control form-control-lg">
-        </div>
+    <div class="col-3 mx-auto">
+        <label for="imageUpload" class="btn btn-light w-100 h-100"><i class="bi bi-camera-fill"></i>&nbsp;Subir Fotos</label>
+        <input type="file" id="imageUpload" accept="image/*" capture="environment" name="images[]" multiple class="d-none form-control form-control-lg">
     </div>
 </div>
 <div class="row">
