@@ -6,7 +6,7 @@
     
     if ($stmt->rowCount()) {
 ?>
-    <table class="table table-bordered table-striped table-hover">
+    <table class="table table-dark table-bordered table-striped table-hover">
         <thead>
             <tr>
                 <th>Nombre</th>

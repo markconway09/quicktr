@@ -1,4 +1,4 @@
-        <div class="container border my-4 px-4 bg-dark rounded">
+        <div class="container border border-secondary my-4 px-4 bg-dark rounded">
             <?php
             if(isset($_POST["nuevo"])){
                 insertarBDS();
@@ -370,10 +370,7 @@
                             echo '<li class="nav-item"><a class="nav-link ' . $activeClass . '" href="?pag=list&filter=' . $key . '"
                             data-bs-toggle="tooltip" data-bs-title="'.$tooltip[$key].'">' . $label . '</a></li>';
                         }
-                        if($_SESSION["login"] == "admin" || $_SESSION["login"] == "repartidor"){
                     ?>
-                    <li class="nav-item"><a class="nav-link" href="?pag=entregas">Entregas</a></li>
-                    <?php } ?>
                 </ul>
             </div>
             <div class="row">

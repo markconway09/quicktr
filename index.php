@@ -16,6 +16,7 @@
             if ($verify) { 
                 $_SESSION["login"] = $row["tipo"];
                 $_SESSION["local"] = $row["local"]!=null?$row["local"]:null;
+                // LIMITE DE SERVICIOS POR PAGINA POR DEFECTO: (0) SIN PAGINAS
                 $_SESSION["pag"] = 0;
             } else { 
                 echo '<script>alert("Contraseña incorrecta")</script>'; 
@@ -98,7 +99,7 @@
         <nav class="navbar navbar-light text-light" style="background-color:rgb(43,45,46);">
             <a class="navbar-brand mx-auto" href="">
                 <img class="rounded" src="LOGO.png" alt="logo" height="90">
-                <span class="badge badge-pill bg-danger">1.14.1</span>
+                <span class="badge badge-pill bg-danger">1.14.2</span>
             </a>
             <?php
             if(isset($_SESSION["login"])){ ?>
@@ -110,7 +111,7 @@
                     <option value="Mataró" <?php echo $_SESSION["local"]=="Mataró"?'selected':''?>>Mataró</option>
                 </select>
                 <?php } else { echo $_SESSION["local"]; } ?>
-                <a href="index.php?logout=true" class="btn btn-danger mx-2"><i class="bi bi-box-arrow-in-left"></i> Log Out</a>
+                <a href="index.php?logout=true" class="btn btn-danger mx-2"><i class="bi bi-box-arrow-in-left"></i> Salir</a>
             <?php
             }
             ?>
@@ -140,6 +141,7 @@
                                     <li><a class="dropdown-item" href="?pag=infoOrdenes">Exportar Ordenes</a></li>
                                     <li><a class="dropdown-item" href="?pag=referencias">Referencias</a></li>
                                     <li><a class="dropdown-item" href="?pag=imageManager">Gestionar Fotos</a></li>
+                                    <li><a class="dropdown-item" href="?pag=entregas">Entregas</a></li>
                                 </ul>
                             </div>
                         <?php } ?>
@@ -171,7 +173,6 @@
             <div id="errorToast" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
                 <div class="d-flex">
                     <div class="toast-body" id="toastMessage">
-                        <!-- Error message will be inserted here -->
                     </div>
                     <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
                 </div>

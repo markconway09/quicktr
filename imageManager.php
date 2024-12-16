@@ -1,7 +1,7 @@
 <?php
 require_once 'controller/functions.php';
 $pdo = connect();
-$stmt = $pdo->prepare("SELECT * FROM `foto` f LEFT JOIN `info_orden` i ON (id_orden = i.id) ORDER BY fecha DESC");
+$stmt = $pdo->prepare("SELECT * FROM `foto` f LEFT JOIN `info_orden` i ON (id_orden = i.id) ORDER BY fecha ASC");
 try {
     $stmt->execute();
 } catch(PDOException $e){
@@ -62,7 +62,7 @@ $images = getImages($imagesDir, $allowedExtensions);
     .img-container .error { color: red; text-align: center; }
 </style>
 
-<div class="container text-bg-dark rounded p-5">
+<div class="container border border-secondary text-bg-dark rounded p-5">
     <h1 class="display-5 mb-3">Gestionar Fotos</h1>
 
     <?php if (isset($message)): ?>

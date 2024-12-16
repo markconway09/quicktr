@@ -57,7 +57,7 @@ if(isset($_GET["form"])){
             >
             <label for="dispositivo">Dispositivo</label>
         </div>
-        <div class="form-floating">
+        <div class="form-floating mb-3">
             <textarea rows="7" style="height:100%;" class="form-control" placeholder="Descripción" name="motivo" id="motivo"><?php if($rellenar){ echo $datos["desc"];}?></textarea>
             <label for="motivo">Descripción</label>
         </div>
@@ -71,7 +71,7 @@ if(isset($_GET["form"])){
     </div>
 </div>
 <div class="row mb-3">
-    <div class="col-3 mx-auto">
+    <div class="col-md-3 mx-auto">
         <label for="imageUpload" class="btn btn-light w-100 h-100"><i class="bi bi-camera-fill"></i>&nbsp;Subir Fotos</label>
         <input type="file" id="imageUpload" accept="image/*" capture="environment" name="images[]" multiple class="d-none form-control form-control-lg">
     </div>
@@ -231,9 +231,8 @@ if(isset($_GET["form"])){
     // ON READY
     $(document).ready(function() {
         var $sigdiv = $("#signature").jSignature();
-        var height = $(".jSignature").width()/2.5;
-        $(".jSignature").height(height);
-        $(".jSignature").attr("height",height);
+        $(".jSignature").height(192);
+        $(".jSignature").attr("height",192);
         $("#clear").click(borrar());
         borrar();
         

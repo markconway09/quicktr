@@ -2,7 +2,7 @@
 require_once "controller/functions.php";
 // GUARDAR DATOS
 if(isset($_POST["guardar-firma"])){
-    subirFirma($_GET["id"]);
+    subirFirma($_GET["id"], "./firmas/");
 }
 ?>
 
@@ -26,7 +26,7 @@ if(isset($_POST["guardar-firma"])){
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
         <!-- jSignature -->
-        <script src="jSignature/jSignature.min.js"></script>
+        <script src="controller/jSignature/jSignature.min.js"></script>
         <style>
             body {
                 font-family: "raleway";

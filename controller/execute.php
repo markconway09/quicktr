@@ -5,8 +5,8 @@ require_once "functions.php";
 // GUARDAR SERVICIO
 if(isset($_POST["guardar-servicio"])){
     $id = insertarBDS();
-    if(isset($_POST["sign"])) subirFirma($id);
-    if(!empty($_FILES['images'])) insertarFotos($id);
+    if(isset($_POST["sign"])) subirFirma($id, "../firmas/");
+    if(isset($_FILES['images'])) insertarFotos($id);
     enviarCorreo($id);
     header('Location: ../index.php?pag=list&id='.$id);
 }

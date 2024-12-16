@@ -1,38 +1,4 @@
-<div class="container border my-4 pb-4 px-4 text-bg-dark rounded">
-    <?php if($_SESSION["login"] == "admin"){ ?>
-    <div class="row">
-        <ul class="nav nav-tabs bg-dark mt-2">
-            <?php
-                $filters = [
-                    "0" => "Diagnóstico",
-                    "1" => "Aprobación",
-                    "2" => "Reparación",
-                    "3" => "Terminado",
-                    "4" => "Entregado",
-                    "5" => "Garantía",
-                    "6" => "Devoluciones",
-                ];
-                $tooltip = [
-                    "Pendiente de diagnosticar el problema y dar presupuesto.",
-                    "Esperando la aprobación del cliente.",
-                    "Ticket aprobado, pendiente de reparación.",
-                    "Reparación finalizada, esperando al cliente.",
-                    "Ticket cerrado, entregado al cliente.",
-                    "",
-                    ""
-                ];
-                // Default case for "Todo"
-                echo '<li class="nav-item"><a class="nav-link text-light" href="?pag=list">Todo</a></li>';
-                // Iterate through filters
-                foreach ($filters as $key => $label) {
-                    echo '<li class="nav-item"><a class="nav-link text-light" href="?pag=list&filter=' . $key . '"
-                    data-bs-toggle="tooltip" data-bs-title="'.$tooltip[$key].'">' . $label . '</a></li>';
-                }
-            ?>
-            <li class="nav-item"><a class="nav-link active" href="?pag=entregas">Entregas</a></li>
-        </ul>
-    </div>
-    <?php } ?>
+<div class="container border border-secondary my-4 pb-4 px-4 text-bg-dark rounded">
     <h2 class="display-5 mt-4 text-center">Entregas a tienda</h2>
     <hr>
 <!-- FORMULARIO -->

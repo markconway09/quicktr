@@ -113,10 +113,10 @@ function insertarBDS($garantia = 0)
     return $pdo->lastInsertId(); // Return last inserted ID
 }
 
-function subirFirma($id)
+function subirFirma($id, $path)
 {
     // SUBIR FIRMA
-    $folderPath = "../firmas/";
+    $folderPath = $path;
     $image_parts = explode(";base64,", $_POST['sign']);
     $image_type_aux = explode("image/", $image_parts[0]);
     $image_type = $image_type_aux[1];
@@ -132,15 +132,6 @@ function subirFirma($id)
 
         try {
             $stmt->execute(); // Insert record into the database
-        } catch (PDOException $e) {
-            echo $e->getMessage();
-        }
-        $pdo = connect();
-        $stmt = $pdo->prepare("INSERT INTO firma VALUES (null, :id, :archivo)");
-        $stmt->bindParam(':id', $id);
-        $stmt->bindParam(':archivo', $image_id);
-        try {
-            $stmt->execute();
         } catch (PDOException $e) {
             echo $e->getMessage();
         }
@@ -176,8 +167,6 @@ function insertarFotos($id = null)
             } catch (PDOException $e) {
                 echo $e->getMessage();
             }
-        } else {
-            echo "Error uploading file: " . $name;
         }
     }
 }

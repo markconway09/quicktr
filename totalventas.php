@@ -27,7 +27,7 @@ if(isset($_POST["gastosM"])) totalGastos($date[1],$date[0],"Mataro");
 if(isset($_POST["gastosTotal"])) totalGastos($date[1],$date[0]);
 ?>
 
-        <div class="container text-bg-dark rounded mt-5 p-5 text-center">
+        <div class="container border border-secondary text-bg-dark rounded mt-5 p-5 text-center">
             <div class="row text-center">
                 <div class="col-12">
                     <h1 class="display-2">Total Ventas</h1>
