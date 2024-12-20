@@ -1,3 +1,4 @@
+<div class="container p-2 rounded bg-dark">
 <?php
     require_once 'controller/functions.php';
     $pdo = connect();
@@ -42,3 +43,4 @@
         echo "No hay códigos usados.";
     }
 ?>
+</div>

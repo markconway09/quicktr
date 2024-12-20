@@ -14,13 +14,16 @@ if(isset($_GET["form"])){
 ?>
 
 <div class="row">
-    <div class="col-12 col-md-4 mb-3">
+    <div class="col-12 col-lg-4 col-md-6 mb-3">
+        <?php if($rellenar) : ?>
+            <input type="hidden" value="<?php echo $servicio[0];?>" id="tipo_servicio">
+        <?php endif ?>
         <div class="form-floating">
             <select class="form-control form-select" name="servicio" id="servicio">
                 <?php if($rellenar) : ?>
-                    <option value="<?php echo $servicio[0];?>">Actual: <?php echo $servicio[0];?></option>
+                    <option value="<?php echo $servicio[0];?>" selected>Actual: <?php echo $servicio[0];?></option>
                 <?php endif ?>
-                <option value="Reparación Móvil" selected>Reparación Móvil</option>
+                <option value="Reparación Móvil">Reparación Móvil</option>
                 <option value="Reparación Ordenador">Reparación Ordenador</option>
                 <option value="Reparación Consola">Reparación Consola</option>
                 <option value="Reparación Tablet">Reparación Tablet</option>
@@ -30,15 +33,22 @@ if(isset($_GET["form"])){
             <label for="servicio">Tipo de Servicio</label>
         </div>
     </div>
-    <div class="col-12 col-md-4 mb-3">
+    <div class="col-12 col-lg-4 col-md-6 mb-3">
         <div class="form-floating">
+            <?php if($rellenar && isset($servicio[1])) : ?>
+                <input type="text" class="form-control" value="<?php echo $servicio[1];?>" id="servicio2" name="servicio2">
+                <label for="servicio2">Servicio</label>
+            <?php endif ?>
+            <?php if(!$rellenar) : ?>
             <select class="form-control form-select" name="servicio2" id="servicio2">
                 <option value="">Selecciona un tipo</option>
             </select>
             <label for="servicio2">Servicio</label>
+            <?php endif ?>
         </div>
     </div>
-    <div class="col-12 col-md-4 mb-3">
+    <?php if(!$rellenar) : ?>
+    <div class="col-12 col-lg-4 mb-3">
         <div class="form-floating" style="z-index: 10;">
             <!-- The select select_code that Choices.js will enhance -->
             <select id="cod_ref" class="form-select" name="cod_ref">
@@ -46,9 +56,15 @@ if(isset($_GET["form"])){
             </select>
         </div>
     </div>
+    <?php endif ?>
 </div>
 <div class="row mb-3">
-    <div class="col-md-7 col-12">
+    <?php if(!$rellenar): ?>
+    <div class="col-lg-7 col-12">
+    <?php endif; ?>
+    <?php if($rellenar): ?>
+    <div class="col-12">
+    <?php endif; ?>
         <div class="form-floating mb-3">
             <input class="form-control" placeholder="Dispositivo" type="text" name="dispositivo" id="dispositivo"
                 <?php if($rellenar) : ?>
@@ -62,20 +78,24 @@ if(isset($_GET["form"])){
             <label for="motivo">Descripción</label>
         </div>
     </div>
-    <div class="col-md-5 col-12">
+    <?php if(!$rellenar): ?>
+    <div class="col-lg-5 col-12">
         <div class="form-control">
             <div id="signature"></div>
             <input type="hidden" name="sign" id="sign">
             <button class="btn btn-secondary btn-sm" id="clear">Borrar</button>
         </div>
     </div>
+    <?php endif; ?>
 </div>
-<div class="row mb-3">
-    <div class="col-md-3 mx-auto">
+<?php if(!$rellenar): ?>
+<div class="row mb-4">
+    <div class="col-lg-3 mx-auto">
         <label for="imageUpload" class="btn btn-light w-100 h-100"><i class="bi bi-camera-fill"></i>&nbsp;Subir Fotos</label>
-        <input type="file" id="imageUpload" accept="image/*" capture="environment" name="images[]" multiple class="d-none form-control form-control-lg">
+        <input type="file" id="imageUpload" accept="image/*" name="images[]" multiple class="d-none form-control form-control-lg">
     </div>
 </div>
+<?php endif; ?>
 <div class="row">
     <div class="col-12 col-md-4 mb-3">
         <div class="form-floating">
@@ -89,28 +109,28 @@ if(isset($_GET["form"])){
             <label for="precio">Precio €</label>
         </div>
     </div>
-    <div class="col-12 col-md-2 mb-3">
-        <div class="form-floating">
-            <input class="form-control" onkeyup="findTotal()" placeholder="Descuento" type="number" step="0.1" name="descuento" id="descuento"
-                <?php if($edit) { ?>
-                    value="<?php echo $datos["descuento"]; ?>"
-                <?php }else{ ?>
-                    value=0
-                <?php } ?>
-            >
-            <label for="descuento">Descuento</label>
-        </div>
-    </div>
-    <div class="col-12 col-md-2 mb-3">
-        <div class="form-floating">
-            <input class="form-control" onkeyup="findTotal()" placeholder="Iva 21%" type="number" step="0.1" name="iva" id="iva"
-                <?php if($edit) { ?>
-                    value="<?php echo $datos["iva"]; ?>"
-                <?php }else{ ?>
-                    value=21
-                <?php } ?>
-            >
-            <label for="iva">Iva 21%</label>
+    <div class="col-12 col-md-4 mb-3">
+        <div class="input-group">
+            <div class="form-floating">
+                <input class="form-control" onkeyup="findTotal()" placeholder="Descuento" type="number" step="0.1" name="descuento" id="descuento"
+                    <?php if($edit) { ?>
+                        value="<?php echo $datos["descuento"]; ?>"
+                    <?php }else{ ?>
+                        value=0
+                    <?php } ?>
+                >
+                <label for="descuento">Descuento</label>
+            </div>
+            <div class="form-floating">
+                <input class="form-control" onkeyup="findTotal()" placeholder="Iva 21%" type="number" step="0.1" name="iva" id="iva"
+                    <?php if($edit) { ?>
+                        value="<?php echo $datos["iva"]; ?>"
+                    <?php }else{ ?>
+                        value=21
+                    <?php } ?>
+                >
+                <label for="iva">Iva 21%</label>
+            </div>
         </div>
     </div>
     <div class="col-12 col-md-4 mb-3">

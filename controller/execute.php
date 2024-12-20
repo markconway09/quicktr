@@ -8,7 +8,7 @@ if(isset($_POST["guardar-servicio"])){
     if(isset($_POST["sign"])) subirFirma($id, "../firmas/");
     if(isset($_FILES['images'])) insertarFotos($id);
     enviarCorreo($id);
-    header('Location: ../index.php?pag=list&id='.$id);
+    header('Location: ../list&id='.$id);
 }
 
 
@@ -26,27 +26,27 @@ if(isset($_GET["ticketservicio"])) {
 // GUARDAR FOTOS
 if(isset($_POST["guardar-fotos"])){
     insertarFotos();
-    header('Location: ../index.php?pag=list&id='.$_POST["id"]);
+    header('Location: ../list&id='.$_POST["id"]);
 }
 
 // ENVIAR AL CLIENTE
 if(isset($_GET["enviar"])) {
     enviarCorreo($_GET["id"]);
-    header('Location: ../index.php?pag=list&id='.$_GET["id"]);
+    header('Location: ../list&id='.$_GET["id"]);
 }
 // DEVOLUCION
 if(isset($_GET["devolucion"])){
     devolucion($_GET["id"]);
-    header('Location: ../index.php?pag=list&id='.$_GET["id"]);
+    header('Location: ../list&id='.$_GET["id"]);
 }
 if(isset($_GET["deshacer"])){
     devolucion($_GET["id"],1);
-    header('Location: ../index.php?pag=list&id='.$_GET["id"]);
+    header('Location: ../list&id='.$_GET["id"]);
 }
 // ELIMINAR
 if(isset($_GET["eliminar"])){
     eliminarEntrada($_GET["id"]);
-    header('Location: ../index.php?pag=list');
+    header('Location: ../list');
 }
 
 // CAMBIAR ESTADO
@@ -58,9 +58,9 @@ if(isset($_GET["estado"])){
     }
     
     if ($_GET["pag"] == 0) {
-        header('Location: ../index.php?pag=list');
+        header('Location: ../list');
     } else {
-        header('Location: ../index.php?pag=list&id=' . $_GET["id"]);
+        header('Location: ../list&id=' . $_GET["id"]);
     }
 }
 
@@ -90,5 +90,5 @@ if(isset($_POST["editar_insumo"])){
         echo '<p class="text-light">'.$e->getMessage().'</p>';
     }
     
-    header('Location: ../index.php?pag=list&id='.$_GET["id"]);
+    header('Location: ../list&id='.$_GET["id"]);
 }

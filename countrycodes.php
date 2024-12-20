@@ -1,6 +1,7 @@
-<input list="countryCode" name="countryCode" class="form-control" placeholder="">
-<label for="countryCode">(+Código)</label>
+<input list="countryCode" name="countryCode" class="form-control" value="+34" placeholder="" id="countryCodeInput">
+<label for="countryCode">(+Cód.)</label>
 <datalist id="countryCode" class="form-control d-none" required>
+        <option data-countryCode="ES" value="+34">España (+34)</option>
         <option data-countryCode="DZ" value="+213">Algeria (+213)</option>
         <option data-countryCode="AD" value="+376">Andorra (+376)</option>
         <option data-countryCode="AO" value="+244">Angola (+244)</option>
@@ -174,7 +175,6 @@
         <option data-countryCode="SB" value="+677">Solomon Islands (+677)</option>
         <option data-countryCode="SO" value="+252">Somalia (+252)</option>
         <option data-countryCode="ZA" value="+27">South Africa (+27)</option>
-        <option data-countryCode="ES" value="+34">Spain (+34)</option>
         <option data-countryCode="LK" value="+94">Sri Lanka (+94)</option>
         <option data-countryCode="SH" value="+290">St. Helena (+290)</option>
         <option data-countryCode="KN" value="+1869">St. Kitts (+1869)</option>

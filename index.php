@@ -16,7 +16,7 @@
             if ($verify) { 
                 $_SESSION["login"] = $row["tipo"];
                 $_SESSION["local"] = $row["local"]!=null?$row["local"]:null;
-                // LIMITE DE SERVICIOS POR PAGINA POR DEFECTO: (0) SIN PAGINAS
+                // LIMITE DE SERVICIOS POR PAGINA POR DEFECTO: 0 = SIN PAGINAS
                 $_SESSION["pag"] = 0;
             } else { 
                 echo '<script>alert("Contraseña incorrecta")</script>'; 
@@ -51,12 +51,14 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="shortcut icon" href="favicon.ico"/>
         <title>Orden de reparación</title>
+        <!-- UIVERSE -->
+        <link rel="stylesheet" href="styles-uiverse.css"/>
         <!-- CHOICES -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css"/>
         <!-- GFONTS -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
         <!-- BOOTSTRAP -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
@@ -70,7 +72,7 @@
         <script src="controller/notificar/polling.js"></script>
         <style>
             body{
-                font-family: "Montserrat";
+                font-family: "Open Sans";
             }
             .gallery {
                 display: flex;
@@ -94,24 +96,21 @@
             }
         </style>
     </head>
-    <body class="bg-secondary">
+    <body>
         <!-- NAVBAR -->
         <nav class="navbar navbar-light text-light" style="background-color:rgb(43,45,46);">
             <a class="navbar-brand mx-auto" href="">
                 <img class="rounded" src="LOGO.png" alt="logo" height="90">
-                <span class="badge badge-pill bg-danger">1.14.2</span>
+                <span class="badge badge-pill bg-danger">1.15.0</span>
             </a>
             <?php
             if(isset($_SESSION["login"])){ ?>
-                <span class="mx-3"><?php echo (!$_SESSION["login"]?"":$_SESSION["login"]); ?></span>
-                <?php if($_SESSION["login"]=="tecnico"||$_SESSION["login"]=="admin") { ?>
-                <select id="sessionSelect" onchange="updateSession(this.value)">
-                    <option value="Todo" <?php echo $_SESSION["local"]==null?'selected':''?>>Todo</option>
-                    <option value="Barcelona" <?php echo $_SESSION["local"]=="Barcelona"?'selected':''?>>Barcelona</option>
-                    <option value="Mataró" <?php echo $_SESSION["local"]=="Mataró"?'selected':''?>>Mataró</option>
-                </select>
-                <?php } else { echo $_SESSION["local"]; } ?>
-                <a href="index.php?logout=true" class="btn btn-danger mx-2"><i class="bi bi-box-arrow-in-left"></i> Salir</a>
+                <a href="index.php?logout=true" style="text-decoration: none;" class="logout mx-2 noselect">
+                    <span class="text"><?php echo ucfirst($_SESSION["login"]); ?></span>
+                    <span class="icon text-light">
+                        <i class="bi bi-box-arrow-in-left"></i>
+                    </span>
+                </a>
             <?php
             }
             ?>
@@ -123,37 +122,38 @@
         }
         ?>
         <?php if($_SESSION["login"] != "repartidor"){ ?>
-        <div class="container mx-auto p-2 rounded my-4 text-center sticky-top bg-dark">
-            <form action="index.php" method="get">
+        <div class="container mx-auto p-3 rounded my-4 text-center bg-dark sticky-top">
                 <div class="col-12">
                     <div class="input-group d-flex">
                         <?php if ($_SESSION["login"] == "admin") { ?>
                             <div class="btn-group">
-                                <button class="btn btn-secondary text-light dropdown-toggle" style="border-radius:6px 0 0 6px" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <button class="button btn btn-dark mx-1 text-light dropdown-toggle" style="border-radius:6px 0 0 6px" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="bi bi-gear-fill"></i> Admin
                                 </button>
                                 <ul class="dropdown-menu">
                                     <li><a class="dropdown-item" target="_blank" href="/almacen">Almacén</a></li>
                                     <li><a class="dropdown-item" target="_blank" href="form-cliente.php">Formulario Cliente</a></li>
-                                    <li><a class="dropdown-item" href="?pag=totalventas">Total Ventas</a></li>
-                                    <li><a class="dropdown-item" href="?pag=user-admin">Usuarios</a></li>
-                                    <li><a class="dropdown-item" href="?pag=infoClientes">Clientes</a></li>
-                                    <li><a class="dropdown-item" href="?pag=infoOrdenes">Exportar Ordenes</a></li>
-                                    <li><a class="dropdown-item" href="?pag=referencias">Referencias</a></li>
-                                    <li><a class="dropdown-item" href="?pag=imageManager">Gestionar Fotos</a></li>
-                                    <li><a class="dropdown-item" href="?pag=entregas">Entregas</a></li>
+                                    <li><a class="dropdown-item" href="totalventas">Total Ventas</a></li>
+                                    <li><a class="dropdown-item" href="user-admin">Usuarios</a></li>
+                                    <li><a class="dropdown-item" href="infoClientes">Clientes</a></li>
+                                    <li><a class="dropdown-item" href="infoOrdenes">Exportar Ordenes</a></li>
+                                    <li><a class="dropdown-item" href="referencias">Referencias</a></li>
+                                    <li><a class="dropdown-item" href="imageManager">Gestionar Fotos</a></li>
+                                    <li><a class="dropdown-item" href="entregas">Entregas</a></li>
+                                    <li><a class="dropdown-item" href="/formulario_v14">v1.14</a></li>
+                                    <li><a class="dropdown-item" href="/formulario_v13">v1.13</a></li>
+                                    <li><a class="dropdown-item" href="list_ajax">AJAX</a></li>
                                 </ul>
                             </div>
                         <?php } ?>
-                        <button class="btn btn-primary flex-fill" type="submit" name="pag" value="formulario">
+                        <a href="formulario" class="button btn btn-dark mx-1 flex-fill">
                             <i class="bi bi-pencil-square"></i> Formulario
-                        </button>
-                        <button class="btn btn-secondary flex-fill" type="submit" name="pag" value="list">
+                        </a>
+                        <a href="list" class="button btn btn-dark mx-1 flex-fill">
                             <i class="bi bi-columns-gap"></i> Lista
-                        </button>
+                        </a>
                     </div>
                 </div>
-            </form>
         </div>
         <?php } ?>
 
@@ -185,16 +185,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
 
     <script type="text/javascript">
-            function updateSession(selectedValue) {
-                var xhr = new XMLHttpRequest();
-                xhr.open("POST", "index.php", true);
-                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-                xhr.onreadystatechange = function () {
-                    if (xhr.readyState === 4 && xhr.status === 200) {
-                        location.reload();
-                    }
-                };
-                xhr.send("valueLocal=" + encodeURIComponent(selectedValue));
-            }
+            
         </script>
 </html>
