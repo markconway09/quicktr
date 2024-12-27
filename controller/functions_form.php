@@ -52,6 +52,7 @@ function insertarBDS($garantia = 0)
     $descuento = $_POST["descuento"] ?? $descuento;
     $iva = $_POST["iva"] ?? $iva;
     $preciofinal = $_POST["precio-final"] ?? $preciofinal;
+    $date = date('Y-m-d');
     if (isset($_POST["cod_ref"])) if ($_POST["cod_ref"] != "") $cod_ref = $_POST["cod_ref"];
 
     if (isset($_POST["socio"]) && !empty($_POST["nacimiento"])) {
@@ -64,6 +65,12 @@ function insertarBDS($garantia = 0)
     } else {
         $nac = null;
         $codigo = null;
+    }
+    if($garantia == 0){
+        if(checkDuplicate($nombre, $disp, $date)){
+            header('Location: ../list');
+            exit;
+        }
     }
 
     // Prepare database connection and insert query
@@ -93,7 +100,6 @@ function insertarBDS($garantia = 0)
     $stmt->bindParam(':disp', $disp);
     $stmt->bindParam(':descr', $desc);
     $stmt->bindParam(':loc', $local);
-    $date = date('Y-m-d');
     $stmt->bindParam(':fecha', $date);
     $stmt->bindParam(':garantia', $garantia);
     $stmt->bindParam(':razon', $razon);
@@ -168,5 +174,28 @@ function insertarFotos($id = null)
                 echo $e->getMessage();
             }
         }
+    }
+}
+
+
+function checkDuplicate($nombre, $disp, $fecha) {
+    $pdo = connect();
+    $stmt = $pdo->prepare("
+        SELECT nombre, nombre_dispositivo 
+        FROM info_orden 
+        WHERE fecha = :fecha AND nombre = :nombre AND nombre_dispositivo = :disp
+    ");
+    $stmt->bindParam(':fecha', $fecha);
+    $stmt->bindParam(':nombre', $nombre);
+    $stmt->bindParam(':disp', $disp);
+
+    try {
+        $stmt->execute();
+        // Fetch the first matching record
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        // Log or handle the error appropriately
+        error_log($e->getMessage());
+        return false;
     }
 }
