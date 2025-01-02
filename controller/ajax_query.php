@@ -13,11 +13,22 @@ switch($call){
     case 2:
         $q = "SELECT *, i.id as id, d.id as did, DATE_FORMAT(fecha, '%d/%m/%Y') as fecha, fecha as `date` FROM info_orden i
                     LEFT JOIN devolucion d ON (i.id = d.id_orden)";
+        if(isset($_GET["search"])&&$_GET["search"] != ""){
+            $params = $_GET["search"] ?? "";
+            $search = " WHERE `nombre_dispositivo` LIKE :search OR i.id LIKE :search OR
+                    `nombre` LIKE :search OR `local` LIKE :search OR `servicio` LIKE :search";
+             $q .= $search;
+        }
+        $q .= " ORDER BY i.id DESC";
         break;
 }
 
 $pdo = connect();
 $stmt = $pdo->prepare($q);
+if(isset($_GET["search"])&&$_GET["search"] != ""){
+    $params = "%" . $params . "%";
+    $stmt->bindParam(':search', $params);
+}
 $stmt->execute();
 
 $var = "[";  // Initialize the array

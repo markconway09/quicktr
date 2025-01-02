@@ -70,4 +70,15 @@ function insertFactura($id, $tipo){
     }
 }
 
+
+function logError($errorMessage, $logFile = 'error_log.txt') {
+    // Ensure the message is sanitized
+    $sanitizedMessage = htmlspecialchars($errorMessage, ENT_QUOTES, 'UTF-8');
+
+    // Prepare the log entry with timestamp
+    $logEntry = "[" . date("Y-m-d H:i:s") . "] " . $sanitizedMessage . PHP_EOL;
+
+    // Write the log entry to the specified file
+    file_put_contents($logFile, $logEntry, FILE_APPEND | LOCK_EX);
+}
 ?>

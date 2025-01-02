@@ -468,7 +468,7 @@ function enviarCorreo($id)
 
         $mail->send();
     } catch (Exception $e) {
-        echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+        logError("Message could not be sent. Mailer Error: {$mail->ErrorInfo}");
     }
 }
 

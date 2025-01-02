@@ -94,6 +94,23 @@
                 text-align: center;
                 text-shadow: 0 0 3px rgba(0, 0, 0, 1);
             }
+
+            /* RESPONSIVE TABS */
+            #list-tabs {
+                display: flex;
+            }
+            #list-select {
+                display: none;
+            }
+            @media (max-width: 1000px) {
+                #list-tabs {
+                    display: none;
+                }
+                #list-select {
+                    display: block;
+                    width: 100%; 
+                }
+            }
         </style>
     </head>
     <body>
@@ -143,6 +160,7 @@
                                     <li><a class="dropdown-item" href="/formulario_v14">v1.14</a></li>
                                     <li><a class="dropdown-item" href="/formulario_v13">v1.13</a></li>
                                     <li><a class="dropdown-item" href="list_ajax">AJAX</a></li>
+                                    <li><a class="dropdown-item" href="error_log">Error Log</a></li>
                                 </ul>
                             </div>
                         <?php } ?>
