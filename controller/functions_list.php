@@ -62,14 +62,14 @@ function crearPDF($id, $enviar = 0)
     $pdf->Cell($width, 5, iconv('UTF-8', 'windows-1252', $datos["local"]), 0, 1);
     $pdf->Cell($width, 5, iconv('UTF-8', 'windows-1252', $direccion), 0, 1);
     if ($datos["local"] == "Barcelona") {
-        $pdf->Cell($width, 5, iconv('UTF-8', 'windows-1252', 'Nº Whatsapp: 650 01 04 38'), 0, 1);
+        $pdf->Cell($width, 5, iconv('UTF-8', 'windows-1252', 'Llamadas y Whatsapp: 650 01 04 38'), 0, 1);
         $pdf->Cell($width, 5, iconv('UTF-8', 'windows-1252', 'Nº Telefono: 934 960 016'), 0, 1);
     }
     if ($datos["local"] == "Barcelona Oficina") {
-        $pdf->Cell($width, 5, iconv('UTF-8', 'windows-1252', 'Nº Whatsapp: 606 46 59 79'), 0, 1);
+        $pdf->Cell($width, 5, iconv('UTF-8', 'windows-1252', 'Llamadas y Whatsapp: 606 46 59 79'), 0, 1);
         $pdf->Cell($width, 5, iconv('UTF-8', 'windows-1252', 'Nº Telefono: 933 496 389'), 0, 1);
     }
-    if ($datos["local"] == "Mataró") $pdf->Cell($width, 5, iconv('UTF-8', 'windows-1252', 'Nº Whatsapp: 612 25 96 31'), 0, 1);
+    if ($datos["local"] == "Mataró") $pdf->Cell($width, 5, iconv('UTF-8', 'windows-1252', 'Llamadas y Whatsapp: 612 25 96 31'), 0, 1);
     $pdf->Ln();
     // DATOS CLIENTE
     $pdf->SetFont('Arial', 'B', 8);
@@ -262,14 +262,15 @@ function crearFServicio($id, $enviar = 0)
 
     $pdf->Ln(30);
 
-    $pdf->Cell($width / 2, 5, iconv('UTF-8', 'windows-1252', 'Descripción'), 1, 0);
+    $pdf->Cell($width / 1.2, 5, iconv('UTF-8', 'windows-1252', 'Descripción'), 1, 1);
+    if ($datos["desc_tecnico"] != "") $pdf->MultiCell($width / 1.2, 5, iconv('UTF-8', 'windows-1252', $datos["desc_tecnico"]), 1, 1);
+    else $pdf->MultiCell($width / 1.2, 5, iconv('UTF-8', 'windows-1252', $datos["desc"]), 1, 1);
+
     $pdf->Cell($width / 10, 5, iconv('UTF-8', 'windows-1252', 'IVA'), 1, 0);
     $pdf->Cell($width / 10, 5, iconv('UTF-8', 'windows-1252', 'P.U.'), 1, 0);
     $pdf->Cell($width / 10, 5, iconv('UTF-8', 'windows-1252', 'Cant.'), 1, 0);
     $pdf->Cell($width / 10, 5, iconv('UTF-8', 'windows-1252', 'Base Imp.'), 1, 1);
 
-    if ($datos["desc_tecnico"] != "") $pdf->Cell($width / 2, 5, iconv('UTF-8', 'windows-1252', $datos["desc_tecnico"]), 1, 0);
-    else $pdf->Cell($width / 2, 5, iconv('UTF-8', 'windows-1252', $datos["desc"]), 1, 0);
     $pdf->Cell($width / 10, 5, iconv('UTF-8', 'windows-1252', $datos["iva"] . "%"), 1, 0);
     $pdf->Cell($width / 10, 5, iconv('UTF-8', 'windows-1252',  $datos["precio"] . " €"), 1, 0);
     $pdf->Cell($width / 10, 5, iconv('UTF-8', 'windows-1252', 1), 1, 0);
@@ -535,9 +536,11 @@ function devolucion($id, $des = 0)
     }
 }
 
-function cambiarEstado($id, $estado, $metodo = null)
+function cambiarEstado($id, $estado, $metodo = null, $date = null)
 {
-    $date = $estado == 4 ? date('Y-m-d') : null;
+    if($date == null && $metodo != null){
+        $date = date("Y-m-d");
+    }
     $pdo = connect();
     $stmt = $pdo->prepare("UPDATE `info_orden` SET `estado` = :estado, `fecha_pago` = :pago, `metodo` = :metodo WHERE `info_orden`.`id` = :id");
     $stmt->bindParam(':id', $id);

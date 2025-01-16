@@ -3,7 +3,7 @@ require_once "controller/functions.php";
 // GUARDAR SERVICIO
 if(isset($_POST["guardar-servicio"])){
     $id = insertarBDS();
-    subirFirma($id);
+    subirFirma($id, "firmas/");
     enviarCorreo($id);
     echo "<meta http-equiv='refresh' content='0'>";
 }
@@ -28,7 +28,7 @@ if(isset($_POST["guardar-servicio"])){
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
         <!-- jSignature -->
-        <script src="jSignature/jSignature.min.js"></script>
+        <script src="controller/jSignature/jSignature.min.js"></script>
         <style>
             body {
                 font-family: "raleway";
@@ -64,7 +64,7 @@ if(isset($_POST["guardar-servicio"])){
                         <div class="input-group">
                             <div class="form-floating">
                                 <?php
-                                include 'countrycodes.php';
+                                include 'views/countrycodes.php';
                                 ?>
                             </div>
 

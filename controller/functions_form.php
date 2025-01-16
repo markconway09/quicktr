@@ -139,7 +139,7 @@ function subirFirma($id, $path)
         try {
             $stmt->execute(); // Insert record into the database
         } catch (PDOException $e) {
-            echo $e->getMessage();
+            logError($e->getMessage());
         }
     }
 }
@@ -171,7 +171,7 @@ function insertarFotos($id = null)
             try {
                 $stmt->execute();
             } catch (PDOException $e) {
-                echo $e->getMessage();
+                logError($e->getMessage());
             }
         }
     }

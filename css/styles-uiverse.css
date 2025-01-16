@@ -1,12 +1,8 @@
-body a{
-  text-decoration:none;
-}
-
 /* LOGIN FORM */
 .form-container {
   width: 400px;
   background: linear-gradient(#212121, #212121) padding-box,
-    linear-gradient(145deg, transparent 35%, #e81cff, #40c9ff) border-box;
+    linear-gradient(145deg, transparent 35%, #00a2ff, #40c9ff) border-box;
   border: 2px solid transparent;
   padding: 32px 24px;
   font-size: 14px;
@@ -71,12 +67,12 @@ body a{
 
 .form-container .form-group input:focus {
   outline: none;
-  border-color: #e81cff;
+  border-color: #40c9ff;
 }
 
 .form-container .form-group textarea:focus {
   outline: none;
-  border-color: #e81cff;
+  border-color: #40c9ff;
 }
 
 .form-container .form-submit-btn {
@@ -171,31 +167,53 @@ body a{
 
 
 
-/* BODY BG */
-body {
-  width: 100%;
-  height: 100%;
-  --s: 200px;
-  /* control the size */
-  --c1: #1d1d1d;
-  --c2: #4e4f51;
-  --c3: #3c3c3c;
 
-  background: repeating-conic-gradient(from 30deg,
-      #0000 0 120deg,
-      var(--c3) 0 180deg) calc(0.5 * var(--s)) calc(0.5 * var(--s) * 0.577),
-    repeating-conic-gradient(from 30deg,
-      var(--c1) 0 60deg,
-      var(--c2) 0 120deg,
-      var(--c3) 0 180deg);
-  background-size: var(--s) calc(var(--s) * 0.577);
+
+/* LIST LOCAL CHECKBOX */
+/* From Uiverse.io by Yaya12085 */ 
+.radio-inputs {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  border-radius: 0.5rem;
+  background-color: #2B2D2E;
+  box-sizing: border-box;
+  box-shadow: 0 0 0px 1px rgba(0, 0, 0, 0.06);
+  padding: 0.25rem;
+  width: 300px;
+  font-size: 14px;
+}
+
+.radio-inputs .radio {
+  flex: 1 1 auto;
+  text-align: center;
+}
+
+.radio-inputs .radio input {
+  display: none;
+}
+
+.radio-inputs .radio .name {
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  border: none;
+  padding: .5rem 0;
+  transition: all .15s ease-in-out;
+  color: whitesmoke;
+}
+
+.radio-inputs .radio input:checked + .name {
+  background-color: #25BED4;
+  font-weight: 600;
 }
 
 
 
 /* From Uiverse.io by adamgiebl */ 
 .cssbuttons-io-button {
-  background: #0974f1;
   color: white;
   font-family: inherit;
   padding: 0.35em;
@@ -207,7 +225,7 @@ body {
   letter-spacing: 0.05em;
   display: flex;
   align-items: center;
-  box-shadow: inset 0 0 1.6em -0.6em #113e75;
+  box-shadow: inset 0 0 1.6em -0.6em rgb(65, 65, 65);
   overflow: hidden;
   position: relative;
   height: 2.8em;
@@ -237,7 +255,7 @@ body {
 .cssbuttons-io-button .icon i {
   width: 1.1em;
   transition: transform 0.3s;
-  color: #0974f1;
+  color: rgba(37,190,212,1);
 }
 
 .cssbuttons-io-button:hover .icon i {
@@ -272,20 +290,21 @@ body {
   cursor: pointer;
   display: flex;
   align-items: center;
-  border: 2px solid lightgray;
+  border: transparent !important;
   background-color: var(--bg-color);
   overflow: hidden;
   font-size: 15px;
 }
 
 .stepButton, .button__icon, .button__text {
-  transition: all 0.3s;
+  transition: all 0.2s;
 }
 
 .stepButton .button__text {
-  transform: translateX(22px);
+  transform: translateX(10px);
   color: var(--font-color);
   font-weight: 600;
+  font-size: 13px;
 }
 
 .stepButton .button__icon {
@@ -399,7 +418,7 @@ body {
   width: auto;
   height: 48px;
   border-radius: 10px;
-  background: linear-gradient(-45deg, #5b42b6 0%, #34bcd4 100% );
+  background: rgba(37,190,212,1);
   z-index: -10;
   pointer-events: none;
   transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -410,18 +429,18 @@ body {
   z-index: -1;
   position: absolute;
   inset: 0;
-  background: linear-gradient(-45deg, #5b42b6 0%, #34bcd4 100% );
+  background: rgba(37,190,212,1);
   transform: translate3d(0, 0, 0) scale(0.95);
-  filter: blur(20px);
+  filter: blur(10px);
   transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .button:hover::after {
-  filter: blur(30px);
+  filter: blur(15px);
 }
 
 .button:hover::before {
-  transform: rotate(-0.5deg);
+  transform: scale(1.008);
 }
 
 .button:active::before {
@@ -534,8 +553,8 @@ body {
 }
 
 .switch input:checked + .slider {
-  box-shadow: 0 0 20px rgba(9, 117, 241, 0.8);
-  border: 2px solid #0974f1;
+  box-shadow: 0 0 20px rgba(37,190,212,0.8);
+  border: 2px solid rgba(37,190,212,1);
 }
 
 .switch input:checked + .slider:before {
@@ -627,7 +646,7 @@ body {
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background: linear-gradient(-45deg, #5b42b6 0%, #34bcd4 100% );
+  background: linear-gradient(-45deg, rgba(37,190,212,1) 0%, #2d99ac 100% );
   border: 0;
   display: inline-block;
   transition: all 300ms cubic-bezier(.23, 1, 0.32, 1);
@@ -685,88 +704,22 @@ body {
 }
 
 
-/* AJAX LIST CARDS */
-/* From Uiverse.io by Javierrocadev */ 
-.listCard {
-  border-radius: 15px;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  overflow: hidden;
-}
 
-.listCard::before {
-  content: "";
-  height: 100px;
-  width: 100px;
-  position: absolute;
-  top: -20%;
-  left: -10%;
-  border-radius: 50%;
-  border: 35px solid rgba(255, 255, 255, 0.102);
-  transition: all .8s ease;
-  filter: blur(2rem);
-}
-
-.listCard .text {
-  flex-grow: 1;
-  padding: 14px;
-  display: flex;
-  flex-direction: column;
-  color: aliceblue;
-  font-weight: 900;
-  font-size: 1.1em;
-}
-
-.listCard .subtitle {
-  font-size: .8em;
-  font-weight: 400;
-  color: rgba(240, 248, 255, 0.8);
-}
-
-.listCard .icons {
+/* STEP AND INFO BTNS */
+.cardIcons {
   display: flex;
   justify-items: center;
   align-items: center;
   width: 100%;
-  border-radius: 0px 0px 15px 15px;
+  border-radius: 15px;
   overflow: hidden;
 }
 
-.listCard .btns {
+.cardBtn {
   border: none;
   width: 100%;
   height: 35px;
-  background-color: rgba(247, 234, 234, 0.589);
   display: flex;
   align-items: center;
   justify-content: center;
 }
-
-.listCard .btns:hover {
-  background-color: rgb(247, 234, 234);
-}
-
-.listCard:hover::before {
-  width: 180px;
-  height: 180px;
-  border: 70px solid rgba(255, 255, 255, 0.102);
-  top: -10%;
-  left: 10%;
-  /* filter: blur(1rem); */
-}
-
-.card__progress progress {
-  width: 100%;
-  height: 10px;
-  margin-bottom: -6px;
-  border-radius: 50px;
-  opacity: 0.75;
-}
-
-.card__progress progress::-webkit-progress-value {
-    background-color: #239101fb;
-}
-
-
-

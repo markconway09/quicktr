@@ -1,4 +1,4 @@
-<div class="form-container col-10 col-md-6 col-lg-4 mx-auto my-3">
+<div class="form-container col-10 col-md-6 col-lg-4" style="position: absolute;top: 25vh; left:33vw;">
     <form method="POST" class="form">
         <div class="form-group">
             <label for="user">Usuario</label>

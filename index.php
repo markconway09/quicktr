@@ -1,192 +1,165 @@
 <?php
-    // IMPORT FUNCTIONS
-    require_once "controller/functions.php";
+// IMPORT FUNCTIONS
+require_once "controller/functions.php";
+require_once "model/Ticket.php";
+require_once "model/Database.php";
 
-    session_start();
-    if(isset($_POST["login"])){
-        $pdo = connect();
-        $stmt = $pdo->prepare("SELECT * FROM user WHERE username = :user");
-        $stmt->bindParam(':user', $_POST["user"]);
-        $stmt->execute();
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        if(isset($row["username"])==1){
-            $hash = $row["password"];
-            $pass = $_POST["pass"];
-            $verify = password_verify($pass, $hash);
-            if ($verify) { 
-                $_SESSION["login"] = $row["tipo"];
-                $_SESSION["local"] = $row["local"]!=null?$row["local"]:null;
-                // LIMITE DE SERVICIOS POR PAGINA POR DEFECTO: 0 = SIN PAGINAS
-                $_SESSION["pag"] = 0;
-            } else { 
-                echo '<script>alert("Contraseña incorrecta")</script>'; 
-            }
-        }
-    }
-    if(isset($_SESSION["login"])){
-        if($_SESSION["login"] == "repartidor"){
-            $default = "entregas";
+session_start();
+if (isset($_POST["login"])) {
+    $pdo = connect();
+    $stmt = $pdo->prepare("SELECT * FROM user WHERE username = :user");
+    $stmt->bindParam(':user', $_POST["user"]);
+    $stmt->execute();
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (isset($row["username"]) == 1) {
+        $hash = $row["password"];
+        $pass = $_POST["pass"];
+        $verify = password_verify($pass, $hash);
+        if ($verify) {
+            $_SESSION["login"] = $row["tipo"];
+            $_SESSION["local"] = $row["local"] != null ? $row["local"] : null;
+            // LIMITE DE SERVICIOS POR PAGINA POR DEFECTO: 0 = SIN PAGINAS
+            $_SESSION["pag"] = 0;
         } else {
-            $default = "formulario";
+            echo '<script>alert("Contraseña incorrecta")</script>';
         }
     }
-    if(isset($_GET["logout"])){
-        session_destroy();
-        header('Location: index.php');
+}
+
+// PAGINAS POR DEFECTO
+if (isset($_SESSION["login"])) {
+    if ($_SESSION["login"] == "repartidor") {
+        $default = "entregas";
+    } else if ($_SESSION["login"] == "tecnico") {
+        $default = "list";
+    } else {
+        $default = "formulario";
     }
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        if (isset($_POST['valueLocal'])) {
-            if($_POST["valueLocal"]=="Todo"){
-                $_SESSION['local'] = null;
-            } else {
-                $_SESSION['local'] = $_POST['valueLocal']; // Update the session variable
-            }
+}
+if (isset($_GET["logout"])) {
+    session_destroy();
+    header('Location: index.php');
+}
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['valueLocal'])) {
+        if ($_POST["valueLocal"] == "Todo") {
+            $_SESSION['local'] = null;
+        } else {
+            $_SESSION['local'] = $_POST['valueLocal']; // Update the session variable
         }
     }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="shortcut icon" href="favicon.ico"/>
-        <title>Orden de reparación</title>
-        <!-- UIVERSE -->
-        <link rel="stylesheet" href="styles-uiverse.css"/>
-        <!-- CHOICES -->
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css"/>
-        <!-- GFONTS -->
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-        <!-- BOOTSTRAP -->
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-        <!-- JQUERY -->
-        <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-        <!-- NOTIFICACIÓN -->
-        <script src="controller/notificar/polling.js"></script>
-        <style>
-            body{
-                font-family: "Open Sans";
-            }
-            .gallery {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 10px;
-            }
-            .gallery img {
-                width: 100%;
-                height: auto;
-                max-width: 200px;
-                cursor: pointer;
-            }
-            .date-highlight {
-                font-size: 1.1rem;
-                font-weight: bold;
-                background-color: gray;
-                padding: 10px 0;
-                border-radius: 5px;
-                text-align: center;
-                text-shadow: 0 0 3px rgba(0, 0, 0, 1);
-            }
 
-            /* RESPONSIVE TABS */
-            #list-tabs {
-                display: flex;
-            }
-            #list-select {
-                display: none;
-            }
-            @media (max-width: 1000px) {
-                #list-tabs {
-                    display: none;
-                }
-                #list-select {
-                    display: block;
-                    width: 100%; 
-                }
-            }
-        </style>
-    </head>
-    <body>
-        <!-- NAVBAR -->
-        <nav class="navbar navbar-light text-light" style="background-color:rgb(43,45,46);">
-            <a class="navbar-brand mx-auto" href="">
-                <img class="rounded" src="LOGO.png" alt="logo" height="90">
-                <span class="badge badge-pill bg-danger">1.15.0</span>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="favicon.ico" />
+    <title>Orden de reparación</title>
+    <link rel="stylesheet" href="css/styles.css" />
+    <!-- UIVERSE -->
+    <link rel="stylesheet" href="css/styles-uiverse.css" />
+    <!-- CHOICES -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+    <!-- GFONTS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <!-- BOOTSTRAP -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- JQUERY -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <!-- NOTIFICACIÓN -->
+    <script src="controller/notificar/polling.js"></script>
+    <script src="controller/jSignature/jSignature.min.js"></script>
+</head>
+
+<body class="pb-5">
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-light text-light" style="background-color:rgb(43,45,46);">
+        <a class="navbar-brand mx-auto" href="">
+            <img class="rounded mx-auto" src="LOGO.png" alt="logo" height="60">
+            <span class="badge badge-pill bg-danger">2.0.0</span>
+        </a>
+    </nav>
+
+    <?php
+    if (!isset($_SESSION["login"])) {
+        include 'views/login.php';
+        exit();
+    }
+    ?>
+
+    <nav class="container rounded text-light sticky-top p-3 mt-3" style="background-color:rgb(43,45,46);">
+        <div class="input-group d-flex">
+            <div class="btn-group">
+                <button class="button w-25 btn btn-dark mx-1 text-light my-auto" style="border-radius:6px 0 0 6px" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-person-fill"></i>
+                    <span class="d-sm-inline-block d-none"><?php echo ucfirst($_SESSION["login"]); ?></span>
+                </button>
+                <ul class="dropdown-menu text-bg-dark">
+                    <!-- ADMIN MENU -->
+                    <?php if ($_SESSION["login"] == "admin") { ?>
+                        <!-- <li><a class="dropdown-item text-light" target="_blank" href="/almacen">Almacén</a></li>
+                        <li><a class="dropdown-item text-light" target="_blank" href="form-cliente.php">Formulario Cliente</a></li>
+                        <li><a class="dropdown-item text-light" href="totalventas">Total Ventas</a></li> -->
+                        <li><a class="dropdown-item text-light" href="user-admin">Usuarios</a></li>
+                        <li><a class="dropdown-item text-light" href="infoClientes">Exportar Clientes</a></li>
+                        <li><a class="dropdown-item text-light" href="infoOrdenes">Exportar Ordenes</a></li>
+                        <li><a class="dropdown-item text-light" href="referencias">Códigos</a></li>
+                        <li><a class="dropdown-item text-light" href="imageManager">Gestionar Fotos</a></li>
+                        <li><a class="dropdown-item text-light" href="entregas">Entregas</a></li>
+                        <!-- <li><a class="dropdown-item text-light" href="/formulario_v14">v1.14</a></li>
+                        <li><a class="dropdown-item text-light" href="/formulario_v13">v1.13</a></li> -->
+                        <li><a class="dropdown-item text-light" href="error_log">Error Log</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                    <?php
+                    }
+                    ?>
+                    <li>
+                        <a href="index.php?logout=true" style="text-decoration: none;" class="logout m-auto noselect">
+                            <span class="text">Cerrar Sesión</span>
+                            <span class="icon text-light">
+                                <i class="bi bi-box-arrow-in-left"></i>
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <?php if($_SESSION["login"] != "tecnico" && $_SESSION["login"] != "repartidor") { ?>
+            <a href="formulario" class="button btn btn-dark mx-1 my-auto flex-fill">
+                <i class="bi bi-pencil-square"></i> <span class="d-sm-inline-block d-none">Formulario</span>
             </a>
-            <?php
-            if(isset($_SESSION["login"])){ ?>
-                <a href="index.php?logout=true" style="text-decoration: none;" class="logout mx-2 noselect">
-                    <span class="text"><?php echo ucfirst($_SESSION["login"]); ?></span>
-                    <span class="icon text-light">
-                        <i class="bi bi-box-arrow-in-left"></i>
-                    </span>
-                </a>
-            <?php
-            }
-            ?>
-        </nav>
+            <?php } ?>
+            <?php if($_SESSION["login"] != "repartidor") { ?>
+            <a href="list" class="button btn btn-dark mx-1 my-auto flex-fill">
+                <i class="bi bi-columns-gap"></i> <span class="d-sm-inline-block d-none">Lista</span>
+            </a>
+            <?php } ?>
+        </div>
+    </nav>
+
+    <!-- CONTENIDO -->
+    <div class="container my-4">
         <?php
-        if(!isset($_SESSION["login"])){
-            include 'login.php';
-            exit();
+        if (isset($_GET["pag"])) {
+            include_once $_GET["pag"] . '.php';
+        } else {
+            include_once $default . '.php';
         }
         ?>
-        <?php if($_SESSION["login"] != "repartidor"){ ?>
-        <div class="container mx-auto p-3 rounded my-4 text-center bg-dark sticky-top">
-                <div class="col-12">
-                    <div class="input-group d-flex">
-                        <?php if ($_SESSION["login"] == "admin") { ?>
-                            <div class="btn-group">
-                                <button class="button btn btn-dark mx-1 text-light dropdown-toggle" style="border-radius:6px 0 0 6px" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="bi bi-gear-fill"></i> Admin
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" target="_blank" href="/almacen">Almacén</a></li>
-                                    <li><a class="dropdown-item" target="_blank" href="form-cliente.php">Formulario Cliente</a></li>
-                                    <li><a class="dropdown-item" href="totalventas">Total Ventas</a></li>
-                                    <li><a class="dropdown-item" href="user-admin">Usuarios</a></li>
-                                    <li><a class="dropdown-item" href="infoClientes">Clientes</a></li>
-                                    <li><a class="dropdown-item" href="infoOrdenes">Exportar Ordenes</a></li>
-                                    <li><a class="dropdown-item" href="referencias">Referencias</a></li>
-                                    <li><a class="dropdown-item" href="imageManager">Gestionar Fotos</a></li>
-                                    <li><a class="dropdown-item" href="entregas">Entregas</a></li>
-                                    <li><a class="dropdown-item" href="/formulario_v14">v1.14</a></li>
-                                    <li><a class="dropdown-item" href="/formulario_v13">v1.13</a></li>
-                                    <li><a class="dropdown-item" href="list_ajax">AJAX</a></li>
-                                    <li><a class="dropdown-item" href="error_log">Error Log</a></li>
-                                </ul>
-                            </div>
-                        <?php } ?>
-                        <a href="formulario" class="button btn btn-dark mx-1 flex-fill">
-                            <i class="bi bi-pencil-square"></i> Formulario
-                        </a>
-                        <a href="list" class="button btn btn-dark mx-1 flex-fill">
-                            <i class="bi bi-columns-gap"></i> Lista
-                        </a>
-                    </div>
-                </div>
-        </div>
-        <?php } ?>
-
-
-        <!-- CONTENIDO -->
-        <div class="container my-4">
-            <?php
-                if(isset($_GET["pag"])){
-                    include_once $_GET["pag"].'.php';
-                } else {
-                    include_once $default . '.php';
-                }
-            ?>
-        </div>
-        <!-- Toast Container -->
+    </div>
+    <!-- Toast Container -->
+    <div class="toast-container position-static" id="toastContainer">
         <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
             <div id="errorToast" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
                 <div class="d-flex">
@@ -196,13 +169,11 @@
                 </div>
             </div>
         </div>
-    </body>
-    <!-- Bootstrap JS Bundle -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+    </div>
+</body>
+<!-- Bootstrap JS Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
 
-    <script type="text/javascript">
-            
-        </script>
 </html>

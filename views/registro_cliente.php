@@ -6,7 +6,7 @@ if(isset($_GET["id"])){
 }
 $rellenar = false;
 if(isset($_GET["form"])){
-    if($_GET["form"] == "garantia" || $_GET["form"] == "edit") $rellenar = true;
+    if($_GET["form"] == "garantia") $rellenar = true;
 }
 
 ?>
@@ -52,7 +52,7 @@ if(isset($_GET["form"])){
             <?php if(!$rellenar) : ?>
                 <div class="form-floating w-25">
                     <?php
-                    include 'countrycodes.php';
+                    include 'views/countrycodes.php';
                     ?>
                 </div>
 
@@ -121,9 +121,9 @@ if(isset($_GET["form"])){
     <div class="col-12 col-md-4 mb-3">
         <div class="form-floating">
             <select class="form-control form-select" name="dept" id="dept">
-                <option value="hardware">Hardware</option>
-                <option value="web">Web</option>
-                <option value="redes">Redes</option>
+                <option value="Hardware">Hardware</option>
+                <option value="Web">Web</option>
+                <option value="Redes">Redes</option>
             </select>
             <label for="dept">Departamento</label>
         </div>

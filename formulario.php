@@ -46,10 +46,10 @@
                 
 <?php
     echo $before;
-    include 'registro_cliente.php';
+    include 'views/registro_cliente.php';
 ?>
     <hr class="text-light pb-3">
 <?php
-    include 'registro_servicio.php';
+    include 'views/registro_servicio.php';
     echo $after;
 ?>

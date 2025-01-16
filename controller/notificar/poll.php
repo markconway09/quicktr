@@ -4,17 +4,17 @@ require_once '../functions.php';
 header('Content-Type: application/json');
 
 $pdo = connect();
-$stmt = $pdo->prepare("SELECT `estado` FROM `info_orden`");
+$stmt = $pdo->prepare("SELECT `id`, `estado` FROM `info_orden`");
 try {
     $stmt->execute();
 } catch(PDOException $e){
     echo $e->getMessage();
 }
 
-$estados = "";
+$estados = [];
 
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-    $estados.=$row["estado"];
+    $estados[$row['id']] = $row['estado'];
 }
 
 $currentData = [
@@ -28,15 +28,19 @@ if (!isset($_SESSION['lastContent'])) {
 }
 
 // Check for specific change
-$notification = '';
-if ($_SESSION['lastContent'] !== $currentData['content']) {
-    $notification = 'Un ticket ha cambiado de estado.';
-    $_SESSION['lastContent'] = $currentData['content'];
+$notification = [];
+foreach ($estados as $id => $estado) {
+    if (isset($_SESSION['lastContent'][$id]) && $_SESSION['lastContent'][$id] !== $estado) {
+        $notification[] = "El ticket # $id ha cambiado.";
+        // Return JSON response
+        echo json_encode([
+            'content' => $currentData['content'],
+            'notification' => $notification,
+        ]);
+    }
 }
 
-// Return JSON response
-echo json_encode([
-    'content' => $currentData['content'],
-    'notification' => $notification,
-]);
+// Update the session content
+$_SESSION['lastContent'] = $currentData['content'];
+
 ?>

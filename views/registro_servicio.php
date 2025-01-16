@@ -5,10 +5,8 @@ if(isset($_GET["id"])){
     $servicio = explode(": ", $datos["servicio"]);
 }
 $rellenar = false;
-$edit = false;
 if(isset($_GET["form"])){
-    if($_GET["form"] == "garantia" || $_GET["form"] == "edit") $rellenar = true;
-    if($_GET["form"] == "edit") $edit = true;
+    if($_GET["form"] == "garantia") $rellenar = true;
 }
 
 ?>
@@ -100,12 +98,7 @@ if(isset($_GET["form"])){
     <div class="col-12 col-md-4 mb-3">
         <div class="form-floating">
             <input class="form-control" onkeyup="findTotal()" placeholder="Precio" type="number" step="0.01" name="precio" id="precio"
-                <?php if($edit) { ?>
-                    value="<?php echo $datos["precio"]; ?>"
-                <?php }else{ ?>
-                    value=0
-                <?php } ?>
-            >
+                value=0>
             <label for="precio">Precio €</label>
         </div>
     </div>
@@ -113,22 +106,12 @@ if(isset($_GET["form"])){
         <div class="input-group">
             <div class="form-floating">
                 <input class="form-control" onkeyup="findTotal()" placeholder="Descuento" type="number" step="0.1" name="descuento" id="descuento"
-                    <?php if($edit) { ?>
-                        value="<?php echo $datos["descuento"]; ?>"
-                    <?php }else{ ?>
-                        value=0
-                    <?php } ?>
-                >
+                    value=0>
                 <label for="descuento">Descuento</label>
             </div>
             <div class="form-floating">
                 <input class="form-control" onkeyup="findTotal()" placeholder="Iva 21%" type="number" step="0.1" name="iva" id="iva"
-                    <?php if($edit) { ?>
-                        value="<?php echo $datos["iva"]; ?>"
-                    <?php }else{ ?>
-                        value=21
-                    <?php } ?>
-                >
+                    value=21>
                 <label for="iva">Iva 21%</label>
             </div>
         </div>
@@ -136,12 +119,7 @@ if(isset($_GET["form"])){
     <div class="col-12 col-md-4 mb-3">
         <div class="form-floating">
             <input class="form-control" onkeyup="findPrecio()" placeholder="Precio Final" step="0.01" type="number" name="precio-final" id="precio-final"
-                <?php if($edit) { ?>
-                    value="<?php echo $datos["precio-final"]; ?>"
-                <?php }else{ ?>
-                    value=0
-                <?php } ?>
-            >
+                value=0>
             <label for="precio-final">Precio Final €</label>
         </div>
     </div>
@@ -320,30 +298,30 @@ if(isset($_GET["form"])){
     });
     // CÁLCULOS IVA
     function findTotal() {
-                var precio = parseFloat(document.getElementById('precio').value);
-                var iva = parseFloat(document.getElementById('iva').value);
-                var final = parseFloat(document.getElementById('precio-final').value);
-                var descuento = parseFloat(document.getElementById('descuento').value);
-                let calc = precio - ((precio*descuento)/100);
-                calc = calc + (calc*(iva/100));
-                document.getElementById('precio-final').value = calc.toFixed(2);
+        var precio = parseFloat(document.getElementById('precio').value);
+        var iva = parseFloat(document.getElementById('iva').value);
+        var final = parseFloat(document.getElementById('precio-final').value);
+        var descuento = parseFloat(document.getElementById('descuento').value);
+        let calc = precio - ((precio*descuento)/100);
+        calc = calc + (calc*(iva/100));
+        document.getElementById('precio-final').value = calc.toFixed(2);
+    }
+    function findPrecio() {
+        var precio = parseFloat(document.getElementById('precio').value);
+        var iva = parseFloat(document.getElementById('iva').value);
+        var final = parseFloat(document.getElementById('precio-final').value);
+        let calc = (final/(100+iva))*100;
+        document.getElementById('precio').value = calc.toFixed(2);
+    }
+    function updateSession(selectedValue) {
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "index.php", true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                location.reload();
             }
-            function findPrecio() {
-                var precio = parseFloat(document.getElementById('precio').value);
-                var iva = parseFloat(document.getElementById('iva').value);
-                var final = parseFloat(document.getElementById('precio-final').value);
-                let calc = (final/(100+iva))*100;
-                document.getElementById('precio').value = calc.toFixed(2);
-            }
-            function updateSession(selectedValue) {
-                var xhr = new XMLHttpRequest();
-                xhr.open("POST", "index.php", true);
-                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-                xhr.onreadystatechange = function () {
-                    if (xhr.readyState === 4 && xhr.status === 200) {
-                        location.reload();
-                    }
-                };
-                xhr.send("valueLocal=" + encodeURIComponent(selectedValue));
-            }
+        };
+        xhr.send("valueLocal=" + encodeURIComponent(selectedValue));
+    }
 </script>

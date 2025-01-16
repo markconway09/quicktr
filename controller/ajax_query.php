@@ -1,35 +1,87 @@
 <?php
 require_once 'functions.php';
+session_start();
+
+$pdo = connect();
 
 $call = $_GET["call"];
 
-switch($call){
+switch ($call) {
     case 0:
+        // AUTORELLENO CLIENTE
         $q = "SELECT * FROM `info_orden` ORDER BY id DESC";
+        $stmt = $pdo->prepare($q);
+        $stmt->execute();
         break;
     case 1:
+        // CODIGO
         $q = "SELECT `codigo_socio` FROM `info_orden` WHERE `codigo_socio` IS NOT NULL";
+        $stmt = $pdo->prepare($q);
+        $stmt->execute();
         break;
     case 2:
-        $q = "SELECT *, i.id as id, d.id as did, DATE_FORMAT(fecha, '%d/%m/%Y') as fecha, fecha as `date` FROM info_orden i
-                    LEFT JOIN devolucion d ON (i.id = d.id_orden)";
-        if(isset($_GET["search"])&&$_GET["search"] != ""){
-            $params = $_GET["search"] ?? "";
-            $search = " WHERE `nombre_dispositivo` LIKE :search OR i.id LIKE :search OR
-                    `nombre` LIKE :search OR `local` LIKE :search OR `servicio` LIKE :search";
-             $q .= $search;
+        // LISTADO
+        $q = "SELECT *, i.id as id, d.id as did, DATE_FORMAT(fecha, '%d/%m/%Y') as fecha, fecha as `date` 
+        FROM info_orden i
+        LEFT JOIN devolucion d ON (i.id = d.id_orden)";
+
+        $wheres = [];
+
+        if (!empty($_GET["search"])) {
+            $params = $_GET["search"];
+            $wheres[] = "(`nombre_dispositivo` LIKE :search OR i.id LIKE :search OR
+                        `nombre` LIKE :search OR `servicio` LIKE :search)";
         }
-        $q .= " ORDER BY i.id DESC";
+
+        if (isset($_GET["filter"]) && $_GET["filter"] != "todo") {
+            $wheres[] = "`estado` = :filter";
+        }
+
+        if (!empty($_SESSION['local'])) {
+            $wheres[] = "`local` = :local";
+        }
+
+        if (!empty($wheres)) {
+            $q .= " WHERE " . implode(" AND ", $wheres);
+        }
+
+        $q .= " ORDER BY i.id DESC LIMIT :limit";
+
+        $stmt = $pdo->prepare($q);
+
+        if (!empty($_GET["search"])) {
+            $params = "%" . $params . "%";
+            $stmt->bindParam(':search', $params, PDO::PARAM_STR);
+        }
+
+        if (isset($_GET["filter"]) && $_GET["filter"] != "todo") {
+            $stmt->bindParam(':filter', $_GET["filter"]);
+        }
+
+        if (!empty($_SESSION["local"])) {
+            $stmt->bindParam(':local', $_SESSION["local"], PDO::PARAM_STR);
+        }
+
+        $limit = (int)$_GET["limit"] ?? 10;
+        $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+
+        $stmt->execute();
+        break;
+    case 3:
+        // $ticket = $db->fetchId($_GET["id"]);
+        // $ticket->estado = $_GET["estado"];
+        // $db->updateTicket($ticket);
+        // CAMBIAR ESTADO
+        if(isset($_GET["estado"])){
+            if(!isset($_GET["metodo"])){
+                cambiarEstado($_GET["id"], $_GET["estado"]);
+            } else {
+                cambiarEstado($_GET["id"],$_GET["estado"],$_GET["metodo"]);
+            }
+        }
         break;
 }
 
-$pdo = connect();
-$stmt = $pdo->prepare($q);
-if(isset($_GET["search"])&&$_GET["search"] != ""){
-    $params = "%" . $params . "%";
-    $stmt->bindParam(':search', $params);
-}
-$stmt->execute();
 
 $var = "[";  // Initialize the array
 $first = true;  // Flag to track if it's the first element

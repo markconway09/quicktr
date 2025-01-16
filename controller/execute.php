@@ -54,7 +54,7 @@ if(isset($_GET["estado"])){
     if(!isset($_GET["metodo"])){
         cambiarEstado($_GET["id"], $_GET["estado"]);
     } else {
-        cambiarEstado($_GET["id"],$_GET["estado"],$_GET["metodo"]);
+        cambiarEstado($_GET["id"],$_GET["estado"],$_GET["metodo"],$_GET["fecha_pago"]);
     }
     
     if ($_GET["pag"] == 0) {
