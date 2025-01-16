@@ -40,7 +40,7 @@
         echo '</tbody>';
         echo '</table>';
     } else {
-        echo "No hay códigos usados.";
+        echo "<span class='text-light'>No hay códigos usados.</span>";
     }
 ?>
 </div>

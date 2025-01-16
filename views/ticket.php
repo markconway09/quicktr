@@ -302,6 +302,8 @@ if (isset($_GET["id"])) {
     </div>
     <?php if ($_SESSION["login"] != "tecnico") { ?>
     <hr>
+    <?php echo $ins; ?>
+    <hr>
     <form action="" method="POST">
         <div class="row">
             <div class="col-12 col-md-4 mb-3">
@@ -470,7 +472,7 @@ if (isset($_GET["id"])) {
                         <div class="row mb-3">
                             <div class="col-12">
                                 <div class="form-floating">
-                                    <input disabled class="form-control" placeholder="Dispositivo" type="text" name="dispositivo" id="dispositivo" value="<?php echo $ticket->nombre_dispositivo; ?>">
+                                    <input class="form-control" placeholder="Dispositivo" type="text" name="dispositivo" id="dispositivo" value="<?php echo $ticket->nombre_dispositivo; ?>">
                                     <label for="dispositivo">Dispositivo</label>
                                 </div>
                             </div>
