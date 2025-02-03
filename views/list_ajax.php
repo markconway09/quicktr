@@ -37,17 +37,15 @@
                 </ul>
             </div>
             <div class="container-fluid bg-dark mt-2 p-2" id="list-select">
-                <form method="GET" action="list">
-                    <select class="form-select text-light bg-dark border-light" name="filter" onchange="this.form.submit()">
-                        <option value="" <?php echo !isset($_GET["filter"]) ? 'selected' : ''; ?>>Todo</option>
-                        <?php
-                        foreach ($filters as $key => $label) {
-                            $selected = (isset($_GET["filter"]) && $_GET["filter"] == $key) ? 'selected' : '';
-                            echo '<option value="' . $key . '" ' . $selected . ' title="' . $tooltip[$key] . '">' . $label . '</option>';
-                        }
-                        ?>
-                    </select>
-                </form>
+                <select class="form-select text-light bg-dark border-light" name="filter" onchange="selectFilter(this.value)">
+                    <option value="" <?php echo !isset($_GET["filter"]) ? 'selected' : ''; ?>>Todo</option>
+                    <?php
+                    foreach ($filters as $key => $label) {
+                        $selected = (isset($_GET["filter"]) && $_GET["filter"] == $key) ? 'selected' : '';
+                        echo '<option value="' . $key . '" ' . $selected . ' title="' . $tooltip[$key] . '">' . $label . '</option>';
+                    }
+                    ?>
+                </select>
             </div>
 
             <!-- SEARCH -->
@@ -102,6 +100,10 @@
             }
         };
         xhr.send("valueLocal=" + encodeURIComponent(selectedValue));
+    }
+    function selectFilter(f){
+        filter = f;
+        search();
     }
     document.querySelectorAll('#list-tabs .nav-link').forEach(button => {
         button.addEventListener('click', () => {

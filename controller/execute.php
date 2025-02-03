@@ -49,7 +49,21 @@ if(isset($_GET["eliminar"])){
     header('Location: ../list');
 }
 
-// CAMBIAR ESTADO
+// CAMBIAR ESTADO POST (FORM COBRAR)
+if(isset($_POST["estado"])){
+    if(!isset($_POST["metodo"])){
+        cambiarEstado($_POST["id"], $_POST["estado"]);
+    } else {
+        cambiarEstado($_POST["id"],$_POST["estado"],$_POST["metodo"],$_POST["fecha_pago"]);
+    }
+    
+    if ($_POST["pag"] == 0) {
+        header('Location: ../list');
+    } else {
+        header('Location: ../list&id=' . $_POST["id"]);
+    }
+}
+// CAMBIAR ESTADO GET (FLECHAS)
 if(isset($_GET["estado"])){
     if(!isset($_GET["metodo"])){
         cambiarEstado($_GET["id"], $_GET["estado"]);

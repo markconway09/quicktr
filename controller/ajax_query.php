@@ -34,7 +34,11 @@ switch ($call) {
         }
 
         if (isset($_GET["filter"]) && $_GET["filter"] != "todo") {
-            $wheres[] = "`estado` = :filter";
+            if($_GET["filter"] == 6){
+                $wheres[] = "`garantia` != 0";
+            } else {
+                $wheres[] = "`estado` = :filter";
+            }
         }
 
         if (!empty($_SESSION['local'])) {
@@ -54,7 +58,7 @@ switch ($call) {
             $stmt->bindParam(':search', $params, PDO::PARAM_STR);
         }
 
-        if (isset($_GET["filter"]) && $_GET["filter"] != "todo") {
+        if ($_GET["filter"] != 6 && isset($_GET["filter"]) && $_GET["filter"] != "todo") {
             $stmt->bindParam(':filter', $_GET["filter"]);
         }
 

@@ -538,9 +538,11 @@ function devolucion($id, $des = 0)
 
 function cambiarEstado($id, $estado, $metodo = null, $date = null)
 {
+    session_start();
     if($date == null && $metodo != null){
         $date = date("Y-m-d");
     }
+    if(isset($_FILES['images'])) insertarFotos($id);
     $pdo = connect();
     $stmt = $pdo->prepare("UPDATE `info_orden` SET `estado` = :estado, `fecha_pago` = :pago, `metodo` = :metodo WHERE `info_orden`.`id` = :id");
     $stmt->bindParam(':id', $id);
@@ -550,8 +552,32 @@ function cambiarEstado($id, $estado, $metodo = null, $date = null)
     try {
         $stmt->execute();
     } catch (PDOException $e) {
-        echo '<p class="text-light">' . $e->getMessage() . '</p>';
+        logError($e->getMessage());
     }
+
+    // ULTIMA MODIFICACION
+    if($estado == 1 || $estado == 3){
+        $pdo = connect();
+
+        $date = new DateTime();
+        if($estado == 1) {
+            $mod = "Diagnosticado por " . $_SESSION["nombre"] . " (" . $date->format('Y-m-d H:i:s') . ")";
+            $stmt = $pdo->prepare("UPDATE `info_orden` SET `tiempo_diagnostico` = :mod WHERE `info_orden`.`id` = :id");
+        }
+        if($estado == 3) {
+            $mod = "Reparado por " . $_SESSION["nombre"] . " (" . $date->format('Y-m-d H:i:s') . ")";
+            $stmt = $pdo->prepare("UPDATE `info_orden` SET `tiempo_reparacion` = :mod WHERE `info_orden`.`id` = :id");
+        }
+        
+        $stmt->bindParam(':id', $id);
+        $stmt->bindParam(':mod', $mod);
+        try {
+            $stmt->execute();
+        } catch (PDOException $e) {
+            logError($e->getMessage());
+        }
+    }
+
     if ($estado == 4) correoReview($id);
 }
 

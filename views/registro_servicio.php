@@ -90,7 +90,7 @@ if(isset($_GET["form"])){
 <div class="row mb-4">
     <div class="col-lg-3 mx-auto">
         <label for="imageUpload" class="btn btn-light w-100 h-100"><i class="bi bi-camera-fill"></i>&nbsp;Subir Fotos</label>
-        <input type="file" id="imageUpload" accept="image/*" name="images[]" multiple class="d-none form-control form-control-lg">
+        <input type="file" id="imageUpload" accept="image/*" name="images[]" capture="environment" multiple class="d-none form-control form-control-lg">
     </div>
 </div>
 <?php endif; ?>

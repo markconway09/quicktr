@@ -1,4 +1,4 @@
-<div class="form-container col-10 col-md-6 col-lg-4" style="position: absolute;top: 25vh; left:33vw;">
+<div class="form-container col-10 col-md-6 col-lg-4" id="loginForm">
     <form method="POST" class="form">
         <div class="form-group">
             <label for="user">Usuario</label>

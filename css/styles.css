@@ -54,4 +54,13 @@ input::-webkit-inner-spin-button {
         display: block;
         width: 100%; 
     }
+    #loginForm{
+        margin: 20px auto;
+    }
+}
+
+@media (min-width: 1000px) {
+    #loginForm{
+        position: absolute;top: 25vh; left:33vw;
+    }
 }

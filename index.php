@@ -16,6 +16,7 @@ if (isset($_POST["login"])) {
         $pass = $_POST["pass"];
         $verify = password_verify($pass, $hash);
         if ($verify) {
+            $_SESSION["nombre"] = $row["username"];
             $_SESSION["login"] = $row["tipo"];
             $_SESSION["local"] = $row["local"] != null ? $row["local"] : null;
             // LIMITE DE SERVICIOS POR PAGINA POR DEFECTO: 0 = SIN PAGINAS
@@ -118,7 +119,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <li><a class="dropdown-item text-light" href="entregas">Entregas</a></li>
                         <!-- <li><a class="dropdown-item text-light" href="/formulario_v14">v1.14</a></li>
                         <li><a class="dropdown-item text-light" href="/formulario_v13">v1.13</a></li> -->
-                        <li><a class="dropdown-item text-light" href="error_log">Error Log</a></li>
+                        <li><a class="dropdown-item text-light" href="errores">Error Log</a></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>

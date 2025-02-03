@@ -187,6 +187,18 @@ if (isset($_GET["id"])) {
         <!-- BOTON MODAL COBRAR/CERRAR TICKET -->
         <button data-bs-toggle="modal" data-bs-target="#cobrarModal" class="mx-auto cssbuttons-io-button bg-secondary">Entregado/Cobrar<div class="icon"><i class="bi bi-cash text-dark"></i></div></button>
     <?php } ?>
+    
+    <table style="width: 100%;" class="mt-3 text-center">
+        <tr>
+            <td>
+                <?php if(!empty($ticket->tiempo_diagnostico)) echo '<i class="bi bi-search"></i> ' . $ticket->tiempo_diagnostico; ?>
+            </td>
+            <td>
+                <?php if(!empty($ticket->tiempo_reparacion)) echo '<i class="bi bi-tools"></i> ' . $ticket->tiempo_reparacion; ?>
+            </td>
+        </tr>
+    </table>
+    
     <hr>
     <form action="" method="POST">
         <div class="row">
@@ -544,12 +556,17 @@ if (isset($_GET["id"])) {
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form method="GET" action="controller/execute.php">
+                    <form method="POST" action="controller/execute.php" enctype="multipart/form-data">
                         <input type="hidden" name="pag" value="1">
                         <input type="hidden" name="id" value="<?php echo $ticket->id ?>">
                         <p>
                             <label for="fecha_pago">Fecha de pago</label>
                             <input type="date" name="fecha_pago" id="fecha_pago" class="form-control" value="<?php echo date("Y-m-d") ?>">
+                        </p>
+                        <p>
+                            <label for="fotoFinal">Foto final</label>
+                            <input type="file" id="fotoFinal" accept="image/*" name="images[]" capture="environment" multiple class="form-control" required>
+                            <input type="checkbox" name="noFoto" id="noFoto" onclick="document.getElementById('fotoFinal').toggleAttribute('required')"> <label for="noFoto">Sin foto final</label>
                         </p>
                         <p>
                             <label for="precio">Precio final</label>

@@ -27,6 +27,8 @@ class Ticket
     public $fecha_pago;
     public $garantia;
     public $estado;
+    public $tiempo_diagnostico;
+    public $tiempo_reparacion;
     public $razon;
     public $dept;
     public $codigo_socio;

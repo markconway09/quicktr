@@ -78,7 +78,7 @@ function insertarBDS($garantia = 0)
     $stmt = $pdo->prepare("INSERT INTO info_orden 
         VALUES (null, :nom, :tel, :doc, :ser, :email, :direccion, :cp, :nac, :preciosV,
                 :cantV, :precio, :descuento, :iva, :final, :ins_d, :ins_p, null, :disp,
-                :descr, null, :loc, :fecha, null, :garantia, 0, :razon, :dept, :codigo, :cod_ref)");
+                :descr, null, :loc, :fecha, null, :garantia, 0, null, null, :razon, :dept, :codigo, :cod_ref)");
 
     // Bind parameters
     $stmt->bindParam(':nom', $nombre);
