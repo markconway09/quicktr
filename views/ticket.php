@@ -28,6 +28,34 @@ if (isset($_POST["guardarCliente"])){
     $db->updateTicket($ticket);
     echo '<meta http-equiv="refresh" content="0"/>';
 }
+// EDIT SERVICIO
+if (isset($_POST["editar_insumo"])){
+    $ticket = $db->fetchId($_GET["id"]);
+    if(!empty($_POST["dispositivo"])) $ticket->nombre_dispositivo = $_POST["dispositivo"];
+    if(!empty($_POST["desc"])) $ticket->desc = $_POST["desc"];
+    if(!empty($_POST["desc_tecnico"])){
+        $ticket->desc_tecnico = $_POST["desc_tecnico"];
+    }
+    if(!empty($_POST["insumo_desc1"])){
+        $k = 1;
+        $i_desc = "";
+        $i_prec = "";
+        while(isset($_POST["insumo_desc".$k]) && $_POST["insumo_desc".$k] != ""){
+            $i_desc .= $_POST["insumo_desc".$k];
+            $i_prec .= $_POST["insumo_precio".$k];
+            $k++;
+            if(isset($_POST["insumo_desc".$k]) && $_POST["insumo_desc".$k] != ""){
+                $i_desc .=";";
+                $i_prec .= ";";
+            }
+        }
+        $ticket->insumo_desc = $i_desc;
+        $ticket->insumo_precio = $i_prec;
+    }
+
+    $db->updateTicket($ticket);
+    echo '<meta http-equiv="refresh" content="0"/>';
+}
 if (isset($_POST["guardarPrecio"])){
     $id = $_POST["id"];
     $ticket = $db->fetchId($id);
@@ -286,7 +314,14 @@ if (isset($_GET["id"])) {
             <p class="card-text"><b>Dispositivo:</b> <?php echo $ticket->nombre_dispositivo ?></p>
             <p class="card-text"><?php echo $desc ?></p>
             <p class="card-text"><b>Descripción Técnico:</b> <?php echo !empty($ticket->desc_tecnico) ? $ticket->desc_tecnico : "Sin descripción" ?></p>
-            <?php if ($_SESSION["login"] == "admin" || $_SESSION["login"] == "tecnico") echo ' <br><button type="button" class="fileButton" data-bs-toggle="modal" data-bs-target="#insumoModal">Editar insumo y descripción técnico</button>'; ?>
+            <br>
+            <button type="button" class="fileButton" data-bs-toggle="modal" data-bs-target="#insumoModal">
+                <?php if ($_SESSION["login"] == "admin" || $_SESSION["login"] == "tecnico") {
+                        echo 'Editar insumo y descripción técnico';
+                    } else {
+                        echo 'Editar descripción';
+                    } ?>
+            </button>
         </div>
         <div class="col-md-6 col-12">
             <b>Firma:</b><br>
@@ -476,11 +511,11 @@ if (isset($_GET["id"])) {
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="insumoModalLabel">Editar detalles técnicos (# <?php echo $ticket->id ?>)</h1>
+                    <h1 class="modal-title fs-5" id="insumoModalLabel">Editar detalles servicio (# <?php echo $ticket->id ?>)</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="controller/execute.php?id=<?php echo $_GET["id"] ?>" method="POST" class="p-4">
+                    <form action="" method="POST" class="p-4">
                         <div class="row mb-3">
                             <div class="col-12">
                                 <div class="form-floating">
@@ -497,6 +532,7 @@ if (isset($_GET["id"])) {
                                 </div>
                             </div>
                         </div>
+                        <?php if($_SESSION["login"] != "dependiente"): ?>
                         <div class="row">
                             <h2 class="display-5">Técnico</h2>
                         </div>
@@ -539,6 +575,7 @@ if (isset($_GET["id"])) {
                                 <button type="button" class="btn btn-secondary" onclick="crear()">+ Añadir Insumo</button>
                             </div>
                         </div>
+                        <?php endif; ?>
                         <div class="row">
                             <input type="submit" name="editar_insumo" class="btn btn-primary col-4 mx-auto" value="Guardar Cambios">
                         </div>

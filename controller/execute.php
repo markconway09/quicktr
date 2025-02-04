@@ -77,33 +77,3 @@ if(isset($_GET["estado"])){
         header('Location: ../list&id=' . $_GET["id"]);
     }
 }
-
-if(isset($_POST["editar_insumo"])){
-    $k = 1;
-    $i_desc = "";
-    $i_prec = "";
-    while(isset($_POST["insumo_desc".$k]) && $_POST["insumo_desc".$k] != ""){
-        $i_desc .= $_POST["insumo_desc".$k];
-        $i_prec .= $_POST["insumo_precio".$k];
-        $k++;
-        if(isset($_POST["insumo_desc".$k]) && $_POST["insumo_desc".$k] != ""){
-            $i_desc .=";";
-            $i_prec .= ";";
-        }
-    }
-    $pdo = connect();
-    $stmt = $pdo->prepare("UPDATE `info_orden` SET `insumo_desc` = :insumo_d, `insumo_precio` = :insumo_p, `nombre_dispositivo` = :disp, `desc` = :de, `desc_tecnico` = :dt WHERE `info_orden`.`id` = :id");
-    $stmt->bindParam(':id', $_GET["id"]);
-    $stmt->bindParam(':disp', $_POST["dispositivo"]);
-    $stmt->bindParam(':de', $_POST["desc"]);
-    $stmt->bindParam(':dt', $_POST["desc_tecnico"]);
-    $stmt->bindParam(':insumo_d', $i_desc);
-    $stmt->bindParam(':insumo_p', $i_prec);
-    try {
-        $stmt->execute();
-    } catch (PDOException $e){
-        echo '<p class="text-light">'.$e->getMessage().'</p>';
-    }
-    
-    header('Location: ../list&id='.$_GET["id"]);
-}

@@ -78,7 +78,12 @@ class Database
             precio = ?,
             descuento = ?,
             iva = ?,
-            `precio-final` = ?
+            `precio-final` = ?,
+            insumo_desc = ?,
+            insumo_precio = ?,
+            `nombre_dispositivo` = ?,
+            `desc` = ?,
+            `desc_tecnico` = ?
             WHERE id = ?";
 
         // Assuming you have a PDO connection
@@ -95,10 +100,15 @@ class Database
                 $ticket->descuento,
                 $ticket->iva,
                 $ticket->precio_final,
+                $ticket->insumo_desc,
+                $ticket->insumo_precio,
+                $ticket->nombre_dispositivo,
+                $ticket->desc,
+                $ticket->desc_tecnico,
                 $ticket->id
             ]);
         } catch (Exception $e){
-            echo "<script> alert('".$e->getMessage()."')</script>";
+            logError($e->getMessage());
         }
     }
     
