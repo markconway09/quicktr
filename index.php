@@ -118,7 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <li><a class="dropdown-item text-light" href="referencias">Códigos</a></li>
                         <li><a class="dropdown-item text-light" href="imageManager">Gestionar Fotos</a></li>
                         <li><a class="dropdown-item text-light" href="entregas">Entregas</a></li>
-                        <li><a class="dropdown-item text-light" href="errores">Error Log</a></li>
+                        <li><a class="dropdown-item text-light" href="errores">Errores</a></li>
                         <li><a class="dropdown-item text-light" href="historial">Historial</a></li>
                         <li>
                             <hr class="dropdown-divider">
