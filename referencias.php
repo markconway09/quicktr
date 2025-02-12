@@ -1,7 +1,8 @@
 <div class="container p-2 rounded bg-dark">
 <?php
     require_once 'controller/functions.php';
-    $pdo = connect();
+    $db = new Database();
+    $pdo = $db->pdo;
     $stmt = $pdo->prepare("SELECT `nombre`, `codigo_socio` FROM info_orden WHERE `codigo_socio` IS NOT NULL");
     $stmt->execute();
     

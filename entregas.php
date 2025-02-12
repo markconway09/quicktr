@@ -49,7 +49,8 @@
 
     // INSERT INTO ENTREGAS
     if(isset($_POST["insert_entrega"])){
-        $pdo = connect();
+        $db = new Database();
+        $pdo = $db->pdo;
         $stmt = $pdo->prepare("INSERT INTO entregas VALUES (null, :nombre, :de, :a, 0)");
         $stmt->bindParam(':nombre', $_POST["nombre"]);
         $stmt->bindParam(':de', $_POST["de"]);
@@ -66,7 +67,8 @@
     if(isset($_POST["mas_estado"])){
         $estado = $_POST["estado"] + 1;
         if($estado <= 2){
-            $pdo = connect();
+            $db = new Database();
+            $pdo = $db->pdo;
             $stmt = $pdo->prepare("UPDATE entregas SET estado = :estado WHERE id = :id");
             $stmt->bindParam(':id', $_POST["id"]);
             $stmt->bindParam(':estado', $estado);
@@ -80,7 +82,8 @@
     if(isset($_POST["menos_estado"])){
         $estado = $_POST["estado"] - 1;
         if($estado >= 0) {
-            $pdo = connect();
+            $db = new Database();
+            $pdo = $db->pdo;
             $stmt = $pdo->prepare("UPDATE entregas SET estado = :estado WHERE id = :id");
             $stmt->bindParam(':id', $_POST["id"]);
             $stmt->bindParam(':estado', $estado);
@@ -96,7 +99,8 @@
     $estados = ["PENDIENTE", "EN CAMINO", "ENTREGADO"];
     $colores = ["#f54f45", "#f5c94a", "#60e855"];
 
-    $pdo = connect();
+    $db = new Database();
+    $pdo = $db->pdo;
     $stmt = $pdo->prepare("SELECT * from entregas WHERE estado = 0 OR estado = 1 ORDER BY id DESC");
     try {
         $stmt->execute();

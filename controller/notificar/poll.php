@@ -1,9 +1,10 @@
 <?php
 session_start();
-require_once '../functions.php';
+require_once '../../model/Database.php';
 header('Content-Type: application/json');
 
-$pdo = connect();
+$db = new Database();
+$pdo = $db->pdo;
 $stmt = $pdo->prepare("SELECT `id`, `estado` FROM `info_orden`");
 try {
     $stmt->execute();
@@ -31,7 +32,7 @@ if (!isset($_SESSION['lastContent'])) {
 $notification = [];
 foreach ($estados as $id => $estado) {
     if (isset($_SESSION['lastContent'][$id]) && $_SESSION['lastContent'][$id] !== $estado) {
-        $notification[] = "El ticket # $id ha cambiado.";
+        $notification[] = "El ticket # <a style='color:white' href='list&id=$id'>$id</a> ha cambiado.";
         // Return JSON response
         echo json_encode([
             'content' => $currentData['content'],

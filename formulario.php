@@ -1,34 +1,21 @@
 <?php
 // LOGICA PARA DECIDIR QUÉ FORMULARIO MOSTRAR
-    $action = 'controller/execute.php';
     $title = '<h1 class="display-5 text-light text-center mb-4">FORMULARIO</h1>';
     $hidden = '';
-    // $submit = '<input type="submit" name="guardar-servicio" class="w-100 btn btn-success col-5 mx-auto" value="Guardar">';
-    $submit = 'name="guardar-servicio"';
     if(isset($_GET["id"])) $backbtn = '<a href="list&id='. $_GET["id"] .'" class="btn btn-secondary">Volver</a>';
 
     if(isset($_GET["form"])){
-        switch($_GET["form"]){
-            case "garantia":
-                $action = 'list';
-                $title = $backbtn.'<h1 class="display-5 text-light text-center mb-4">Garantía para # '. $_GET["id"] .'</h1>';
-                $hidden = '<input type="hidden" name="id" value="'. $_GET["id"] .'">';
-                $submit = 'name="garantia"';
-                break;
-            case "edit":
-                $action = 'list';
-                $title = $backbtn.'<h1 class="display-5 text-light text-center mb-4">Editar # '. $_GET["id"] .'</h1>';
-                $hidden = '<input type="hidden" name="id" value="'. $_GET["id"] .'">';
-                $submit = 'name="editar-factura"';
-                break;
+        if($_GET["form"] == "garantia"){
+            $title = $backbtn.'<h1 class="display-5 text-light text-center mb-4">Garantía para # '. $_GET["id"] .'</h1>';
+            $hidden = '<input type="hidden" name="garantia" value="'. $_GET["id"] .'">';
         }
     }
 
-    $before = ' <form action="'.$action.'" method="POST" class="form-control p-4 bg-dark border-secondary" enctype="multipart/form-data">'.$title;
+    $before = ' <form action="list" method="POST" class="form-control p-4 bg-dark border-secondary" enctype="multipart/form-data">'.$title;
     $after = '      <div class="row">
                         <div class="col-12">
                             '.$hidden.'
-                            <button class="mx-auto save-ticket" '.$submit.'>
+                            <button class="mx-auto save-ticket" name="guardar-servicio">
                                 <div class="svg-wrapper-1">
                                     <div class="svg-wrapper">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">

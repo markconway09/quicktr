@@ -4,7 +4,8 @@
 
     // IMPORT FUNCTIONS
     require_once "controller/functions.php";
-    $pdo = connect();
+    $db = new Database();
+    $pdo = $db->pdo;
     $stmt = $pdo->prepare("SELECT * FROM InfoClientes");
     try {
         $stmt->execute();
@@ -12,7 +13,7 @@
         echo $e->getMessage();
     }
 ?>
-<a href="exportcsvfile.php" target="_blank" class="btn btn-primary mb-2">Exportar CSV <i class="bi bi-cloud-download"></i></a>
+<a href="controller/exportcsvfile.php" target="_blank" class="btn btn-primary mb-2">Exportar CSV <i class="bi bi-cloud-download"></i></a>
 <table class="table table-dark table-striped text-bg-dark">
     <thead>
         <tr>

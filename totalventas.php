@@ -1,5 +1,6 @@
 <?php
 require_once 'controller/functions.php';
+require_once 'model/Database.php'; 
 
 if(isset($_POST["dtotalB"])||isset($_POST["dtotalM"])||isset($_POST["dtotal"])){
     $date = explode("-",$_POST["dia"]);

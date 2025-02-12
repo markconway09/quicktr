@@ -1,6 +1,7 @@
 <?php 
 
 require_once 'functions.php'; 
+require_once '../model/Database.php'; 
 
 $filename = "clientes_" . date('Y-m-d') . ".csv"; 
 
@@ -13,7 +14,8 @@ $fields = array('ID', 'Nombre', 'Telefono', 'Documento', 'Direccion', 'CP', 'Loc
 
 fputcsv($f, $fields, $delimiter); 
 
-$pdo = connect();
+$db = new Database();
+$pdo = $db->pdo;
 $stmt = $pdo->prepare("SELECT * FROM InfoClientes");
 try {
     $stmt->execute();

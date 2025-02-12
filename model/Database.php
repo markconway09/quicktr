@@ -66,6 +66,123 @@ class Database
         return $tickets;
     }
 
+    public function insertTicket($ticket)
+    {
+        $sql = "INSERT INTO info_orden SET 
+            id = ?,
+            nombre = ?,
+            telefono = ?,
+            documento = ?,
+            servicio = ?,
+            email = ?,
+            direccion = ?,
+            cp = ?,
+            fecha_nacimiento = ?,
+            precio = ?,
+            descuento = ?,
+            iva = ?,
+            `precio-final` = ?,
+            insumo_desc = ?,
+            insumo_precio = ?,
+            metodo = ?,
+            `nombre_dispositivo` = ?,
+            `desc` = ?,
+            `desc_tecnico` = ?,
+            `local` = ?,
+            fecha = ?,
+            fecha_pago = ?,
+            garantia = ?,
+            estado = ?,
+            razon = ?,
+            dept = ?,
+            codigo_socio = ?,
+            codigo_usado = ?";
+    
+        
+        $stmt = $this->pdo->prepare($sql);
+        try {
+            $stmt->execute([
+                null,
+                $ticket->nombre,
+                $ticket->telefono,
+                $ticket->documento,
+                $ticket->servicio,
+                $ticket->email,
+                $ticket->direccion,
+                $ticket->cp,
+                $ticket->fecha_nacimiento,
+                $ticket->precio,
+                $ticket->descuento,
+                $ticket->iva,
+                $ticket->precio_final,
+                $ticket->insumo_desc,
+                $ticket->insumo_precio,
+                $ticket->metodo,
+                $ticket->nombre_dispositivo,
+                $ticket->desc,
+                $ticket->desc_tecnico,
+                $ticket->local,
+                $ticket->fecha,
+                $ticket->fecha_pago,
+                $ticket->garantia,
+                $ticket->estado,
+                $ticket->razon,
+                $ticket->dept,
+                $ticket->codigo_socio,
+                $ticket->codigo_usado
+            ]);
+            return $this->pdo->lastInsertId();
+        } catch (Exception $e) {
+            logError($e->getMessage());
+        }
+    }
+
+    public function insertPhotos($id, $photos)
+    {
+        $targetDir = "fotos/";
+        foreach ($photos['name'] as $key => $name) {
+            $fileTmpPath = $photos['tmp_name'][$key];
+            $fileName = basename($name);
+            $targetFilePath = $targetDir . $fileName;
+            // Move the uploaded file to the target directory
+            if (move_uploaded_file($fileTmpPath, $targetFilePath)) {
+                $stmt = $this->pdo->prepare("INSERT INTO foto (id_orden, archivo) VALUES (:id, :archivo)");
+                $stmt->bindParam(':id', $id);
+                $stmt->bindParam(':archivo', $fileName);
+                try {
+                    $stmt->execute();
+                } catch (PDOException $e) {
+                    logError($e->getMessage());
+                }
+            }
+        }
+    }
+
+    public function insertSignature($id, $sig)
+    {
+        // SUBIR FIRMA
+        $folderPath = "firmas/";
+        $image_parts = explode(";base64,", $sig);
+        $image_type_aux = explode("image/", $image_parts[0]);
+        $image_type = $image_type_aux[1];
+        $image_base64 = base64_decode($image_parts[1]);
+        $image_id = uniqid() . '.' . $image_type;
+        $file = $folderPath . $image_id;
+        $saveResult = file_put_contents($file, $image_base64);
+        if ($saveResult) {
+            $pdo = $this->pdo;
+            $stmt = $pdo->prepare("INSERT INTO firma VALUES (null, :id, :archivo)");
+            $stmt->bindParam(':id', $id);
+            $stmt->bindParam(':archivo', $image_id);
+
+            try {
+                $stmt->execute(); // Insert record into the database
+            } catch (PDOException $e) {
+                logError($e->getMessage());
+            }
+        }
+    }
+
     public function updateTicket($ticket)
     {
         $sql = "UPDATE info_orden SET 
@@ -83,7 +200,10 @@ class Database
             insumo_precio = ?,
             `nombre_dispositivo` = ?,
             `desc` = ?,
-            `desc_tecnico` = ?
+            `desc_tecnico` = ?,
+            `estado` = ?,
+            `metodo` = ?,
+            `fecha_pago` = ?
             WHERE id = ?";
 
         // Assuming you have a PDO connection
@@ -105,11 +225,45 @@ class Database
                 $ticket->nombre_dispositivo,
                 $ticket->desc,
                 $ticket->desc_tecnico,
+                $ticket->estado,
+                $ticket->metodo,
+                $ticket->fecha_pago,
                 $ticket->id
             ]);
         } catch (Exception $e){
             logError($e->getMessage());
         }
+    }
+
+    public function logChange($user, $desc, $orden)
+    {
+        $fecha = new DateTime();
+        $fecha = $fecha->format('Y-m-d H:i:s');
+        $stmt = $this->pdo->prepare("INSERT INTO historial_cambios VALUES (null, :user, :fecha, :descripcion, :id_orden)");
+        $stmt->bindParam(":user", $user);
+        $stmt->bindParam(":fecha", $fecha);
+        $stmt->bindParam(":descripcion", $desc);
+        $stmt->bindParam(":id_orden", $orden);
+        try {
+            $stmt->execute();
+        } catch (Exception $e) {
+            logError($e->getMessage());
+        }
+    }
+
+    public function fetchTicketHistory($ticket)
+    {
+        $q = "SELECT * FROM historial_cambios WHERE id_orden = :id";
+        $stmt = $this->pdo->prepare($q);
+        $stmt->bindParam(':id', $ticket->id, PDO::PARAM_INT);
+        $stmt->execute();
+        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($data) {
+            return $data;
+        }
+
+        return null;
     }
     
 }

@@ -6,7 +6,8 @@ require_once "model/Database.php";
 
 session_start();
 if (isset($_POST["login"])) {
-    $pdo = connect();
+    $db = new Database();
+    $pdo = $db->pdo;
     $stmt = $pdo->prepare("SELECT * FROM user WHERE username = :user");
     $stmt->bindParam(':user', $_POST["user"]);
     $stmt->execute();
@@ -87,7 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <nav class="navbar navbar-light text-light" style="background-color:rgb(43,45,46);">
         <a class="navbar-brand mx-auto" href="">
             <img class="rounded mx-auto" src="LOGO.png" alt="logo" height="60">
-            <span class="badge badge-pill bg-danger">2.0.0</span>
+            <span class="badge badge-pill bg-danger">2.1.0</span>
         </a>
     </nav>
 
@@ -109,17 +110,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <!-- ADMIN MENU -->
                     <?php if ($_SESSION["login"] == "admin") { ?>
                         <!-- <li><a class="dropdown-item text-light" target="_blank" href="/almacen">Almacén</a></li>
-                        <li><a class="dropdown-item text-light" target="_blank" href="form-cliente.php">Formulario Cliente</a></li>
-                        <li><a class="dropdown-item text-light" href="totalventas">Total Ventas</a></li> -->
+                        <li><a class="dropdown-item text-light" target="_blank" href="form-cliente.php">Formulario Cliente</a></li> -->
+                        <li><a class="dropdown-item text-light" href="totalventas">Total Ventas</a></li>
                         <li><a class="dropdown-item text-light" href="user-admin">Usuarios</a></li>
                         <li><a class="dropdown-item text-light" href="infoClientes">Exportar Clientes</a></li>
                         <li><a class="dropdown-item text-light" href="infoOrdenes">Exportar Ordenes</a></li>
                         <li><a class="dropdown-item text-light" href="referencias">Códigos</a></li>
                         <li><a class="dropdown-item text-light" href="imageManager">Gestionar Fotos</a></li>
                         <li><a class="dropdown-item text-light" href="entregas">Entregas</a></li>
-                        <!-- <li><a class="dropdown-item text-light" href="/formulario_v14">v1.14</a></li>
-                        <li><a class="dropdown-item text-light" href="/formulario_v13">v1.13</a></li> -->
                         <li><a class="dropdown-item text-light" href="errores">Error Log</a></li>
+                        <li><a class="dropdown-item text-light" href="historial">Historial</a></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
@@ -160,17 +160,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ?>
     </div>
     <!-- Toast Container -->
-    <div class="toast-container position-static" id="toastContainer">
-        <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
-            <div id="errorToast" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="d-flex">
-                    <div class="toast-body" id="toastMessage">
-                    </div>
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" id="toastContainer"></div>
 </body>
 <!-- Bootstrap JS Bundle -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

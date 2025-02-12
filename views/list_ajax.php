@@ -1,6 +1,35 @@
 <div class="text-light">
     <div class="row mb-2">
         <div class="col-12">
+            <!-- SEARCH -->
+            <div class="row">
+                <div class="col-12 my-2">
+                    <div class="searchBox mt-2">
+                        <input onkeyup="search(this.value)" onkeydown="search(this.value)" class="searchInput w-100" type="text" name="search" placeholder="Buscar... (Dispositivo, Id, Servicio...)">
+                        <button class="searchButton">
+                            <i class="bi bi-search" style="font-size: large;"></i>
+                        </button>
+                    </div>
+                </div>
+                <!-- LOCALES -->
+                <?php if ($_SESSION["login"] == "tecnico" || $_SESSION["login"] == "admin") { ?>
+                <div class="radio-inputs mx-auto col-12 col-lg-4 my-2">
+                    <label class="radio">
+                        <input name="local" type="radio" onchange="updateSession(this.value)" value="Todo" <?php echo $_SESSION["local"] == null ? 'checked' : '' ?>>
+                        <span class="name">Todo</span>
+                    </label>
+                    <label class="radio">
+                        <input name="local" type="radio" onchange="updateSession(this.value)" value="Barcelona" <?php echo $_SESSION["local"] == "Barcelona" ? 'checked' : '' ?>>
+                        <span class="name">Barcelona</span>
+                    </label>
+                        
+                    <label class="radio">
+                        <input name="local" type="radio" onchange="updateSession(this.value)" value="Mataró" <?php echo $_SESSION["local"] == "Mataró" ? 'checked' : '' ?>>
+                        <span class="name">Mataró</span>
+                    </label>
+                </div>
+                <?php } ?>
+            </div>
             <!-- TABS -->
             <div class="row">
                 <ul class="nav nav-tabs bg-dark mt-2" id="list-tabs">
@@ -47,37 +76,8 @@
                     ?>
                 </select>
             </div>
-
-            <!-- SEARCH -->
-            <div class="row">
-                <div class="col-12 my-2">
-                    <div class="searchBox mt-2">
-                        <input onkeyup="search(this.value)" onkeydown="search(this.value)" class="searchInput w-100" type="text" name="search" placeholder="Buscar... (Dispositivo, Id, Servicio...)">
-                        <button class="searchButton">
-                            <i class="bi bi-search" style="font-size: large;"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
-    <?php if ($_SESSION["login"] == "tecnico" || $_SESSION["login"] == "admin") { ?>
-    <div class="radio-inputs mx-auto mb-2">
-        <label class="radio">
-            <input name="local" type="radio" onchange="updateSession(this.value)" value="Todo" <?php echo $_SESSION["local"] == null ? 'checked' : '' ?>>
-            <span class="name">Todo</span>
-        </label>
-        <label class="radio">
-            <input name="local" type="radio" onchange="updateSession(this.value)" value="Barcelona" <?php echo $_SESSION["local"] == "Barcelona" ? 'checked' : '' ?>>
-            <span class="name">Barcelona</span>
-        </label>
-            
-        <label class="radio">
-            <input name="local" type="radio" onchange="updateSession(this.value)" value="Mataró" <?php echo $_SESSION["local"] == "Mataró" ? 'checked' : '' ?>>
-            <span class="name">Mataró</span>
-        </label>
-    </div>
-    <?php } ?>
 
     <!-- LIST -->
     <div id="list-container">
@@ -173,9 +173,14 @@
                 id: id,
                 estado: estado
             },
-            dataType: 'json'
+            dataType: 'json',
+            success: function(data) {
+                query();
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX Error: ' + status + ' - ' + error);
+            }
         });
-        query();
     }
 
     function displayList(data) {
@@ -281,4 +286,7 @@
     $(document).ready(function() {
         query();
     });
+    
+    // RELOAD TICKETS EVERY 10s
+    setInterval(query, 10000);
 </script>

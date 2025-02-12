@@ -1,6 +1,6 @@
 <div class="container text-bg-dark p-5 rounded">
 <?php
-$logFilePath = 'controller/error_log.txt';
+$logFilePath = 'error_log.txt';
 
 if (file_exists($logFilePath)) {
     // Read the contents of the error log file into an array

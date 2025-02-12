@@ -1,8 +1,10 @@
 <?php
-require_once 'functions.php';
+require_once '../model/Database.php';
+require_once '../model/Ticket.php';
 session_start();
 
-$pdo = connect();
+$db = new Database();
+$pdo = $db->pdo;
 
 $call = $_GET["call"];
 
@@ -72,16 +74,12 @@ switch ($call) {
         $stmt->execute();
         break;
     case 3:
-        // $ticket = $db->fetchId($_GET["id"]);
-        // $ticket->estado = $_GET["estado"];
-        // $db->updateTicket($ticket);
         // CAMBIAR ESTADO
         if(isset($_GET["estado"])){
-            if(!isset($_GET["metodo"])){
-                cambiarEstado($_GET["id"], $_GET["estado"]);
-            } else {
-                cambiarEstado($_GET["id"],$_GET["estado"],$_GET["metodo"]);
-            }
+            $ticket = $db->fetchId($_GET["id"]);
+            $ticket->estado = $_GET["estado"];
+            $db->updateTicket($ticket);
+            $db->logChange($_SESSION["nombre"], "Estado cambiado a ".$ticket->pasos[$ticket->estado], $ticket->id);
         }
         break;
 }
@@ -90,14 +88,18 @@ switch ($call) {
 $var = "[";  // Initialize the array
 $first = true;  // Flag to track if it's the first element
 
-while ($q = $stmt->fetch(PDO::FETCH_ASSOC)) {
-    // Only add a comma if it's not the first item
-    if (!$first) {
-        $var .= ",";  // Add a comma before the next element
+if(isset($stmt)){
+    while ($q = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        // Only add a comma if it's not the first item
+        if (!$first) {
+            $var .= ",";  // Add a comma before the next element
+        }
+        // Append the current item
+        $var .= json_encode($q, JSON_UNESCAPED_UNICODE);
+        $first = false;  // After the first iteration, set $first to false
     }
-    // Append the current item
-    $var .= json_encode($q, JSON_UNESCAPED_UNICODE);
-    $first = false;  // After the first iteration, set $first to false
+} else {
+    $var .= json_encode($ticket, JSON_UNESCAPED_UNICODE);
 }
 
 $var .= "]";  // Close the JSON array

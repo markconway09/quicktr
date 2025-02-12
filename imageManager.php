@@ -1,6 +1,7 @@
 <?php
 require_once 'controller/functions.php';
-$pdo = connect();
+$db = new Database();
+$pdo = $db->pdo;
 $stmt = $pdo->prepare("SELECT * FROM `foto` f LEFT JOIN `info_orden` i ON (id_orden = i.id) ORDER BY fecha ASC");
 try {
     $stmt->execute();

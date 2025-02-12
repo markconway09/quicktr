@@ -44,6 +44,7 @@
             <input class="flex-fill" type="text" name="newuser" id="user" placeholder="Nombre usuario">
             <input class="flex-fill" type="password" name="newpass" id="pass" placeholder="Contraseña">
             <select class="flex-fill" name="local" id="local">
+                <option value="">(Sin local asignado)</option>
                 <option value="Barcelona">Barcelona</option>
                 <option value="Mataró">Mataró</option>
             </select>

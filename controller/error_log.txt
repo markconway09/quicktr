@@ -1,5 +1,0 @@
-[2025-02-03 17:18:09] SQLSTATE[23000]: Integrity constraint violation: 1452 Cannot add or update a child row: a foreign key constraint fails (`quicktrc_formulario`.`firma`, CONSTRAINT `fk_firma` FOREIGN KEY (`id_orden`) REFERENCES `info_orden` (`id`) ON DELETE CASCADE)
-[2025-02-03 17:20:01] SQLSTATE[23000]: Integrity constraint violation: 1452 Cannot add or update a child row: a foreign key constraint fails (`quicktrc_formulario`.`firma`, CONSTRAINT `fk_firma` FOREIGN KEY (`id_orden`) REFERENCES `info_orden` (`id`) ON DELETE CASCADE)
-[2025-02-03 17:20:52] SQLSTATE[23000]: Integrity constraint violation: 1452 Cannot add or update a child row: a foreign key constraint fails (`quicktrc_formulario`.`firma`, CONSTRAINT `fk_firma` FOREIGN KEY (`id_orden`) REFERENCES `info_orden` (`id`) ON DELETE CASCADE)
-[2025-02-03 17:21:51] SQLSTATE[23000]: Integrity constraint violation: 1452 Cannot add or update a child row: a foreign key constraint fails (`quicktrc_formulario`.`firma`, CONSTRAINT `fk_firma` FOREIGN KEY (`id_orden`) REFERENCES `info_orden` (`id`) ON DELETE CASCADE)
-[2025-02-03 17:24:50] Message could not be sent. Mailer Error: Invalid address:  (to): 

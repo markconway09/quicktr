@@ -9,22 +9,6 @@ function fetchData() {
             })
             .catch(error => console.error('Error fetching data:', error));
     }
-    function showNotification(message) {
-        // Check for notification permission
-        if (Notification.permission === 'granted') {
-            new Notification('Update', {
-                body: message,
-            });
-        } else if (Notification.permission !== 'denied') {
-            Notification.requestPermission().then(permission => {
-                if (permission === 'granted') {
-                    new Notification('Update', {
-                        body: message,
-                    });
-                }
-            });
-        }
-    }
     function showToast(message) {
         var toastContainer = document.getElementById('toastContainer');
     
@@ -40,7 +24,7 @@ function fetchData() {
         // Create a new toast element
         var toastDiv = document.createElement('div');
         toastDiv.innerHTML = `
-            <div class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast align-items-center text-bg-danger border-0 my-1" role="alert" aria-live="assertive" aria-atomic="true">
                 <div class="d-flex">
                     <div class="toast-body">
                         ${message}
@@ -54,7 +38,7 @@ function fetchData() {
         toastContainer.appendChild(toastDiv);
     
         // Initialize and show the toast
-        var toast = new bootstrap.Toast(toastDiv.querySelector('.toast'), { autohide: true });
+        var toast = new bootstrap.Toast(toastDiv.querySelector('.toast'), { autohide: false });
         toast.show();
     
         // Optional: Remove the toast from the DOM once it is hidden
