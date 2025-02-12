@@ -1,8 +1,9 @@
 <?php
 // LOGICA POR SI SE TIENE QUE RELLENAR ALGUNOS CAMPOS
 if(isset($_GET["id"])){
-    $datos=selectBD($_GET["id"]);
-    $servicio = explode(": ", $datos["servicio"]);
+    $db = new Database();
+    $datos=$db->fetchId($_GET["id"]);
+    $servicio = explode(": ", $datos->servicio);
 }
 $rellenar = false;
 if(isset($_GET["form"])){
@@ -14,7 +15,7 @@ if(isset($_GET["form"])){
 <div class="row">
     <div class="col-12 col-lg-2 mb-3">
         <div class="form-floating" style="z-index: 10;">
-            <select onchange="selectCliente(this.value)" id="cliente_select" class="form-select" name="cliente_select">
+            <select onchange="selectCliente(datos.value)" id="cliente_select" class="form-select" name="cliente_select">
                 <option value="">Buscar cliente...</option>
             </select>
         </div>
@@ -23,7 +24,7 @@ if(isset($_GET["form"])){
         <div class="form-floating">
             <input class="form-control" placeholder="Nombre" type="text" name="nombre" id="nombre"
                 <?php if($rellenar) : ?>
-                    value="<?php echo $datos["nombre"];?>"
+                    value="<?php echo $datos->nombre;?>"
                 <?php endif ?>
             >
             <label for="nombre">Nombre</label>
@@ -33,7 +34,7 @@ if(isset($_GET["form"])){
         <div class="form-floating">
             <input class="form-control" placeholder="DNI/NIF/NIE" type="text" name="doc" id="doc"
                 <?php if($rellenar) : ?>
-                    value="<?php echo $datos["documento"];?>"
+                    value="<?php echo $datos->documento;?>"
                 <?php endif ?>
             >
             <label for="doc">DNI/NIF/NIE</label>
@@ -45,7 +46,7 @@ if(isset($_GET["form"])){
         <div class="input-group">
             <?php if($rellenar) : ?>
                 <div class="form-floating">
-                    <input class="form-control" placeholder="Teléfono" type="tel" name="tel" id="tel" value="<?php echo $datos["telefono"];?>">
+                    <input class="form-control" placeholder="Teléfono" type="tel" name="tel" id="tel" value="<?php echo $datos->telefono;?>">
                     <label for="tel">Teléfono</label>
                 </div>
             <?php endif ?>
@@ -67,7 +68,7 @@ if(isset($_GET["form"])){
         <div class="form-floating">
             <input class="form-control" placeholder="Email" type="email" name="email" id="email"
                 <?php if($rellenar) : ?>
-                    value="<?php echo $datos["email"];?>"
+                    value="<?php echo $datos->email;?>"
                 <?php endif ?>
             >
             <label for="email">Email</label>
@@ -86,8 +87,8 @@ if(isset($_GET["form"])){
                 } else {
                 ?>
                 <?php if($rellenar) : ?>
-                    <option value="Barcelona" <?php if($datos["local"] == "Barcelona") echo "selected"; ?>>Barcelona</option>
-                    <option value="Mataró" <?php if($datos["local"] == "Mataró") echo "selected"; ?>>Mataró</option>
+                    <option value="Barcelona" <?php if($datos->local == "Barcelona") echo "selected"; ?>>Barcelona</option>
+                    <option value="Mataró" <?php if($datos->local == "Mataró") echo "selected"; ?>>Mataró</option>
                 <?php endif ?>
                 <?php if(!$rellenar) : ?>
                     <option value="Barcelona">Barcelona</option>

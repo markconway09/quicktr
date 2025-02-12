@@ -1,8 +1,9 @@
 <?php
 // LOGICA POR SI SE TIENE QUE RELLENAR ALGUNOS CAMPOS
 if(isset($_GET["id"])){
-    $datos=selectBD($_GET["id"]);
-    $servicio = explode(": ", $datos["servicio"]);
+    $db = new Database();
+    $datos=$db->fetchId($_GET["id"]);
+    $servicio = explode(": ", $datos->servicio);
 }
 $rellenar = false;
 if(isset($_GET["form"])){
@@ -66,13 +67,13 @@ if(isset($_GET["form"])){
         <div class="form-floating mb-3">
             <input class="form-control" placeholder="Dispositivo" type="text" name="dispositivo" id="dispositivo"
                 <?php if($rellenar) : ?>
-                    value="<?php echo $datos["nombre_dispositivo"]; ?>"
+                    value="<?php echo $datos->nombre_dispositivo; ?>"
                 <?php endif ?>
             >
             <label for="dispositivo">Dispositivo</label>
         </div>
         <div class="form-floating mb-3">
-            <textarea rows="7" style="height:100%;" class="form-control" placeholder="Descripción" name="motivo" id="motivo"><?php if($rellenar){ echo $datos["desc"];}?></textarea>
+            <textarea rows="7" style="height:100%;" class="form-control" placeholder="Descripción" name="motivo" id="motivo"><?php if($rellenar){ echo $datos->desc;}?></textarea>
             <label for="motivo">Descripción</label>
         </div>
     </div>
