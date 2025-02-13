@@ -244,6 +244,7 @@
                             <div class="progress-bar" style="width: `+((item.estado+1)*20)+`%; background-color:${colores[item.estado]}">${pasos[item.estado]}</div>
                         </div>
                     </div>
+            <?php if($_SESSION["login"] != "repartidor") { ?>
                     <div class="cardIcons">
                         <button class="cardBtn `+ (disableLeft ? 'disabled' : '') +`"
                                 onclick="updateStep(${item.id}, `+ (item.estado - 1) +`)"
@@ -262,6 +263,7 @@
                             <i class="bi bi-arrow-right"></i>
                         </button>
                     </div>
+            <?php } ?>
                 </div>
                 <div class="card-footer">
                     <small class="text-muted col-6">${item.fecha} · <span style="color:${colD}">${daysPassed}</span></small>

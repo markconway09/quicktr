@@ -141,9 +141,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <i class="bi bi-pencil-square"></i> <span class="d-sm-inline-block d-none">Formulario</span>
             </a>
             <?php } ?>
-            <?php if($_SESSION["login"] != "repartidor") { ?>
             <a href="list" class="button btn btn-dark mx-1 my-auto flex-fill">
                 <i class="bi bi-columns-gap"></i> <span class="d-sm-inline-block d-none">Lista</span>
+            </a>
+            <?php if($_SESSION["login"] == "repartidor") { ?>
+            <a href="entregas" class="button btn btn-dark mx-1 my-auto flex-fill">
+                <i class="bi bi-view-list"></i> <span class="d-sm-inline-block d-none">Entregas</span>
             </a>
             <?php } ?>
         </div>
