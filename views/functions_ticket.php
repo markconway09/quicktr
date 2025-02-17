@@ -48,19 +48,21 @@ if(isset($_POST["guardar-servicio"]))
     }
     $ticket->estado = 0;
     $ticket->garantia = $_POST["garantia"] ?? 0;
-    $id = $db->insertTicket($ticket);
-
-    // SUBIR FOTOS DEL FORM
-    if(isset($_FILES['images'])) $db->insertPhotos($id, $_FILES['images']);
-
-    // SUBIR FIRMA DEL FORM
-    if(isset($_POST["sign"])) $db->insertSignature($id, $_POST['sign']);
-
-    // ENVIAR CORREO AL TERMINAR
-    $ticket = $db->fetchId($id);
-    $ticket->sendEmail();
+    if(!$db->isDuplicate($ticket)){
+        $id = $db->insertTicket($ticket);
+        
+        // SUBIR FOTOS DEL FORM
+        if(isset($_FILES['images'])) $db->insertPhotos($id, $_FILES['images']);
     
-    $db->logChange($_SESSION["nombre"], "Nuevo ticket (#$id)", $id);
+        // SUBIR FIRMA DEL FORM
+        if(!empty($_POST["sign"])) $db->insertSignature($id, $_POST['sign']);
+    
+        // ENVIAR CORREO AL TERMINAR
+        $ticket = $db->fetchId($id);
+        $ticket->sendEmail();
+        
+        $db->logChange($_SESSION["nombre"], "Nuevo ticket (#$id)", $id);
+    }
 }
 
 

@@ -137,6 +137,28 @@ class Database
         }
     }
 
+    public function isDuplicate($ticket) {
+        $pdo = $this->pdo;
+        $stmt = $pdo->prepare("
+            SELECT nombre, nombre_dispositivo 
+            FROM info_orden 
+            WHERE fecha = :fecha AND nombre = :nombre AND nombre_dispositivo = :disp
+        ");
+        $stmt->bindParam(':fecha', $ticket->fecha);
+        $stmt->bindParam(':nombre', $ticket->nombre);
+        $stmt->bindParam(':disp', $ticket->nombre_dispositivo);
+    
+        try {
+            $stmt->execute();
+            // Fetch the first matching record
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            // Log or handle the error appropriately
+            logError($e->getMessage());
+            return false;
+        }
+    }
+
     public function insertPhotos($id, $photos)
     {
         $targetDir = "fotos/";

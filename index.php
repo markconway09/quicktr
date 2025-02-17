@@ -88,7 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <nav class="navbar navbar-light text-light" style="background-color:rgb(43,45,46);">
         <a class="navbar-brand mx-auto" href="">
             <img class="rounded mx-auto" src="LOGO.png" alt="logo" height="60">
-            <span class="badge badge-pill bg-danger">2.1.0</span>
+            <span class="badge badge-pill bg-danger">2.1.1</span>
         </a>
     </nav>
 

@@ -60,7 +60,7 @@
                     foreach ($filters as $key => $label) {
                         $activeClass = (isset($_GET["filter"]) && $_GET["filter"] == $key) ? 'active' : 'text-light';
                         echo '<li class="nav-item"><button data-filter="' . $key . '" class="nav-link ' . $activeClass . '"
-                                        data-bs-toggle="tooltip" data-bs-title="' . $tooltip[$key] . '">' . $label . '</button></li>';
+                                        data-bs-toggle="tooltip" data-bs-title="' . $tooltip[$key] . '">' . $label . ' <span id="badge-' . $key . '" class="badge text-bg-secondary">0</span></button></li>';
                     }
                     ?>
                 </ul>
@@ -96,6 +96,7 @@
         xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4 && xhr.status === 200) {
+                updateBadges();
                 query();
             }
         };
@@ -141,6 +142,36 @@
     function loadMore() {
         limit += 30;
         query();
+    }
+
+    $(document).ready(function() {
+        query();
+        updateBadges();
+    });
+
+    function updateBadges() {
+        // Loop through each filter and update its badge
+        <?php foreach ($filters as $key => $label): ?>
+            (function(key, label) {
+                $.ajax({
+                    url: 'controller/ajax_query.php',
+                    type: 'GET',
+                    data: {
+                        call: 2,
+                        search: "",
+                        filter: key
+                    },
+                    dataType: 'json',
+                    success: function(data) {
+                        // Update the badge with the count from the response
+                        document.getElementById('badge-' + key).innerHTML = data.length;
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('AJAX Error: ' + status + ' - ' + error);
+                    }
+                });
+            })('<?php echo $key; ?>', '<?php echo $label; ?>');
+        <?php endforeach; ?>
     }
 
     function query() {
@@ -285,10 +316,8 @@
 
         loadMore.innerHTML = '<button onclick="loadMore()" style="color:white;background-color:rgba(37,190,212,1);" class="btn w-100 mx-auto mt-2 mb-4">Mostrar más <i class="bi bi-chevron-down"></i></button>';
     }
-    $(document).ready(function() {
-        query();
-    });
     
     // RELOAD TICKETS EVERY 10s
     setInterval(query, 10000);
+    setInterval(updateBadges, 10000);
 </script>

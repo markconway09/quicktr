@@ -51,7 +51,8 @@ switch ($call) {
             $q .= " WHERE " . implode(" AND ", $wheres);
         }
 
-        $q .= " ORDER BY i.id DESC LIMIT :limit";
+        $q .= " ORDER BY i.id DESC";
+        if(isset($_GET["limit"])) $q .= " LIMIT :limit";
 
         $stmt = $pdo->prepare($q);
 
@@ -68,8 +69,10 @@ switch ($call) {
             $stmt->bindParam(':local', $_SESSION["local"], PDO::PARAM_STR);
         }
 
-        $limit = (int)$_GET["limit"] ?? 10;
-        $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+        if(isset($_GET["limit"])) {
+            $limit = (int)$_GET["limit"] ?? 10;
+            $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+        }
 
         $stmt->execute();
         break;

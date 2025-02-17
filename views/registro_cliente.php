@@ -15,7 +15,7 @@ if(isset($_GET["form"])){
 <div class="row">
     <div class="col-12 col-lg-2 mb-3">
         <div class="form-floating" style="z-index: 10;">
-            <select onchange="selectCliente(datos.value)" id="cliente_select" class="form-select" name="cliente_select">
+            <select onchange="selectCliente(this.value)" id="cliente_select" class="form-select" name="cliente_select">
                 <option value="">Buscar cliente...</option>
             </select>
         </div>
