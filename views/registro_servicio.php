@@ -87,14 +87,12 @@ if(isset($_GET["form"])){
     </div>
     <?php endif; ?>
 </div>
-<?php if(!$rellenar): ?>
 <div class="row mb-4">
     <div class="col-lg-3 mx-auto">
         <label for="imageUpload" class="btn btn-light w-100 h-100"><i class="bi bi-camera-fill"></i>&nbsp;Subir Fotos</label>
         <input type="file" id="imageUpload" accept="image/*" name="images[]" capture="environment" multiple class="d-none form-control form-control-lg">
     </div>
 </div>
-<?php endif; ?>
 <div class="row">
     <div class="col-12 col-md-4 mb-3">
         <div class="form-floating">

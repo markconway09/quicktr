@@ -62,6 +62,17 @@ class Ticket
         } else {
             $socio = null;
         }
+        if($this->local == "Barcelona") {
+            $d1 = "Carrer d'Entença, 117";
+            $d2 = "Local-1, 08015, Barcelona";
+            $dir = "Carrer d'Entença, 117, Local-1, 08015, Barcelona";
+            $telFirma = "933 496 389 - 606 46 59 79";
+        } else {
+            $d1 = "Ronda O'Donnell, 14-16";
+            $d2 = "08302, Mataró";
+            $dir = "Ronda O'Donnell, 14-16, 08302, Mataró";
+            $telFirma = "612 25 96 31";
+        }
     
         // ENVIAR CORREO
         $mail = new PHPMailer(true);
@@ -96,9 +107,8 @@ class Ticket
                             <div style="padding: 30px; border-bottom: 2px solid #007bff;">
                                 <img src="cid:logo_qtr" alt="logo" style="width: 240px; height: auto; margin: auto;">
                                 <p style="font-weight: bold;">QUICK T&R, S.L.</p>
-                                <p>Carrer de València, 235</p>
-                                <p>Principal, 1 Eixample</p>
-                                <p>08007 Barcelona</p>
+                                <p>'.$d1.'</p>
+                                <p>'.$d2.'</p>
                                 <p>Teléfono Barcelona: 933 496 389</p>
                                 <p>Whatsapp Barcelona: 606 46 59 79</p>
                                 <p>Whatsapp Mataró: 612 25 96 31</p>
@@ -130,6 +140,98 @@ class Ticket
                                 <p>IVA: ' . $this->iva . '%</p>
                                 <p><strong>Precio Total:</strong> ' . $this->precio_final . '€</p>
                             </div>
+                        </div>
+                        --
+                        <div class="pre">
+                            <table style="vertical-align: -webkit-baseline-middle; font-size: medium; font-family: Arial;" border="0" cellspacing="0" cellpadding="0">
+                            <tbody>
+                            <tr>
+                            <td>
+                            <table style="vertical-align: -webkit-baseline-middle; font-size: medium; font-family: Arial;" border="0" cellspacing="0" cellpadding="0">
+                            <tbody>
+                            <tr>
+                            <td style="vertical-align: top;">
+                            <table style="vertical-align: -webkit-baseline-middle; font-size: medium; font-family: Arial;" border="0" cellspacing="0" cellpadding="0">
+                            <tbody>
+                            <tr>
+                            <td style="text-align: center;"><img style="max-width: 130px; display: block;" src="https://quicktr.es/wp-content/uploads/2024/08/Recurso-12.png" width="130" /></td>
+                            </tr>
+                            </tbody>
+                            </table>
+                            </td>
+                            <td width="46">
+                            <div>&nbsp;</div>
+                            </td>
+                            <td style="padding: 0px; vertical-align: middle;">
+                            <h2 style="margin: 0px; font-size: 18px; color: #000000; font-weight: 600;">&nbsp;</h2>
+                            <div style="margin: 0px; font-weight: 500; color: #000000; font-size: 14px; line-height: 22px;"><strong>Quick T&amp;R Sociedad Limitada</strong></div>
+                            <table style="vertical-align: -webkit-baseline-middle; font-size: medium; font-family: Arial;" border="0" cellspacing="0" cellpadding="0">
+                            <tbody>
+                            <tr style="vertical-align: middle;">
+                            <td style="vertical-align: middle;" width="30">
+                            <table style="vertical-align: -webkit-baseline-middle; font-size: medium; font-family: Arial;" border="0" cellspacing="0" cellpadding="0">
+                            <tbody>
+                            <tr>
+                            <td style="vertical-align: bottom;"><span style="display: inline-block; background-color: #f86295;"><img style="display: block; background-color: #f86295;" src="https://cdn2.hubspot.net/hubfs/53/tools/email-signature-generator/icons/phone-icon-2x.png" alt="mobilePhone" width="13" /></span></td>
+                            </tr>
+                            </tbody>
+                            </table>
+                            </td>
+                            <td style="padding: 0px; color: #000000;"><span style="font-size: 14px;">'.$telFirma.'</span></td>
+                            </tr>
+                            <tr style="vertical-align: middle;">
+                            <td style="vertical-align: middle;" width="30">
+                            <table style="vertical-align: -webkit-baseline-middle; font-size: medium; font-family: Arial;" border="0" cellspacing="0" cellpadding="0">
+                            <tbody>
+                            <tr>
+                            <td style="vertical-align: bottom;"><span style="display: inline-block; background-color: #f86295;"><img style="display: block; background-color: #f86295;" src="https://cdn2.hubspot.net/hubfs/53/tools/email-signature-generator/icons/email-icon-2x.png" alt="emailAddress" width="13" /></span></td>
+                            </tr>
+                            </tbody>
+                            </table>
+                            </td>
+                            <td style="padding: 0px;"><a style="text-decoration: none; color: #000000; font-size: 14px;" href="mailto:info@quicktr.es"><span>info@quicktr.es</span></a></td>
+                            </tr>
+                            <tr style="vertical-align: middle;">
+                            <td style="vertical-align: middle;" width="30">
+                            <table style="vertical-align: -webkit-baseline-middle; font-size: medium; font-family: Arial;" border="0" cellspacing="0" cellpadding="0">
+                            <tbody>
+                            <tr>
+                            <td style="vertical-align: bottom;"><span style="display: inline-block; background-color: #f86295;"><img style="display: block; background-color: #f86295;" src="https://cdn2.hubspot.net/hubfs/53/tools/email-signature-generator/icons/link-icon-2x.png" alt="website" width="13" /></span></td>
+                            </tr>
+                            </tbody>
+                            </table>
+                            </td>
+                            <td style="padding: 0px;"><a style="text-decoration: none; color: #000000; font-size: 14px;" href="https://quicktr.es/"><span>https://quicktr.es/</span></a></td>
+                            </tr>
+                            <tr style="vertical-align: middle;">
+                            <td style="vertical-align: middle;" width="30">
+                            <table style="vertical-align: -webkit-baseline-middle; font-size: medium; font-family: Arial;" border="0" cellspacing="0" cellpadding="0">
+                            <tbody>
+                            <tr>
+                            <td style="vertical-align: bottom;"><span style="display: inline-block; background-color: #f86295;"><img style="display: block; background-color: #f86295;" src="https://cdn2.hubspot.net/hubfs/53/tools/email-signature-generator/icons/address-icon-2x.png" alt="address" width="13" /></span></td>
+                            </tr>
+                            </tbody>
+                            </table>
+                            </td>
+                            <td style="padding: 0px;"><span style="font-size: 14px; color: #000000;"><span>'.$dir.'</span></span></td>
+                            </tr>
+                            </tbody>
+                            </table>
+                            <table style="vertical-align: -webkit-baseline-middle; font-size: medium; font-family: Arial;" border="0" cellspacing="0" cellpadding="0">
+                            <tbody>
+                            <tr>
+                            <td height="30">&nbsp;</td>
+                            </tr>
+                            </tbody>
+                            </table>
+                            </td>
+                            </tr>
+                            </tbody>
+                            </table>
+                            </td>
+                            </tr>
+                            </tbody>
+                            </table>
                         </div>
                     </body>
             ';

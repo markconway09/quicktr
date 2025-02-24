@@ -96,7 +96,6 @@
         xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4 && xhr.status === 200) {
-                updateBadges();
                 query();
             }
         };
@@ -146,7 +145,6 @@
 
     $(document).ready(function() {
         query();
-        updateBadges();
     });
 
     function updateBadges() {
@@ -158,7 +156,7 @@
                     type: 'GET',
                     data: {
                         call: 2,
-                        search: "",
+                        search: parameters,
                         filter: key
                     },
                     dataType: 'json',
@@ -193,6 +191,7 @@
                 console.error('AJAX Error: ' + status + ' - ' + error);
             }
         });
+        updateBadges();
     }
 
     function updateStep(id, estado){
@@ -319,5 +318,4 @@
     
     // RELOAD TICKETS EVERY 10s
     setInterval(query, 10000);
-    setInterval(updateBadges, 10000);
 </script>
