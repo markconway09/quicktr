@@ -346,6 +346,54 @@ echo '</div>';
         ?>
     </div>
 </div>
+<?php
+if ($_SESSION["login"] == "admin") {
+    ?>
+    <hr>
+    <div class="row">
+        <b class="text-center fs-3"><a href="entregas">Entregas <i class="bi bi-arrow-right"></i></a></b>
+    <?php
+    // ENTREGAS
+
+    $estados = ["PENDIENTE", "EN CAMINO", "ENTREGADO"];
+    $colores = ["#ed7279", "#f0de92", "#8bfa82"];
+    $pdo = $db->pdo;
+    $stmt = $pdo->prepare("SELECT * from entregas WHERE id_orden = :id ORDER BY id DESC");
+    $stmt->bindParam(":id", $ticket->id);
+    try {
+        $stmt->execute();
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Check if results are not empty
+        if (count($results) > 0) {
+            echo "<table border='1' class='table table-secondary'>";
+            echo "<thead><tr><th>Fecha</th><th>Nombre</th><th>Local</th><th>Estado</th></tr></thead>";
+            echo "<tbody>";
+
+            // Loop through results and display each row
+            foreach ($results as $row) {
+                echo "<tr>";
+                echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['fecha']) . "</td>";
+                echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['nombre']) . "</td>";
+                echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['destino']) . "</td>";
+                echo "<td style='background:" . $colores[$row["estado"]] . "'>" . $estados[$row['estado']] . "</td>";
+                echo "</tr>";
+            }
+            echo "</tbody></table>";
+        }
+    } catch (PDOException $e) {
+        logError($e->getMessage());
+    }
+
+    // END ENTREGAS
+    ?>
+    </div>
+    <?php
+}
+?>
+
+<!-- /////////////////////////////////////////////// -->
+
 <!-- IMAGENES -->
 <div class="modal fade" id="fotos" tabindex="-1" aria-labelledby="fotosLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
