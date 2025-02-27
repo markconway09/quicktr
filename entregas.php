@@ -84,22 +84,22 @@
         }
     }
     // END CHANGE
-    if (isset($_POST["id_orden"])) {
-        $id = $_POST["id"];
-        $id_orden = $_POST["id_orden"];
-        $db = new Database();
-        $pdo = $db->pdo;
-        $stmt = $pdo->prepare("UPDATE entregas SET id_orden = :id_orden WHERE id = :id");
-        $stmt->bindParam(':id', $id);
-        $stmt->bindParam(':id_orden', $id_orden);
-        try {
-            $stmt->execute();
-        } catch (PDOException $e) {
-            logError($e->getMessage());
-        }
-    }
+    
     // AGREGAR ID ASSOCIADO
-
+        if (isset($_POST["id_orden"])) {
+            $id = $_POST["id"];
+            $id_orden = $_POST["id_orden"];
+            $db = new Database();
+            $pdo = $db->pdo;
+            $stmt = $pdo->prepare("UPDATE entregas SET id_orden = :id_orden WHERE id = :id");
+            $stmt->bindParam(':id', $id);
+            $stmt->bindParam(':id_orden', $id_orden);
+            try {
+                $stmt->execute();
+            } catch (PDOException $e) {
+                logError($e->getMessage());
+            }
+        }
     // END ID
 
     $estados = ["PENDIENTE", "EN CAMINO", "ENTREGADO"];

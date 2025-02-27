@@ -13,21 +13,21 @@
                 </div>
                 <!-- LOCALES -->
                 <?php if ($_SESSION["login"] == "tecnico" || $_SESSION["login"] == "admin") { ?>
-                <div class="radio-inputs mx-auto col-12 col-lg-4 my-2">
-                    <label class="radio">
-                        <input name="local" type="radio" onchange="updateSession(this.value)" value="Todo" <?php echo $_SESSION["local"] == null ? 'checked' : '' ?>>
-                        <span class="name">Todo</span>
-                    </label>
-                    <label class="radio">
-                        <input name="local" type="radio" onchange="updateSession(this.value)" value="Barcelona" <?php echo $_SESSION["local"] == "Barcelona" ? 'checked' : '' ?>>
-                        <span class="name">Barcelona</span>
-                    </label>
-                        
-                    <label class="radio">
-                        <input name="local" type="radio" onchange="updateSession(this.value)" value="Mataró" <?php echo $_SESSION["local"] == "Mataró" ? 'checked' : '' ?>>
-                        <span class="name">Mataró</span>
-                    </label>
-                </div>
+                    <div class="radio-inputs mx-auto col-12 col-lg-4 my-2">
+                        <label class="radio">
+                            <input name="local" type="radio" onchange="updateSession(this.value)" value="Todo" <?php echo $_SESSION["local"] == null ? 'checked' : '' ?>>
+                            <span class="name">Todo</span>
+                        </label>
+                        <label class="radio">
+                            <input name="local" type="radio" onchange="updateSession(this.value)" value="Barcelona" <?php echo $_SESSION["local"] == "Barcelona" ? 'checked' : '' ?>>
+                            <span class="name">Barcelona</span>
+                        </label>
+
+                        <label class="radio">
+                            <input name="local" type="radio" onchange="updateSession(this.value)" value="Mataró" <?php echo $_SESSION["local"] == "Mataró" ? 'checked' : '' ?>>
+                            <span class="name">Mataró</span>
+                        </label>
+                    </div>
                 <?php } ?>
             </div>
             <!-- TABS -->
@@ -94,14 +94,15 @@
         var xhr = new XMLHttpRequest();
         xhr.open("POST", "index.php", true);
         xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-        xhr.onreadystatechange = function () {
+        xhr.onreadystatechange = function() {
             if (xhr.readyState === 4 && xhr.status === 200) {
                 query();
             }
         };
         xhr.send("valueLocal=" + encodeURIComponent(selectedValue));
     }
-    function selectFilter(f){
+
+    function selectFilter(f) {
         filter = f;
         search();
     }
@@ -150,25 +151,25 @@
     function updateBadges() {
         // Loop through each filter and update its badge
         <?php foreach ($filters as $key => $label): ?>
-            (function(key, label) {
-                $.ajax({
-                    url: 'controller/ajax_query.php',
-                    type: 'GET',
-                    data: {
-                        call: 2,
-                        search: parameters,
-                        filter: key
-                    },
-                    dataType: 'json',
-                    success: function(data) {
-                        // Update the badge with the count from the response
-                        document.getElementById('badge-' + key).innerHTML = data.length;
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('AJAX Error: ' + status + ' - ' + error);
-                    }
-                });
-            })('<?php echo $key; ?>', '<?php echo $label; ?>');
+                (function(key, label) {
+                    $.ajax({
+                        url: 'controller/ajax_query.php',
+                        type: 'GET',
+                        data: {
+                            call: 2,
+                            search: parameters,
+                            filter: key
+                        },
+                        dataType: 'json',
+                        success: function(data) {
+                            // Update the badge with the count from the response
+                            document.getElementById('badge-' + key).innerHTML = data.length;
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('AJAX Error: ' + status + ' - ' + error);
+                        }
+                    });
+                })('<?php echo $key; ?>', '<?php echo $label; ?>');
         <?php endforeach; ?>
     }
 
@@ -194,7 +195,7 @@
         updateBadges();
     }
 
-    function updateStep(id, estado){
+    function updateStep(id, estado) {
         $.ajax({
             url: 'controller/ajax_query.php',
             type: 'GET',
@@ -266,34 +267,36 @@
                     <p class="card-text"><i class="bi bi-wrench-adjustable"></i> ${servicio}</p>
                     <p class="card-text"><i class="bi bi-phone-fill"></i> ${nombreDispositivo}</p>
                     <p class="card-text"><i class="bi bi-file-text-fill"></i> ${desc}</p>
-                    <?php if($_SESSION["login"] != "tecnico") { ?>
+                    <?php if ($_SESSION["login"] != "tecnico") { ?>
                     <p class="card-text"><i class="bi bi-currency-exchange"></i> ${item.precio}€ (+ IVA ${item.iva}%) = <b>${item['precio-final']}€</b></p>
                     <?php } ?>
                     <div class="mb-3">
                         <div class="progress" role="progressbar" aria-label="Basic example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                            <div class="progress-bar" style="width: `+((item.estado+1)*20)+`%; background-color:${colores[item.estado]}">${pasos[item.estado]}</div>
+                            <div class="progress-bar" style="width: ` + ((item.estado + 1) * 20) + `%; background-color:${colores[item.estado]}">${pasos[item.estado]}</div>
                         </div>
                     </div>
-            <?php if($_SESSION["login"] != "repartidor") { ?>
                     <div class="cardIcons">
-                        <button class="cardBtn `+ (disableLeft ? 'disabled' : '') +`"
-                                onclick="updateStep(${item.id}, `+ (item.estado - 1) +`)"
-                                style="pointer-events: `+ (disableLeft ? 'none' : 'auto') +`;
-                                color: white; background-color:`+ (disableLeft ? '' : colores[item.estado - 1]) +`">
+            <?php if ($_SESSION["login"] != "repartidor") { ?>
+                        <button class="cardBtn ` + (disableLeft ? 'disabled' : '') + `"
+                                onclick="updateStep(${item.id}, ` + (item.estado - 1) + `)"
+                                style="pointer-events: ` + (disableLeft ? 'none' : 'auto') + `;
+                                color: white; background-color:` + (disableLeft ? '' : colores[item.estado - 1]) + `">
                             <i class="bi bi-arrow-left"></i>
                         </button>
+            <?php }  ?>
                         <a class="cardBtn" href="list&id=${item.id}"
                                 style="color:white;background-color:#25BED4">
                             <i class="bi bi-info-circle"></i>
                         </a>
-                        <button class="cardBtn `+ (disableRight ? 'disabled' : '') +`"
-                                onclick="updateStep(${item.id}, `+ (item.estado + 1) +`)"
-                                style="pointer-events: `+ (disableRight ? 'none' : 'auto') +`;
-                                color: white; background-color:`+ (disableRight ? '' : colores[item.estado + 1]) +`">
+            <?php if ($_SESSION["login"] != "repartidor") { ?>
+                        <button class="cardBtn ` + (disableRight ? 'disabled' : '') + `"
+                                onclick="updateStep(${item.id}, ` + (item.estado + 1) + `)"
+                                style="pointer-events: ` + (disableRight ? 'none' : 'auto') + `;
+                                color: white; background-color:` + (disableRight ? '' : colores[item.estado + 1]) + `">
                             <i class="bi bi-arrow-right"></i>
                         </button>
+            <?php }  ?>
                     </div>
-            <?php } ?>
                 </div>
                 <div class="card-footer">
                     <small class="text-muted col-6">${item.fecha} · <span style="color:${colD}">${daysPassed}</span></small>
@@ -315,7 +318,7 @@
 
         loadMore.innerHTML = '<button onclick="loadMore()" style="color:white;background-color:rgba(37,190,212,1);" class="btn w-100 mx-auto mt-2 mb-4">Mostrar más <i class="bi bi-chevron-down"></i></button>';
     }
-    
+
     // RELOAD TICKETS EVERY 10s
     setInterval(query, 10000);
 </script>
