@@ -110,17 +110,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <ul class="dropdown-menu text-bg-dark">
                     <!-- ADMIN MENU -->
                     <?php if ($_SESSION["login"] == "admin") { ?>
-                        <!-- <li><a class="dropdown-item text-light" target="_blank" href="/almacen">Almacén</a></li>
-                        <li><a class="dropdown-item text-light" target="_blank" href="form-cliente.php">Formulario Cliente</a></li> -->
-                        <li><a class="dropdown-item text-light" href="totalventas">Total Ventas</a></li>
-                        <li><a class="dropdown-item text-light" href="user-admin">Usuarios</a></li>
-                        <li><a class="dropdown-item text-light" href="infoClientes">Exportar Clientes</a></li>
-                        <li><a class="dropdown-item text-light" href="infoOrdenes">Exportar Ordenes</a></li>
-                        <li><a class="dropdown-item text-light" href="referencias">Códigos</a></li>
-                        <li><a class="dropdown-item text-light" href="imageManager">Gestionar Fotos</a></li>
-                        <li><a class="dropdown-item text-light" href="entregas">Entregas</a></li>
-                        <li><a class="dropdown-item text-light" href="errores">Errores</a></li>
-                        <li><a class="dropdown-item text-light" href="historial">Historial</a></li>
+                        <li><a class="dropdown-item text-light" href="totalventas"><i class="bi bi-calculator"></i> Total Ventas</a></li>
+                        <li><a class="dropdown-item text-light" href="user-admin"><i class="bi bi-people"></i> Usuarios</a></li>
+                        <li><a class="dropdown-item text-light" href="infoClientes"><i class="bi bi-person-up"></i> Exportar Clientes</a></li>
+                        <li><a class="dropdown-item text-light" href="infoOrdenes"><i class="bi bi-database-up"></i> Exportar Ordenes</a></li>
+                        <li><a class="dropdown-item text-light" href="referencias"><i class="bi bi-upc-scan"></i> Códigos</a></li>
+                        <li><a class="dropdown-item text-light" href="imageManager"><i class="bi bi-image"></i> Gestionar Fotos</a></li>
+                        <li><a class="dropdown-item text-light" href="entregas"><i class="bi bi-box-seam"></i> Entregas</a></li>
+                        <li><a class="dropdown-item text-light" href="errores"><i class="bi bi-exclamation-octagon"></i> Errores</a></li>
+                        <li><a class="dropdown-item text-light" href="historial"><i class="bi bi-clock-history"></i> Historial</a></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
