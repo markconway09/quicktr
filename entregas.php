@@ -6,13 +6,13 @@
     <!-- FORMULARIO -->
     <form action="" method="POST">
         <div class="row">
-            <div class="col-5">
+            <div class="col-4">
                 <div class="form-floating">
                     <input class="form-control" placeholder="Nombre" type="text" id="nombre" name="nombre" required>
                     <label for="nombre" class="text-dark">Nombre</label>
                 </div>
             </div>
-            <div class="col-7">
+            <div class="col-4">
                 <div class="form-floating">
                     <select class="form-control" id="a" name="a" required>
                         <option value="" disabled selected>-Seleccionar Destino-</option>
@@ -24,6 +24,12 @@
                     <label for="a" class="text-dark">Local</label>
                 </div>
             </div>
+            <div class="col-4">
+                <div class="form-floating">
+                    <input class="form-control" placeholder="Precio" type="text" id="precio" name="precio" required>
+                    <label for="precio" class="text-dark">Precio</label>
+                </div>
+            </div>
         </div>
         <div class="row mt-2 mx-auto">
             <button type="submit" name="insert_entrega" class="btn btn-secondary" style="height: 100%;">Insertar</button>
@@ -31,6 +37,7 @@
     </form>
     <!-- END FORMULARIO -->
     <hr>
+    <h1>Pendientes</h1>
     <?php
     require_once 'controller/functions.php';
 
@@ -40,8 +47,9 @@
         $fecha = date("Y-m-d");
         $db = new Database();
         $pdo = $db->pdo;
-        $stmt = $pdo->prepare("INSERT INTO entregas VALUES (null, :nombre, :loc, 0, :fecha, null)");
+        $stmt = $pdo->prepare("INSERT INTO insumos VALUES (null, :fecha, :nombre, :precio, :loc, 1, null)");
         $stmt->bindParam(':nombre', $_POST["nombre"]);
+        $stmt->bindParam(':precio', $_POST["precio"]);
         $stmt->bindParam(':loc', $_POST["a"]);
         $stmt->bindParam(':fecha', $fecha);
         try {
@@ -55,10 +63,10 @@
     // CHANGE ESTADO
     if (isset($_POST["mas_estado"])) {
         $estado = $_POST["estado"] + 1;
-        if ($estado <= 2) {
+        if ($estado <= 3) {
             $db = new Database();
             $pdo = $db->pdo;
-            $stmt = $pdo->prepare("UPDATE entregas SET estado = :estado WHERE id = :id");
+            $stmt = $pdo->prepare("UPDATE insumos SET estado = :estado WHERE id = :id");
             $stmt->bindParam(':id', $_POST["id"]);
             $stmt->bindParam(':estado', $estado);
             try {
@@ -73,7 +81,7 @@
         if ($estado >= 0) {
             $db = new Database();
             $pdo = $db->pdo;
-            $stmt = $pdo->prepare("UPDATE entregas SET estado = :estado WHERE id = :id");
+            $stmt = $pdo->prepare("UPDATE insumos SET estado = :estado WHERE id = :id");
             $stmt->bindParam(':id', $_POST["id"]);
             $stmt->bindParam(':estado', $estado);
             try {
@@ -91,7 +99,7 @@
             $id_orden = $_POST["id_orden"];
             $db = new Database();
             $pdo = $db->pdo;
-            $stmt = $pdo->prepare("UPDATE entregas SET id_orden = :id_orden WHERE id = :id");
+            $stmt = $pdo->prepare("UPDATE insumos SET id_orden = :id_orden WHERE id = :id");
             $stmt->bindParam(':id', $id);
             $stmt->bindParam(':id_orden', $id_orden);
             try {
@@ -102,20 +110,17 @@
         }
     // END ID
 
-    $estados = ["PENDIENTE", "EN CAMINO", "ENTREGADO"];
-    $colores = ["#ed7279", "#f0de92", "#8bfa82"];
+    $estados = ["","PENDIENTE", "EN CAMINO", "ENTREGADO"];
+    $colores = ["", "#ed7279", "#f0de92", "#8bfa82"];
 
     $db = new Database();
-    $pdo = $db->pdo;
-    $stmt = $pdo->prepare("SELECT * from entregas WHERE estado = 0 OR estado = 1 ORDER BY id DESC");
     try {
-        $stmt->execute();
-        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $results = $db->fetchInsumos();
 
         // Check if results are not empty
         if (count($results) > 0) {
             echo "<table border='1' class='table table-secondary'>";
-            echo "<thead><tr><th>Fecha</th><th>Nombre</th><th>Local</th><th>ID Orden</th><th colspan=2>Estado</th></tr></thead>";
+            echo "<thead><tr><th>Fecha</th><th>Nombre</th><th>Precio</th><th>Local</th><th>ID Orden</th><th colspan=2>Estado</th></tr></thead>";
             echo "<tbody>";
 
             // Loop through results and display each row
@@ -123,7 +128,8 @@
                 echo "<tr>";
                 echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['fecha']) . "</td>";
                 echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['nombre']) . "</td>";
-                echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['destino']) . "</td>";
+                echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['precio']) . " €</td>";
+                echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['local']) . "</td>";
 
                 if ($row["id_orden"] === null) {
                     echo "<td style='background:" . $colores[$row["estado"]] . "'>";
@@ -158,96 +164,68 @@
     } catch (PDOException $e) {
         logError($e->getMessage());
     }
-    $stmt = $pdo->prepare("SELECT * from entregas WHERE estado = 2 AND id_orden IS NULL ORDER BY id DESC");
-    try {
-        $stmt->execute();
-        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        // Check if results are not empty
-        if (count($results) > 0) {
-            echo "<table border='1' class='table table-secondary'>";
-            echo "<thead><tr><th>Fecha</th><th>Nombre</th><th>Local</th><th>ID Orden</th><th colspan=2>Estado</th></tr></thead>";
-            echo "<tbody>";
-
-            // Loop through results and display each row
-            foreach ($results as $row) {
-                echo "<tr>";
-                echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['fecha']) . "</td>";
-                echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['nombre']) . "</td>";
-                echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['destino']) . "</td>";
-
-                if ($row["id_orden"] === null) {
-                    echo "<td style='background:" . $colores[$row["estado"]] . "'>";
-                    ?>
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="setId(<?php echo $row['id']; ?>)">
-                        Asociar Ticket
-                    </button>
-                    <form action="" method="POST" style="display: inline;">
-                        <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
-                        <input type="hidden" name="id_orden" value="0">
-                        <button type="submit" class="btn btn-danger">
-                            <i class="bi bi-x-lg"></i>
-                        </button>
-                    </form>
-                    <?php
-                    echo "</td>";
-                } else echo "<td style='background:" . $colores[$row["estado"]] . "'>" . ($row['id_orden'] == 0?"-":$row['id_orden']) . "</td>";
-
-                echo "<td style='background:" . $colores[$row["estado"]] . "'>" . $estados[$row['estado']] . "</td>";
-                echo "<td style='background:" . $colores[$row["estado"]] . "'>";
-                echo "<form method='post' action=''>";
-                echo "<input type='hidden' name='id' value='" . $row['id'] . "'>";
-                echo "<input type='hidden' name='estado' value='" . $row['estado'] . "'>";
-                echo "<button type='submit' name='menos_estado' class='btn btn-primary'>&lt;</button>&nbsp;";
-                echo "<button type='submit' name='mas_estado' class='btn btn-primary'>&gt;</button>";
-                echo "</form>";
-                echo "</td>";
-                echo "</tr>";
-            }
-            echo "</tbody></table>";
-        }
-    } catch (PDOException $e) {
-        logError($e->getMessage());
-    }
-    $stmt = $pdo->prepare("SELECT * from entregas WHERE estado = 2 AND id_orden IS NOT NULL ORDER BY id DESC LIMIT 15");
-    try {
-        $stmt->execute();
-        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        // Check if results are not empty
-        if (count($results) > 0) {
-            echo "<table border='1' class='table table-secondary'>";
-            echo "<thead><tr><th>Fecha</th><th>Nombre</th><th>Local</th><th>ID Orden</th><th colspan=2>Estado</th></tr></thead>";
-            echo "<tbody>";
-
-            // Loop through results and display each row
-            foreach ($results as $row) {
-                echo "<tr>";
-                echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['fecha']) . "</td>";
-                echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['nombre']) . "</td>";
-                echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['destino']) . "</td>";
-
-                echo "<td style='background:" . $colores[$row["estado"]] . "'>" . ($row['id_orden'] == 0?"-":$row['id_orden']) . "</td>";
-
-                echo "<td style='background:" . $colores[$row["estado"]] . "'>" . $estados[$row['estado']] . "</td>";
-                echo "<td style='background:" . $colores[$row["estado"]] . "'>";
-                echo "<form method='post' action=''>";
-                echo "<input type='hidden' name='id' value='" . $row['id'] . "'>";
-                echo "<input type='hidden' name='estado' value='" . $row['estado'] . "'>";
-                echo "<button type='submit' name='menos_estado' class='btn btn-primary'>&lt;</button>&nbsp;";
-                echo "<button type='submit' name='mas_estado' class='btn btn-primary'>&gt;</button>";
-                echo "</form>";
-                echo "</td>";
-                echo "</tr>";
-            }
-            echo "</tbody></table>";
-        }
-    } catch (PDOException $e) {
-        logError($e->getMessage());
-    }
+    
     ?>
-    </tbody>
-    </table>
+    <hr>
+    <h1>Entregados</h1>
+    <?php
+
+    try {
+        $pdo = $db->pdo;
+        $stmt = $pdo->prepare("SELECT * FROM `insumos` WHERE estado > 2 ORDER BY id DESC");
+        $stmt->execute();
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Check if results are not empty
+        if (count($results) > 0) {
+            echo "<table border='1' class='table table-secondary'>";
+            echo "<thead><tr><th>Fecha</th><th>Nombre</th><th>Precio</th><th>Local</th><th>ID Orden</th><th colspan=2>Estado</th></tr></thead>";
+            echo "<tbody>";
+
+            // Loop through results and display each row
+            foreach ($results as $row) {
+                echo "<tr>";
+                echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['fecha']) . "</td>";
+                echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['nombre']) . "</td>";
+                echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['precio']) . " €</td>";
+                echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['local']) . "</td>";
+
+                if ($row["id_orden"] === null) {
+                    echo "<td style='background:" . $colores[$row["estado"]] . "'>";
+                    ?>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="setId(<?php echo $row['id']; ?>)">
+                        Asociar Ticket
+                    </button>
+                    <form action="" method="POST" style="display: inline;">
+                        <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
+                        <input type="hidden" name="id_orden" value="0">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-x-lg"></i>
+                        </button>
+                    </form>
+                    <?php
+                    echo "</td>";
+                } else echo "<td style='background:" . $colores[$row["estado"]] . "'>" . ($row['id_orden'] == 0?"-":$row['id_orden']) . "</td>";
+
+                echo "<td style='background:" . $colores[$row["estado"]] . "'>" . $estados[$row['estado']] . "</td>";
+                echo "<td style='background:" . $colores[$row["estado"]] . "'>";
+                echo "<form method='post' action=''>";
+                echo "<input type='hidden' name='id' value='" . $row['id'] . "'>";
+                echo "<input type='hidden' name='estado' value='" . $row['estado'] . "'>";
+                echo "<button type='submit' name='menos_estado' class='btn btn-primary'>&lt;</button>&nbsp;";
+                echo "<button type='submit' name='mas_estado' class='btn btn-primary'>&gt;</button>";
+                echo "</form>";
+                echo "</td>";
+                echo "</tr>";
+            }
+            echo "</tbody></table>";
+        }
+    } catch (PDOException $e) {
+        logError($e->getMessage());
+    }
+    
+    
+    ?>
 </div>
 <!-- Modal -->
 <div class="modal modal-lg fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">

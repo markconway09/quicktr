@@ -9,10 +9,10 @@ $pdo = $db->pdo;
 
 // Prepare and execute the query
 if(isset($_GET["dia"])&&$_GET["dia"] == 1){
-    $stmt = $pdo->prepare("SELECT * FROM entregas WHERE fecha = :fecha");
+    $stmt = $pdo->prepare("SELECT * FROM insumos WHERE fecha = :fecha");
     $stmt->bindParam(":fecha", $hoy);
 } else {
-    $stmt = $pdo->prepare("SELECT * FROM entregas");
+    $stmt = $pdo->prepare("SELECT * FROM insumos");
 }
 $stmt->execute();
 

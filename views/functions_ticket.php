@@ -149,24 +149,19 @@ if (isset($_POST["editar_insumo"]))
         $ticket->desc_tecnico = $_POST["desc_tecnico"];
     }
     if (!empty($_POST["insumo_desc1"])) {
+        $stmt = $db->pdo->prepare("DELETE FROM `insumos` WHERE id_orden = :id");
+        $stmt->bindParam(":id", $_GET["id"]);
+        $stmt->execute();
         $k = 1;
-        $i_desc = "";
-        $i_prec = "";
         while (isset($_POST["insumo_desc" . $k]) && $_POST["insumo_desc" . $k] != "") {
-            $i_desc .= $_POST["insumo_desc" . $k];
-            $i_prec .= $_POST["insumo_precio" . $k];
+            $insumo = new Insumo($_POST["insumo_desc" . $k], $_POST["insumo_precio" . $k], $ticket->local, $_POST["insumo_estado" . $k], $_GET["id"]);
+            $db->insertInsumo($insumo);
             $k++;
-            if (isset($_POST["insumo_desc" . $k]) && $_POST["insumo_desc" . $k] != "") {
-                $i_desc .= ";";
-                $i_prec .= ";";
-            }
         }
-        $ticket->insumo_desc = $i_desc;
-        $ticket->insumo_precio = $i_prec;
     }
 
     $db->updateTicket($ticket);
-    $db->logChange($_SESSION["nombre"], "Cambio de datos servicio", $id);
+    $db->logChange($_SESSION["nombre"], "Cambio de datos servicio", $ticket->id);
     echo '<meta http-equiv="refresh" content="0"/>';
 }
 // EDIT PRECIO
@@ -181,4 +176,20 @@ if (isset($_POST["guardarPrecio"]))
     $db->updateTicket($ticket);
     $db->logChange($_SESSION["nombre"], "Cambio de precio", $id);
     echo '<meta http-equiv="refresh" content="0"/>';
+}
+
+// PEDIR INSUMO
+if(isset($_POST["pedirInsumo"])) {
+    $id = $_POST["id"];
+    $estado = 1;
+    $db = new Database();
+    $pdo = $db->pdo;
+    $stmt = $pdo->prepare("UPDATE insumos SET estado = :estado WHERE id = :id");
+    $stmt->bindParam(':id', $id);
+    $stmt->bindParam(':estado', $estado);
+    try {
+        $stmt->execute();
+    } catch (PDOException $e) {
+        echo $e->getMessage();
+    }
 }

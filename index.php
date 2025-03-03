@@ -2,6 +2,7 @@
 // IMPORT FUNCTIONS
 require_once "controller/functions.php";
 require_once "model/Ticket.php";
+require_once "model/Insumo.php";
 require_once "model/Database.php";
 
 session_start();
@@ -88,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <nav class="navbar navbar-light text-light" style="background-color:rgb(43,45,46);">
         <a class="navbar-brand mx-auto" href="">
             <img class="rounded mx-auto" src="LOGO.png" alt="logo" height="60">
-            <span class="badge badge-pill bg-danger">2.1.1</span>
+            <span class="badge badge-pill bg-danger">2.1.2</span>
         </a>
     </nav>
 

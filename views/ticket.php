@@ -47,9 +47,9 @@ else $ticket = $db->fetchId($id);
         </a>
     <?php } ?>
     <?php if ($_SESSION["login"] == "admin") { ?>
-    <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#historialModal">
-        <i class="bi bi-clock-history"></i> <span class="d-none d-sm-inline">Historial</span>
-    </button>
+        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#historialModal">
+            <i class="bi bi-clock-history"></i> <span class="d-none d-sm-inline">Historial</span>
+        </button>
     <?php } ?>
 </div>
 <!-- {END} MENU OPCIONES -->
@@ -99,6 +99,8 @@ $percentage = ($estado / $totalStates) * 100;
     </div>
 </div>
 <br>
+<!-- CONDICION PARA REPARTIDOR -->
+<?php if ($_SESSION["login"] != "repartidor") { ?>
 <?php
 echo '<div id="cardStepBtns" class="input-group px-2 mx-auto mb-2">';
 $disableLeft = true;
@@ -223,6 +225,8 @@ echo '</div>';
     </div>
 </div>
 <hr>
+<!-- END CONDICION PARA REPARTIDOR -->
+<?php } ?>
 <div class="row">
     <h3 class="display-4 mb-4">Servicio</h3>
     <div class="col-md-6 col-12">
@@ -233,6 +237,9 @@ echo '</div>';
         <p class="card-text"><b>Descripción:</b> <?php echo $ticket->desc; ?></p>
         <p class="card-text"><b>Descripción Técnico:</b> <?php echo !empty($ticket->desc_tecnico) ? $ticket->desc_tecnico : "Sin descripción" ?></p>
         <br>
+        
+<!-- CONDICION REPARTIDOR -->
+<?php if ($_SESSION["login"] != "repartidor") { ?>
         <button type="button" class="fileButton" data-bs-toggle="modal" data-bs-target="#insumoModal">
             <?php if ($_SESSION["login"] == "admin" || $_SESSION["login"] == "tecnico") {
                 echo 'Editar insumo y descripción técnico';
@@ -240,7 +247,11 @@ echo '</div>';
                 echo 'Editar descripción';
             } ?>
         </button>
+<!-- END CONDICION PARA REPARTIDOR -->
+<?php } ?>
     </div>
+    
+<?php if ($_SESSION["login"] != "repartidor") { ?>
     <div class="col-md-6 col-12">
         <b>Firma:</b><br>
         <?php if (!empty($ticket->firma)): ?>
@@ -264,10 +275,58 @@ echo '</div>';
             </p>
         <?php endif; ?>
     </div>
+<?php } ?>
 </div>
+
 <?php if ($_SESSION["login"] != "tecnico") { ?>
     <hr>
-    <?php echo $ins; ?>
+    <div class="row">
+        <span class="fs-4 mb-2">Insumo(s)</span>
+        <?php
+        // INSUMOS
+
+        // Define estados and colores arrays
+        $estados = ["", "PENDIENTE", "EN CAMINO", "ENTREGADO"];
+        $colores = ["white", "#ed7279", "#f0de92", "#8bfa82"];
+
+        // Fetch insumos data
+        $insumos = $db->fetchInsumos($ticket->id);
+
+        // Check if there are any insumos to display
+        if (count($insumos) > 0) {
+            echo "<table border='1' class='table table-secondary'>";
+            echo "<thead><tr><th>Nombre</th><th>Precio</th><th>Local</th><th>Fecha</th><th>Estado</th></tr></thead>";
+            echo "<tbody>";
+
+            // Loop through results and display each row
+            foreach ($insumos as $row) {
+                echo "<tr>";
+                echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['nombre']) . "</td>";
+                echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['precio']) . " €</td>";
+                echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['local']) . "</td>";
+                echo "<td style='background:" . $colores[$row["estado"]] . "'><small class='text-muted'>" . htmlspecialchars($row['fecha']) . "</small></td>";
+                if($row["estado"] > 0) {
+                    echo "<td style='background:" . $colores[$row["estado"]] . "'>" . $estados[$row['estado']] . "</td>";
+                }else {
+                    echo "
+                    <td style='background:" . $colores[$row["estado"]] . "'>
+                    <form style='display:inline-block' action='' method='post'>
+                        <input type='hidden' name='id' value='".$row["id"]."'>
+                        <button type='submit' class='btn btn-primary' name='pedirInsumo'>Pedir</button>
+                    </form>
+                    </td>";
+                }
+                echo "</tr>";
+            }
+
+            echo "</tbody></table>";
+        } else {
+            echo "<p>No hay insumos para mostrar.</p>";
+        }
+        ?>
+    </div>
+<!-- CONDICION REPARTIDOR -->
+<?php if ($_SESSION["login"] != "repartidor") { ?>
     <hr>
     <form action="" method="POST">
         <div class="row">
@@ -308,8 +367,12 @@ echo '</div>';
             </div>
         </div>
     </form>
+<!-- END CONDICION REPARTIDOR -->
+<?php } ?>
 <?php } ?>
 <hr>
+<!-- CONDICION REPARTIDOR -->
+<?php if ($_SESSION["login"] != "repartidor") { ?>
 <div class="row">
     <div class="col-12 mb-3">
         <button type="button" class="fileButton" data-bs-toggle="modal" data-bs-target="#fotos">
@@ -318,6 +381,8 @@ echo '</div>';
         </button>
     </div>
 </div>
+<!-- END CONDICION REPARTIDOR -->
+<?php } ?>
 <div class="row">
     <div class="gallery">
         <?php
@@ -346,51 +411,6 @@ echo '</div>';
         ?>
     </div>
 </div>
-<?php
-if ($_SESSION["login"] == "admin") {
-    ?>
-    <hr>
-    <div class="row">
-        <b class="text-center fs-3"><a href="entregas">Entregas <i class="bi bi-arrow-right"></i></a></b>
-    <?php
-    // ENTREGAS
-
-    $estados = ["PENDIENTE", "EN CAMINO", "ENTREGADO"];
-    $colores = ["#ed7279", "#f0de92", "#8bfa82"];
-    $pdo = $db->pdo;
-    $stmt = $pdo->prepare("SELECT * from entregas WHERE id_orden = :id ORDER BY id DESC");
-    $stmt->bindParam(":id", $ticket->id);
-    try {
-        $stmt->execute();
-        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        // Check if results are not empty
-        if (count($results) > 0) {
-            echo "<table border='1' class='table table-secondary'>";
-            echo "<thead><tr><th>Fecha</th><th>Nombre</th><th>Local</th><th>Estado</th></tr></thead>";
-            echo "<tbody>";
-
-            // Loop through results and display each row
-            foreach ($results as $row) {
-                echo "<tr>";
-                echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['fecha']) . "</td>";
-                echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['nombre']) . "</td>";
-                echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['destino']) . "</td>";
-                echo "<td style='background:" . $colores[$row["estado"]] . "'>" . $estados[$row['estado']] . "</td>";
-                echo "</tr>";
-            }
-            echo "</tbody></table>";
-        }
-    } catch (PDOException $e) {
-        logError($e->getMessage());
-    }
-
-    // END ENTREGAS
-    ?>
-    </div>
-    <?php
-}
-?>
 
 <!-- /////////////////////////////////////////////// -->
 
@@ -514,22 +534,41 @@ if ($_SESSION["login"] == "admin") {
                         <div class="row">
                             <div class="col-12" id="insumo">
                                 <?php
-                                $ins = explode(";", $ticket->insumo_desc);
-                                $pre = explode(";", $ticket->insumo_precio);
-
-                                for ($i = 0; $i < count($ins); $i++) { ?>
+                                $insumos = $db->fetchInsumos($ticket->id);
+                                foreach ($insumos as $i => $row) {
+                                ?>
                                     <div class="input-group mb-3">
                                         <span class="input-group-text">Insumo</span>
                                         <div class="form-floating">
-                                            <input class="form-control" placeholder="Descripción" type="text" name="insumo_desc<?php echo $i + 1; ?>" id="insumo_desc<?php echo $i + 1; ?>" value="<?php echo $ins[$i]; ?>">
+                                            <input class="form-control" placeholder="Descripción" type="text" name="insumo_desc<?php echo $i + 1; ?>" id="insumo_desc<?php echo $i + 1; ?>" value="<?php echo $row["nombre"]; ?>">
                                             <label for="insumo_desc">Descripción</label>
                                         </div>
 
                                         <div class="form-floating">
                                             <input <?php if ($_SESSION["login"] == "tecnico") {
                                                         echo "readonly";
-                                                    } ?> class="form-control" placeholder="Precio" type="number" step=.01 name="insumo_precio<?php echo $i + 1; ?>" id="insumo_precio<?php echo $i + 1; ?>" value="<?php echo isset($pre[$i]) ? $pre[$i] : 0; ?>">
+                                                    } ?> class="form-control" placeholder="Precio" type="number" step=.01 name="insumo_precio<?php echo $i + 1; ?>" id="insumo_precio<?php echo $i + 1; ?>" value="<?php echo isset($row["precio"]) ? $row["precio"] : 0; ?>">
                                             <label for="insumo_precio">Precio</label>
+                                            <input type="hidden" name="insumo_estado<?php echo $i + 1; ?>" value="<?php echo $row["estado"]; ?>">
+                                        </div>
+                                    </div>
+                                <?php
+                                }
+                                if (!$insumos) {
+                                ?>
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text">Insumo</span>
+                                        <div class="form-floating">
+                                            <input class="form-control" placeholder="Descripción" type="text" name="insumo_desc1" id="insumo_desc1">
+                                            <label for="insumo_desc">Descripción</label>
+                                        </div>
+
+                                        <div class="form-floating">
+                                            <input <?php if ($_SESSION["login"] == "tecnico") {
+                                                        echo "readonly";
+                                                    } ?> class="form-control" placeholder="Precio" type="number" step=.01 name="insumo_precio1" id="insumo_precio1">
+                                            <label for="insumo_precio">Precio</label>
+                                            <input type="hidden" name="insumo_estado1" value="0">
                                         </div>
                                     </div>
                                 <?php
@@ -616,36 +655,36 @@ if ($_SESSION["login"] == "admin") {
                 $stmt->bindParam(":id", $_GET["id"]);
                 $stmt->execute();
                 if ($stmt->rowCount()) {
-                    ?>   
-                        <table class="table table-bordered table-striped table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Usuario</th>
-                                    <th>#</th>
-                                    <th>Cambio</th>
-                                    <th>Fecha</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                    <?php
-                            // Loop through the results and execute the second query to get the order count for each codigo_socio
-                            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                    
-                                // Display the results in a table row
-                                echo '<tr>';
-                                echo '<td>' . htmlspecialchars($row["usuario"]) . '</td>';
-                                echo '<td><a style="color:rgb(37,190,212)" href="list&id='.$row["id_orden"].'">' . htmlspecialchars($row["id_orden"]) . '</a></td>';
-                                echo '<td>' . htmlspecialchars($row["descripcion"]) . '</td>';
-                                echo '<td>' . htmlspecialchars($row["fecha"]) . '</td>';
-                                echo '</tr>';
-                            }
-                    
-                            echo '</tbody>';
-                            echo '</table>';
-                        } else {
-                            echo "No hay cambios aún.";
-                        }
                 ?>
+                    <table class="table table-bordered table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Usuario</th>
+                                <th>#</th>
+                                <th>Cambio</th>
+                                <th>Fecha</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <?php
+                        // Loop through the results and execute the second query to get the order count for each codigo_socio
+                        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+
+                            // Display the results in a table row
+                            echo '<tr>';
+                            echo '<td>' . htmlspecialchars($row["usuario"]) . '</td>';
+                            echo '<td><a style="color:rgb(37,190,212)" href="list&id=' . $row["id_orden"] . '">' . htmlspecialchars($row["id_orden"]) . '</a></td>';
+                            echo '<td>' . htmlspecialchars($row["descripcion"]) . '</td>';
+                            echo '<td>' . htmlspecialchars($row["fecha"]) . '</td>';
+                            echo '</tr>';
+                        }
+
+                        echo '</tbody>';
+                        echo '</table>';
+                    } else {
+                        echo "No hay cambios aún.";
+                    }
+                        ?>
             </div>
         </div>
     </div>
@@ -665,6 +704,7 @@ if ($_SESSION["login"] == "admin") {
                         echo "readonly";
                     } ?> class="form-control" placeholder="Precio" type="number" step=.01 name="insumo_precio' + (num + 1) + '" id="insumo_precio' + (num + 1) + '" value=0>' +
             '<label for="insumo_precio">Precio</label>' +
+            '<input type="hidden" name="insumo_estado' + (num + 1) + '" value="0">'+
             '</div>';
         insumo.appendChild(clone);
     }

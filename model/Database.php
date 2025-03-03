@@ -66,7 +66,7 @@ class Database
         return $tickets;
     }
 
-    public function insertTicket($ticket)
+    public function insertTicket(Ticket $ticket)
     {
         $sql = "INSERT INTO info_orden SET 
             id = ?,
@@ -97,8 +97,8 @@ class Database
             dept = ?,
             codigo_socio = ?,
             codigo_usado = ?";
-    
-        
+
+
         $stmt = $this->pdo->prepare($sql);
         try {
             $stmt->execute([
@@ -137,7 +137,8 @@ class Database
         }
     }
 
-    public function isDuplicate($ticket) {
+    public function isDuplicate(Ticket $ticket)
+    {
         $pdo = $this->pdo;
         $stmt = $pdo->prepare("
             SELECT nombre, nombre_dispositivo 
@@ -147,7 +148,7 @@ class Database
         $stmt->bindParam(':fecha', $ticket->fecha);
         $stmt->bindParam(':nombre', $ticket->nombre);
         $stmt->bindParam(':disp', $ticket->nombre_dispositivo);
-    
+
         try {
             $stmt->execute();
             // Fetch the first matching record
@@ -205,6 +206,43 @@ class Database
         }
     }
 
+    public function fetchInsumos($id = null)
+    {
+        $pdo = $this->pdo;
+        if($id == null) {
+            $stmt = $pdo->prepare("SELECT * FROM `insumos` WHERE estado > 0 AND estado < 3 ORDER BY id DESC");
+        } else {
+            $stmt = $pdo->prepare("SELECT * FROM `insumos` WHERE id_orden = :id");
+            $stmt->bindParam(":id", $id);
+        }
+        $stmt->execute();
+        
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function insertInsumo(Insumo $ins)
+    {
+        $pdo = $this->pdo;
+        // Prepare the SQL statement
+        $stmt = $pdo->prepare("
+            INSERT INTO `insumos` (fecha, nombre, precio, local, estado, id_orden)
+            VALUES (:fecha, :nombre, :precio, :loc, :estado, :id_orden)");
+
+        // Bind the parameters from the $ins array
+        $stmt->bindParam(":fecha", $ins->fecha);
+        $stmt->bindParam(":nombre", $ins->nombre);
+        $stmt->bindParam(":precio", $ins->precio);
+        $stmt->bindParam(":loc", $ins->local);
+        $stmt->bindParam(":estado", $ins->estado);
+        $stmt->bindParam(":id_orden", $ins->id_orden);
+
+        try {
+            $stmt->execute();
+        } catch (Exception $e) {
+            logError($e->getMessage());
+        }
+    }
+
     public function updateTicket($ticket)
     {
         $sql = "UPDATE info_orden SET 
@@ -230,7 +268,7 @@ class Database
 
         // Assuming you have a PDO connection
         $stmt = $this->pdo->prepare($sql);
-        try{
+        try {
             $stmt->execute([
                 $ticket->nombre,
                 $ticket->documento,
@@ -252,7 +290,7 @@ class Database
                 $ticket->fecha_pago,
                 $ticket->id
             ]);
-        } catch (Exception $e){
+        } catch (Exception $e) {
             logError($e->getMessage());
         }
     }
@@ -287,5 +325,4 @@ class Database
 
         return null;
     }
-    
 }
