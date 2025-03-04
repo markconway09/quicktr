@@ -110,7 +110,8 @@
         }
     // END ID
 
-    $estados = ["","PENDIENTE", "EN CAMINO", "ENTREGADO"];
+    $estados = ["Sin estado, sin ID","<i class='bi bi-hourglass-bottom'></i> PENDIENTE",
+                "<i class='bi bi-person-walking'></i> EN CAMINO", "<i class='bi bi-check-lg'></i> ENTREGADO"];
     $colores = ["", "#ed7279", "#f0de92", "#8bfa82"];
 
     $db = new Database();
@@ -134,19 +135,15 @@
                 if ($row["id_orden"] === null) {
                     echo "<td style='background:" . $colores[$row["estado"]] . "'>";
                     ?>
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="setId(<?php echo $row['id']; ?>)">
-                        Asociar Ticket
+                    <button type="button" class="btn btn-primary"
+                            data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="setId(<?php echo $row['id']; ?>)">
+                        <i class="bi bi-link" data-bs-toggle="tooltip" data-bs-title="Asociar Ticket"></i>
                     </button>
-                    <form action="" method="POST" style="display: inline;">
-                        <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
-                        <input type="hidden" name="id_orden" value="0">
-                        <button type="submit" class="btn btn-danger">
-                            <i class="bi bi-x-lg"></i>
-                        </button>
-                    </form>
                     <?php
                     echo "</td>";
-                } else echo "<td style='background:" . $colores[$row["estado"]] . "'>" . ($row['id_orden'] == 0?"-":$row['id_orden']) . "</td>";
+                } else echo "<td style='background:" . $colores[$row["estado"]] . "'>" .
+                                ($row['id_orden'] == 0?"-":"<a href='list&id=".$row["id_orden"]."'>".$row['id_orden']."</a>") .
+                            "</td>";
 
                 echo "<td style='background:" . $colores[$row["estado"]] . "'>" . $estados[$row['estado']] . "</td>";
                 echo "<td style='background:" . $colores[$row["estado"]] . "'>";
@@ -165,6 +162,55 @@
         logError($e->getMessage());
     }
     
+    try {
+        $pdo = $db->pdo;
+        $stmt = $pdo->prepare("SELECT * FROM `insumos` WHERE estado = 0 AND id_orden IS NULL ORDER BY id DESC");
+        $stmt->execute();
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Check if results are not empty
+        if (count($results) > 0) {
+            echo "<table border='1' class='table table-secondary'>";
+            echo "<thead><tr><th>Fecha</th><th>Nombre</th><th>Precio</th><th>Local</th><th>ID Orden</th><th colspan=2>Estado</th></tr></thead>";
+            echo "<tbody>";
+
+            // Loop through results and display each row
+            foreach ($results as $row) {
+                echo "<tr>";
+                echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['fecha']) . "</td>";
+                echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['nombre']) . "</td>";
+                echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['precio']) . " €</td>";
+                echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['local']) . "</td>";
+
+                if ($row["id_orden"] === null) {
+                    echo "<td style='background:" . $colores[$row["estado"]] . "'>";
+                    ?>
+                    <button type="button" class="btn btn-primary"
+                            data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="setId(<?php echo $row['id']; ?>)">
+                        <i class="bi bi-link" data-bs-toggle="tooltip" data-bs-title="Asociar Ticket"></i>
+                    </button>
+                    <?php
+                    echo "</td>";
+                } else echo "<td style='background:" . $colores[$row["estado"]] . "'>" .
+                                ($row['id_orden'] == 0?"-":"<a href='list&id=".$row["id_orden"]."'>".$row['id_orden']."</a>") .
+                            "</td>";
+
+                echo "<td style='background:" . $colores[$row["estado"]] . "'>" . $estados[$row['estado']] . "</td>";
+                echo "<td style='background:" . $colores[$row["estado"]] . "'>";
+                echo "<form method='post' action=''>";
+                echo "<input type='hidden' name='id' value='" . $row['id'] . "'>";
+                echo "<input type='hidden' name='estado' value='" . $row['estado'] . "'>";
+                echo "<button type='submit' name='menos_estado' class='btn btn-primary'>&lt;</button>&nbsp;";
+                echo "<button type='submit' name='mas_estado' class='btn btn-primary'>&gt;</button>";
+                echo "</form>";
+                echo "</td>";
+                echo "</tr>";
+            }
+            echo "</tbody></table>";
+        }
+    } catch (PDOException $e) {
+        logError($e->getMessage());
+    }
     ?>
     <hr>
     <h1>Entregados</h1>
@@ -193,19 +239,15 @@
                 if ($row["id_orden"] === null) {
                     echo "<td style='background:" . $colores[$row["estado"]] . "'>";
                     ?>
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="setId(<?php echo $row['id']; ?>)">
-                        Asociar Ticket
+                    <button type="button" class="btn btn-primary"
+                            data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="setId(<?php echo $row['id']; ?>)">
+                        <i class="bi bi-link" data-bs-toggle="tooltip" data-bs-title="Asociar Ticket"></i>
                     </button>
-                    <form action="" method="POST" style="display: inline;">
-                        <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
-                        <input type="hidden" name="id_orden" value="0">
-                        <button type="submit" class="btn btn-danger">
-                            <i class="bi bi-x-lg"></i>
-                        </button>
-                    </form>
                     <?php
                     echo "</td>";
-                } else echo "<td style='background:" . $colores[$row["estado"]] . "'>" . ($row['id_orden'] == 0?"-":$row['id_orden']) . "</td>";
+                } else echo "<td style='background:" . $colores[$row["estado"]] . "'>" .
+                                ($row['id_orden'] == 0?"-":"<a href='list&id=".$row["id_orden"]."'>".$row['id_orden']."</a>") .
+                            "</td>";
 
                 echo "<td style='background:" . $colores[$row["estado"]] . "'>" . $estados[$row['estado']] . "</td>";
                 echo "<td style='background:" . $colores[$row["estado"]] . "'>";
@@ -223,8 +265,6 @@
     } catch (PDOException $e) {
         logError($e->getMessage());
     }
-    
-    
     ?>
 </div>
 <!-- Modal -->
