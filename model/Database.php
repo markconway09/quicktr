@@ -220,6 +220,16 @@ class Database
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function fetchInsumoFromId($id_ins)
+    {
+        $pdo = $this->pdo;
+        $stmt = $pdo->prepare("SELECT * FROM `insumos` WHERE id = :id");
+        $stmt->bindParam(":id", $id_ins);
+        $stmt->execute();
+        
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
     public function insertInsumo(Insumo $ins)
     {
         $pdo = $this->pdo;

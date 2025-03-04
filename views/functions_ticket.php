@@ -184,11 +184,13 @@ if(isset($_POST["pedirInsumo"])) {
     $estado = 1;
     $db = new Database();
     $pdo = $db->pdo;
+    $insumo = $db->fetchInsumoFromId($id);
     $stmt = $pdo->prepare("UPDATE insumos SET estado = :estado WHERE id = :id");
     $stmt->bindParam(':id', $id);
     $stmt->bindParam(':estado', $estado);
     try {
         $stmt->execute();
+        $db->logChange($_SESSION["nombre"], "Insumo pedido (".$insumo["nombre"].")", $insumo["id_orden"]);
     } catch (PDOException $e) {
         echo $e->getMessage();
     }

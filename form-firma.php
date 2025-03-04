@@ -1,8 +1,11 @@
 <?php
-require_once "controller/functions.php";
+require_once "model/Database.php";
+require_once "model/Ticket.php";
+
+$db = new Database();
 // GUARDAR DATOS
 if(isset($_POST["guardar-firma"])){
-    subirFirma($_GET["id"], "./firmas/");
+    if(!empty($_POST["sign"])) $db->insertSignature($_GET["id"], $_POST['sign']);
 }
 ?>
 

@@ -286,7 +286,8 @@ echo '</div>';
         // INSUMOS
 
         // Define estados and colores arrays
-        $estados = ["", "PENDIENTE", "EN CAMINO", "ENTREGADO"];
+        $estados = ["Sin estado, sin ID","<i class='bi bi-hourglass-bottom'></i> PENDIENTE",
+                    "<i class='bi bi-person-walking'></i> EN CAMINO", "<i class='bi bi-check-lg'></i> ENTREGADO"];
         $colores = ["white", "#ed7279", "#f0de92", "#8bfa82"];
 
         // Fetch insumos data
@@ -301,10 +302,10 @@ echo '</div>';
             // Loop through results and display each row
             foreach ($insumos as $row) {
                 echo "<tr>";
-                echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['nombre']) . "</td>";
-                echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['precio']) . " €</td>";
-                echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['local']) . "</td>";
-                echo "<td style='background:" . $colores[$row["estado"]] . "'><small class='text-muted'>" . htmlspecialchars($row['fecha']) . "</small></td>";
+                echo "<td style='background:white'>" . htmlspecialchars($row['nombre']) . "</td>";
+                echo "<td style='background:white'>" . htmlspecialchars($row['precio']) . " €</td>";
+                echo "<td style='background:white'>" . htmlspecialchars($row['local']) . "</td>";
+                echo "<td style='background:white'><small class='text-muted'>" . htmlspecialchars($row['fecha']) . "</small></td>";
                 if($row["estado"] > 0) {
                     echo "<td style='background:" . $colores[$row["estado"]] . "'>" . $estados[$row['estado']] . "</td>";
                 }else {
@@ -495,7 +496,7 @@ echo '</div>';
 </div>
 <!-- INSUMO/DESC -->
 <div class="modal modal-lg fade" id="insumoModal" tabindex="-1" aria-labelledby="insumoModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
                 <h1 class="modal-title fs-5" id="insumoModalLabel">Editar detalles servicio (# <?php echo $ticket->id ?>)</h1>
