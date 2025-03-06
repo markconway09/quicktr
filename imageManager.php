@@ -1,8 +1,7 @@
 <?php
-require_once 'controller/functions.php';
 $db = new Database();
 $pdo = $db->pdo;
-$stmt = $pdo->prepare("SELECT * FROM `foto` f LEFT JOIN `info_orden` i ON (id_orden = i.id) ORDER BY fecha ASC");
+$stmt = $pdo->prepare("SELECT * FROM `foto` f LEFT JOIN `info_orden` i ON (id_orden = i.id) ORDER BY i.fecha ASC");
 try {
     $stmt->execute();
 } catch(PDOException $e){
