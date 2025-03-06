@@ -114,7 +114,7 @@ if(isset($_GET["estado"]))
 if(isset($_POST["estado"]))
 {
     $ticket = $db->fetchId($_POST["id"]);
-    if(isset($_FILES['images'])) $db->insertPhotos($ticket->id, $_FILES['images']);
+    if(isset($_FILES['images'])) $db->insertPhotos($ticket->id, $_FILES['images'], "Final");
     $ticket->estado = $_POST["estado"];
     $ticket->metodo = $_POST["metodo"] ?? null;
     $ticket->fecha_pago = $_POST["fecha_pago"] ?? date("Y-m-d");

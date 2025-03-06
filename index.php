@@ -5,7 +5,7 @@ require_once "model/Ticket.php";
 require_once "model/Insumo.php";
 require_once "model/Database.php";
 
-session_start();
+if(session_status() == PHP_SESSION_NONE) session_start();
 if (isset($_POST["login"])) {
     $db = new Database();
     $pdo = $db->pdo;
@@ -21,8 +21,6 @@ if (isset($_POST["login"])) {
             $_SESSION["nombre"] = $row["username"];
             $_SESSION["login"] = $row["tipo"];
             $_SESSION["local"] = $row["local"] != null ? $row["local"] : null;
-            // LIMITE DE SERVICIOS POR PAGINA POR DEFECTO: 0 = SIN PAGINAS
-            $_SESSION["pag"] = 0;
         } else {
             echo '<script>alert("Contraseña incorrecta")</script>';
         }
@@ -89,8 +87,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <nav class="navbar navbar-light text-light" style="background-color:rgb(43,45,46);">
         <a class="navbar-brand mx-auto" href="">
             <img class="rounded mx-auto" src="LOGO.png" alt="logo" height="60">
-            <span class="badge badge-pill bg-danger">2.1.2</span>
+            <span class="badge badge-pill bg-danger">2.1.3</span>
         </a>
+        <?php if(isset($_SESSION["login"])) : ?>
+        <button class="btn position-relative text-light" style="right: 20px; background-color:#25BED4" data-bs-toggle="modal" data-bs-target="#messageModal">
+            <i class="bi bi-megaphone"></i>
+            <span id="announcementsPill" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+            0
+            <span class="visually-hidden">unread messages</span>
+            </span>
+        </button>
+        <?php endif; ?>
     </nav>
 
     <?php
@@ -110,6 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <ul class="dropdown-menu text-bg-dark">
                     <!-- ADMIN MENU -->
                     <?php if ($_SESSION["login"] == "admin") { ?>
+                        <li><a class="dropdown-item text-light" href="recordatorios"><i class="bi bi-megaphone"></i></i> Recordatorios</a></li>
                         <li><a class="dropdown-item text-light" href="totalventas"><i class="bi bi-calculator"></i> Total Ventas</a></li>
                         <li><a class="dropdown-item text-light" href="user-admin"><i class="bi bi-people"></i> Usuarios</a></li>
                         <li><a class="dropdown-item text-light" href="infoClientes"><i class="bi bi-person-up"></i> Exportar Clientes</a></li>
@@ -164,6 +172,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- Toast Container -->
     <div class="toast-container position-fixed bottom-0 end-0 p-3" id="toastContainer"></div>
 </body>
+
+<!-- RECORDATORIOS -->
+<?php
+include_once "views/mostrar_mensaje.php";
+?>
+<script>
+    $(document).ready(function() {
+        fetchMessage();
+    });
+</script>
+<!-- END RECORDATORIOS -->
+
 <!-- Bootstrap JS Bundle -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>

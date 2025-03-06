@@ -85,6 +85,11 @@ switch ($call) {
             $db->logChange($_SESSION["nombre"], "Estado cambiado a ".$ticket->pasos[$ticket->estado], $ticket->id);
         }
         break;
+    case 4:
+        $stmt = $pdo->prepare("UPDATE recordatorios SET fecha_fin = NOW() WHERE id = :id");
+        $stmt->bindParam(':id', $_GET["id"], PDO::PARAM_INT);
+        $stmt->execute();
+        break;
 }
 
 

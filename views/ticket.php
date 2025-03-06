@@ -286,9 +286,9 @@ echo '</div>';
         // INSUMOS
 
         // Define estados and colores arrays
-        $estados = ["Sin estado, sin ID","<i class='bi bi-hourglass-bottom'></i> PENDIENTE",
-                    "<i class='bi bi-person-walking'></i> EN CAMINO", "<i class='bi bi-check-lg'></i> ENTREGADO"];
-        $colores = ["white", "#ed7279", "#f0de92", "#8bfa82"];
+        $estados = ["Sin estado, sin ID","PENDIENTE", "EN CAMINO", "ENTREGADO"];
+        $iconos = ["", "<i class='bi bi-hourglass-bottom'></i>", "<i class='bi bi-person-walking'></i>", "<i class='bi bi-check-lg'></i>"];
+        $colores = ["", "#ed7279", "#f0de92", "#8bfa82"];
 
         // Fetch insumos data
         $insumos = $db->fetchInsumos($ticket->id);
@@ -296,7 +296,7 @@ echo '</div>';
         // Check if there are any insumos to display
         if (count($insumos) > 0) {
             echo "<table border='1' class='table table-secondary'>";
-            echo "<thead><tr><th>Nombre</th><th>Precio</th><th>Local</th><th>Fecha</th><th>Estado</th></tr></thead>";
+            echo "<thead><tr><th>Nombre</th><th>Precio</th><th class='d-none d-md-table-cell'>Local</th><th class='d-none d-md-table-cell'>Fecha</th><th>Estado</th></tr></thead>";
             echo "<tbody>";
 
             // Loop through results and display each row
@@ -304,10 +304,10 @@ echo '</div>';
                 echo "<tr>";
                 echo "<td style='background:white'>" . htmlspecialchars($row['nombre']) . "</td>";
                 echo "<td style='background:white'>" . htmlspecialchars($row['precio']) . " €</td>";
-                echo "<td style='background:white'>" . htmlspecialchars($row['local']) . "</td>";
-                echo "<td style='background:white'><small class='text-muted'>" . htmlspecialchars($row['fecha']) . "</small></td>";
+                echo "<td style='background:white' class='d-none d-md-table-cell'>" . htmlspecialchars($row['local']) . "</td>";
+                echo "<td style='background:white' class='d-none d-md-table-cell'><small class='text-muted'>" . htmlspecialchars($row['fecha']) . "</small></td>";
                 if($row["estado"] > 0) {
-                    echo "<td style='background:" . $colores[$row["estado"]] . "'>" . $estados[$row['estado']] . "</td>";
+                    echo "<td style='background:" . $colores[$row["estado"]] . "'>" . $iconos[$row['estado']] ." <span class='d-none d-md-inline'>". $estados[$row['estado']] . "</span></td>";
                 }else {
                     echo "
                     <td style='background:" . $colores[$row["estado"]] . "'>
@@ -385,10 +385,10 @@ echo '</div>';
 <!-- END CONDICION REPARTIDOR -->
 <?php } ?>
 <div class="row">
-    <div class="gallery">
+    <div class="gallery p-2 rounded border" style="background-color: #efefef;">
         <?php
         $pdo = $db->pdo;
-        $fotos = $pdo->prepare("SELECT * FROM `foto` WHERE id_orden = :id");
+        $fotos = $pdo->prepare("SELECT * FROM `foto` WHERE id_orden = :id ORDER BY id DESC");
         $fotos->bindParam(':id', $_GET["id"]);
         try {
             $fotos->execute();
@@ -400,10 +400,12 @@ echo '</div>';
             while ($img = $fotos->fetch(PDO::FETCH_ASSOC)) {
                 if (file_exists('fotos/' . $img["archivo"])) {
                     echo '
-                                                    <a href="fotos/' . $img["archivo"] . '" target="_blank">
-                                                        <img src="fotos/' . $img["archivo"] . '" alt="Foto' . $img["id"] . '">
-                                                    </a>
-                                                    ';
+                    <div data-bs-toggle="tooltip" data-bs-placement="top" title="'.$img["estado"] .' ('.$img["fecha"].')">
+                        <a href="fotos/' . $img["archivo"] . '" target="_blank">
+                            <img src="fotos/' . $img["archivo"] . '" alt="Foto' . $img["id"] . '" class="rounded border shadow">
+                        </a><br><span class="mx-2">' . $img["estado"] . '</span>
+                    </div>
+                        ';
                 } else {
                     echo "<p>(Foto '" . $img["archivo"] . "' eliminada)</p>";
                 }
@@ -610,7 +612,6 @@ echo '</div>';
                     <p>
                         <label for="fotoFinal">Foto final</label>
                         <input type="file" id="fotoFinal" accept="image/*" name="images[]" capture="environment" multiple class="form-control" required>
-                        <input type="checkbox" name="noFoto" id="noFoto" onclick="document.getElementById('fotoFinal').toggleAttribute('required')"> <label for="noFoto">Sin foto final</label>
                     </p>
                     <p>
                         <label for="precio">Precio final</label>

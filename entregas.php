@@ -6,13 +6,13 @@
     <!-- FORMULARIO -->
     <form action="" method="POST">
         <div class="row">
-            <div class="col-4">
+            <div class="col-md-4 col-12 mb-1">
                 <div class="form-floating">
                     <input class="form-control" placeholder="Nombre" type="text" id="nombre" name="nombre" required>
                     <label for="nombre" class="text-dark">Nombre</label>
                 </div>
             </div>
-            <div class="col-4">
+            <div class="col-md-4 col-12 mb-1">
                 <div class="form-floating">
                     <select class="form-control" id="a" name="a" required>
                         <option value="" disabled selected>-Seleccionar Destino-</option>
@@ -24,7 +24,7 @@
                     <label for="a" class="text-dark">Local</label>
                 </div>
             </div>
-            <div class="col-4">
+            <div class="col-md-4 col-12 mb-1">
                 <div class="form-floating">
                     <input class="form-control" placeholder="Precio" type="text" id="precio" name="precio" required>
                     <label for="precio" class="text-dark">Precio</label>
@@ -110,8 +110,8 @@
         }
     // END ID
 
-    $estados = ["Sin estado, sin ID","<i class='bi bi-hourglass-bottom'></i> PENDIENTE",
-                "<i class='bi bi-person-walking'></i> EN CAMINO", "<i class='bi bi-check-lg'></i> ENTREGADO"];
+    $estados = ["Sin estado, sin ID","PENDIENTE", "EN CAMINO", "ENTREGADO"];
+    $iconos = ["", "<i class='bi bi-hourglass-bottom'></i>", "<i class='bi bi-person-walking'></i>", "<i class='bi bi-check-lg'></i>"];
     $colores = ["", "#ed7279", "#f0de92", "#8bfa82"];
 
     $db = new Database();
@@ -121,19 +121,19 @@
         // Check if results are not empty
         if (count($results) > 0) {
             echo "<table border='1' class='table table-secondary'>";
-            echo "<thead><tr><th>Fecha</th><th>Nombre</th><th>Precio</th><th>Local</th><th>ID Orden</th><th colspan=2>Estado</th></tr></thead>";
+            echo "<thead><tr><th class='d-none d-md-table-cell'>Fecha</th><th>Nombre</th><th>Precio</th><th>Local</th><th class='d-none d-md-table-cell'>ID Orden</th><th colspan=2>Estado</th></tr></thead>";
             echo "<tbody>";
 
             // Loop through results and display each row
             foreach ($results as $row) {
                 echo "<tr>";
-                echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['fecha']) . "</td>";
+                echo "<td class='d-none d-md-table-cell' style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['fecha']) . "</td>";
                 echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['nombre']) . "</td>";
                 echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['precio']) . " €</td>";
                 echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['local']) . "</td>";
 
                 if ($row["id_orden"] === null) {
-                    echo "<td style='background:" . $colores[$row["estado"]] . "'>";
+                    echo "<td class='d-none d-md-table-cell' style='background:" . $colores[$row["estado"]] . "'>";
                     ?>
                     <button type="button" class="btn btn-primary"
                             data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="setId(<?php echo $row['id']; ?>)">
@@ -141,17 +141,19 @@
                     </button>
                     <?php
                     echo "</td>";
-                } else echo "<td style='background:" . $colores[$row["estado"]] . "'>" .
+                } else echo "<td class='d-none d-md-table-cell' style='background:" . $colores[$row["estado"]] . "'>" .
                                 ($row['id_orden'] == 0?"-":"<a href='list&id=".$row["id_orden"]."'>".$row['id_orden']."</a>") .
                             "</td>";
 
-                echo "<td style='background:" . $colores[$row["estado"]] . "'>" . $estados[$row['estado']] . "</td>";
+                echo "<td style='background:" . $colores[$row["estado"]] . "'>" . $iconos[$row["estado"]] . " <span class='d-none d-md-inline'>" . $estados[$row['estado']] . "</span></td>";
                 echo "<td style='background:" . $colores[$row["estado"]] . "'>";
                 echo "<form method='post' action=''>";
                 echo "<input type='hidden' name='id' value='" . $row['id'] . "'>";
                 echo "<input type='hidden' name='estado' value='" . $row['estado'] . "'>";
-                echo "<button type='submit' name='menos_estado' class='btn btn-primary'>&lt;</button>&nbsp;";
-                echo "<button type='submit' name='mas_estado' class='btn btn-primary'>&gt;</button>";
+                echo "<div class='btn-group'>";
+                echo "<button type='submit' name='menos_estado' class='btn btn-primary'><i class='bi bi-chevron-left'></i></button>&nbsp;";
+                echo "<button type='submit' name='mas_estado' class='btn btn-primary'><i class='bi bi-chevron-right'></i></button>";
+                echo "</div>";
                 echo "</form>";
                 echo "</td>";
                 echo "</tr>";
@@ -171,19 +173,19 @@
         // Check if results are not empty
         if (count($results) > 0) {
             echo "<table border='1' class='table table-secondary'>";
-            echo "<thead><tr><th>Fecha</th><th>Nombre</th><th>Precio</th><th>Local</th><th>ID Orden</th><th colspan=2>Estado</th></tr></thead>";
+            echo "<thead><tr><th class='d-none d-md-table-cell'>Fecha</th><th>Nombre</th><th>Precio</th><th>Local</th><th class='d-none d-md-table-cell'>ID Orden</th><th colspan=2>Estado</th></tr></thead>";
             echo "<tbody>";
 
             // Loop through results and display each row
             foreach ($results as $row) {
                 echo "<tr>";
-                echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['fecha']) . "</td>";
+                echo "<td class='d-none d-md-table-cell' style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['fecha']) . "</td>";
                 echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['nombre']) . "</td>";
                 echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['precio']) . " €</td>";
                 echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['local']) . "</td>";
 
                 if ($row["id_orden"] === null) {
-                    echo "<td style='background:" . $colores[$row["estado"]] . "'>";
+                    echo "<td class='d-none d-md-table-cell' style='background:" . $colores[$row["estado"]] . "'>";
                     ?>
                     <button type="button" class="btn btn-primary"
                             data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="setId(<?php echo $row['id']; ?>)">
@@ -191,17 +193,19 @@
                     </button>
                     <?php
                     echo "</td>";
-                } else echo "<td style='background:" . $colores[$row["estado"]] . "'>" .
+                } else echo "<td class='d-none d-md-table-cell' style='background:" . $colores[$row["estado"]] . "'>" .
                                 ($row['id_orden'] == 0?"-":"<a href='list&id=".$row["id_orden"]."'>".$row['id_orden']."</a>") .
                             "</td>";
 
-                echo "<td style='background:" . $colores[$row["estado"]] . "'>" . $estados[$row['estado']] . "</td>";
+                echo "<td style='background:" . $colores[$row["estado"]] . "'>" . $iconos[$row["estado"]] . " <span class='d-none d-md-inline'>" . $estados[$row['estado']] . "</span></td>";
                 echo "<td style='background:" . $colores[$row["estado"]] . "'>";
                 echo "<form method='post' action=''>";
                 echo "<input type='hidden' name='id' value='" . $row['id'] . "'>";
                 echo "<input type='hidden' name='estado' value='" . $row['estado'] . "'>";
-                echo "<button type='submit' name='menos_estado' class='btn btn-primary'>&lt;</button>&nbsp;";
-                echo "<button type='submit' name='mas_estado' class='btn btn-primary'>&gt;</button>";
+                echo "<div class='btn-group'>";
+                echo "<button type='submit' name='menos_estado' class='btn btn-primary' ".($row["estado"]==0?"disabled":"")."><i class='bi bi-chevron-left'></i></button>&nbsp;";
+                echo "<button type='submit' name='mas_estado' class='btn btn-primary'><i class='bi bi-chevron-right'></i></button>";
+                echo "</div>";
                 echo "</form>";
                 echo "</td>";
                 echo "</tr>";
@@ -225,19 +229,19 @@
         // Check if results are not empty
         if (count($results) > 0) {
             echo "<table border='1' class='table table-secondary'>";
-            echo "<thead><tr><th>Fecha</th><th>Nombre</th><th>Precio</th><th>Local</th><th>ID Orden</th><th colspan=2>Estado</th></tr></thead>";
+            echo "<thead><tr><th class='d-none d-md-table-cell'>Fecha</th><th>Nombre</th><th>Precio</th><th>Local</th><th class='d-none d-md-table-cell'>ID Orden</th><th>Estado</th></tr></thead>";
             echo "<tbody>";
 
             // Loop through results and display each row
             foreach ($results as $row) {
                 echo "<tr>";
-                echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['fecha']) . "</td>";
+                echo "<td class='d-none d-md-table-cell' style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['fecha']) . "</td>";
                 echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['nombre']) . "</td>";
                 echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['precio']) . " €</td>";
                 echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['local']) . "</td>";
 
                 if ($row["id_orden"] === null) {
-                    echo "<td style='background:" . $colores[$row["estado"]] . "'>";
+                    echo "<td class='d-none d-md-table-cell' style='background:" . $colores[$row["estado"]] . "'>";
                     ?>
                     <button type="button" class="btn btn-primary"
                             data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="setId(<?php echo $row['id']; ?>)">
@@ -245,19 +249,11 @@
                     </button>
                     <?php
                     echo "</td>";
-                } else echo "<td style='background:" . $colores[$row["estado"]] . "'>" .
+                } else echo "<td class='d-none d-md-table-cell' style='background:" . $colores[$row["estado"]] . "'>" .
                                 ($row['id_orden'] == 0?"-":"<a href='list&id=".$row["id_orden"]."'>".$row['id_orden']."</a>") .
                             "</td>";
 
-                echo "<td style='background:" . $colores[$row["estado"]] . "'>" . $estados[$row['estado']] . "</td>";
-                echo "<td style='background:" . $colores[$row["estado"]] . "'>";
-                echo "<form method='post' action=''>";
-                echo "<input type='hidden' name='id' value='" . $row['id'] . "'>";
-                echo "<input type='hidden' name='estado' value='" . $row['estado'] . "'>";
-                echo "<button type='submit' name='menos_estado' class='btn btn-primary'>&lt;</button>&nbsp;";
-                echo "<button type='submit' name='mas_estado' class='btn btn-primary'>&gt;</button>";
-                echo "</form>";
-                echo "</td>";
+                echo "<td style='background:" . $colores[$row["estado"]] . "'>" . $iconos[$row["estado"]] . " <span class='d-none d-md-inline'>" . $estados[$row['estado']] . "</span></td>";
                 echo "</tr>";
             }
             echo "</tbody></table>";

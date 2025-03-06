@@ -160,18 +160,22 @@ class Database
         }
     }
 
-    public function insertPhotos($id, $photos)
+    public function insertPhotos($id, $photos, $e = "Entrada")
     {
         $targetDir = "fotos/";
         foreach ($photos['name'] as $key => $name) {
+            $fecha = date("Y-m-d");
+            $estado = $e;
             $fileTmpPath = $photos['tmp_name'][$key];
             $fileName = basename($name);
             $targetFilePath = $targetDir . $fileName;
             // Move the uploaded file to the target directory
             if (move_uploaded_file($fileTmpPath, $targetFilePath)) {
-                $stmt = $this->pdo->prepare("INSERT INTO foto (id_orden, archivo) VALUES (:id, :archivo)");
+                $stmt = $this->pdo->prepare("INSERT INTO foto (id_orden, archivo, fecha, estado) VALUES (:id, :archivo, :fecha, :estado)");
                 $stmt->bindParam(':id', $id);
                 $stmt->bindParam(':archivo', $fileName);
+                $stmt->bindParam(':fecha', $fecha);
+                $stmt->bindParam(':estado', $estado);
                 try {
                     $stmt->execute();
                 } catch (PDOException $e) {
