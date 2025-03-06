@@ -90,6 +90,11 @@ switch ($call) {
         $stmt->bindParam(':id', $_GET["id"], PDO::PARAM_INT);
         $stmt->execute();
         break;
+    case 5:
+        $current_time = date("Y-m-d H:i:s");
+        $stmt = $pdo->prepare("SELECT * FROM recordatorios WHERE fecha_fin > '$current_time' ORDER BY id DESC");
+        $stmt->execute();
+        break;
 }
 
 

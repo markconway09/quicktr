@@ -16,11 +16,14 @@ if(session_status() == PHP_SESSION_NONE) session_start();
 ?>
 <script>
     function fetchMessage() {
-        fetch('controller/fetch_recordatorio.php')
-            .then(response => {
-                return response.json();
-            })
-            .then(data => {
+        $.ajax({
+            url: 'controller/ajax_query.php',
+            type: 'GET',
+            data: {
+                call: 5
+            },
+            dataType: 'json',
+            success: function(data) {
                 const messageContent = document.getElementById('message-content');
                 let messagesAppended = false; // Flag to track if any messages were appended
 
@@ -53,9 +56,10 @@ if(session_status() == PHP_SESSION_NONE) session_start();
                 } else {
                     console.error('No messages found in response:', data);
                 }
-            })
-            .catch(error => {
-                console.error('Error fetching message:', error);
-            });
+            },
+            error: function(xhr, status, error) {
+                console.error('Error fetching message:', status, error);
+            }
+        });
     }
 </script>
