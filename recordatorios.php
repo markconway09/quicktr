@@ -37,11 +37,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="row mb-2">
             <div class="radio-inputs mx-auto col-12 col-lg-4 my-2">
                 <label class="radio">
-                    <input name="end_date" type="radio" value="+1 day" checked onclick="toggleDateInput(false)">
+                    <input name="end_date" type="radio" value="+1 day" checked onclick="toggleDateInput(false); updateSelectedDate(this.value)">
                     <span class="name">1 Día</span>
                 </label>
                 <label class="radio">
-                    <input name="end_date" type="radio" value="+1 week" onclick="toggleDateInput(false)">
+                    <input name="end_date" type="radio" value="+1 week" onclick="toggleDateInput(false); updateSelectedDate(this.value)">
                     <span class="name">1 Semana</span>
                 </label>
                 <label class="radio">
@@ -52,13 +52,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
 
         <div class="row mb-2">
-            <div class="col-4 mx-auto">
+            <div class="col-md-4 mx-auto">
                 <input class="form-control" type="datetime-local" name="expiration_time" id="expiration_time" hidden required disabled>
+                <input class="form-control" type="text" id="selected_date" readonly>
             </div>
         </div>
 
         <div class="row mb-2">
-            <div class="col-6 mx-auto text-light">
+            <div class="col-md-6 mx-auto text-light">
                 <div class="d-flex gap-3">
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" name="usuarios[]" value="tecnico" id="msgTec" checked>
@@ -83,7 +84,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
 
         <div class="row mb-2">
-            <div class="col-6 mx-auto">
+            <div class="col-md-6 mx-auto">
                 <div class="input-group">
                     <div class="form-floating">
                         <textarea name="mensaje" id="mensaje" class="form-control" placeholder="Mensaje" rows="4" style="height: 100%;"></textarea>
@@ -116,22 +117,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <table class="table table-dark table-striped">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Usuario</th>
+                    <th class="d-none d-md-table-cell">ID</th>
+                    <th class="d-none d-md-table-cell">Usuario</th>
                     <th>Mensaje</th>
-                    <th>Inicio</th>
-                    <th>Fin</th>
+                    <th class="d-none d-md-table-cell">Inicio</th>
+                    <th class="d-none d-md-table-cell">Fin</th>
                     <th>Estado</th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($recordatorios as $recordatorio): ?>
                     <tr>
-                        <td><?php echo htmlspecialchars($recordatorio['id']); ?></td>
-                        <td><?php echo htmlspecialchars($recordatorio['usuario']); ?></td>
+                        <td class="d-none d-md-table-cell"><?php echo htmlspecialchars($recordatorio['id']); ?></td>
+                        <td class="d-none d-md-table-cell"><?php echo htmlspecialchars($recordatorio['usuario']); ?></td>
                         <td><?php echo htmlspecialchars($recordatorio['mensaje']); ?></td>
-                        <td><?php echo htmlspecialchars($recordatorio['fecha_inicio']); ?></td>
-                        <td><?php echo htmlspecialchars($recordatorio['fecha_fin']); ?></td>
+                        <td class="d-none d-md-table-cell"><?php echo htmlspecialchars($recordatorio['fecha_inicio']); ?></td>
+                        <td class="d-none d-md-table-cell"><?php echo htmlspecialchars($recordatorio['fecha_fin']); ?></td>
                         <td class="text-center">
                             <?php
                             $now = new DateTime();
@@ -152,6 +153,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     function toggleDateInput(enable) {
         document.getElementById("expiration_time").disabled = !enable;
         document.getElementById("expiration_time").hidden = !enable;
+        document.getElementById("selected_date").hidden = enable;
     }
     function cancelarRecordatorio(id) {
         $.ajax({
@@ -170,4 +172,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
         });
     }
+    function updateSelectedDate(value) {
+        const selectedDateInput = document.getElementById("selected_date");
+        const now = new Date();
+        const newDate = new Date(now);
+        if (value === "+1 day") {
+            newDate.setDate(now.getDate() + 1);
+        } else if (value === "+1 week") {
+            newDate.setDate(now.getDate() + 7);
+        }
+        selectedDateInput.value = newDate.toLocaleString();
+    }
+
+    // Initialize the selected date input with the default value
+    document.addEventListener("DOMContentLoaded", function() {
+        updateSelectedDate(document.querySelector('input[name="end_date"]:checked').value);
+    });
 </script>
