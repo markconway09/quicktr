@@ -171,6 +171,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 console.error('AJAX Error: ' + status + ' - ' + error);
             }
         });
+        location.reload();
     }
     function updateSelectedDate(value) {
         const selectedDateInput = document.getElementById("selected_date");
