@@ -5,7 +5,7 @@ require_once "model/Ticket.php";
 require_once "model/Insumo.php";
 require_once "model/Database.php";
 
-if(session_status() == PHP_SESSION_NONE) session_start();
+if (session_status() == PHP_SESSION_NONE) session_start();
 if (isset($_POST["login"])) {
     $db = new Database();
     $pdo = $db->pdo;
@@ -82,21 +82,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script src="controller/jSignature/jSignature.min.js"></script>
 </head>
 
-<body class="pb-5">
+<body>
     <!-- NAVBAR -->
     <nav class="navbar navbar-light text-light" style="background-color:rgb(43,45,46);">
         <a class="navbar-brand mx-auto" href="">
             <img class="rounded mx-auto" src="LOGO.png" alt="logo" height="60">
-            <span class="badge badge-pill bg-danger">2.1.3</span>
         </a>
-        <?php if(isset($_SESSION["login"])) : ?>
-        <button class="btn position-relative text-light" style="right: 20px; background-color:#25BED4" data-bs-toggle="modal" data-bs-target="#messageModal">
-            <i class="bi bi-megaphone"></i>
-            <span id="announcementsPill" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-            0
-            <span class="visually-hidden">unread messages</span>
-            </span>
-        </button>
+        <?php if (isset($_SESSION["login"])) : ?>
+            <button class="btn position-relative text-light" style="right: 20px; background-color:#25BED4" data-bs-toggle="modal" data-bs-target="#messageModal">
+                <i class="bi bi-megaphone"></i>
+                <span id="announcementsPill" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    0
+                    <span class="visually-hidden">unread messages</span>
+                </span>
+            </button>
         <?php endif; ?>
     </nav>
 
@@ -149,18 +148,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </li>
                 </ul>
             </div>
-            <?php if($_SESSION["login"] != "tecnico" && $_SESSION["login"] != "repartidor") { ?>
-            <a href="formulario" class="button btn btn-dark mx-1 my-auto flex-fill">
-                <i class="bi bi-pencil-square"></i> <span class="d-sm-inline-block d-none">Formulario</span>
-            </a>
+            <?php if ($_SESSION["login"] != "tecnico" && $_SESSION["login"] != "repartidor") { ?>
+                <a href="formulario" class="button btn btn-dark mx-1 my-auto flex-fill">
+                    <i class="bi bi-pencil-square"></i> <span class="d-sm-inline-block d-none">Formulario</span>
+                </a>
             <?php } ?>
             <a href="list" class="button btn btn-dark mx-1 my-auto flex-fill">
                 <i class="bi bi-columns-gap"></i> <span class="d-sm-inline-block d-none">Lista</span>
             </a>
-            <?php if($_SESSION["login"] == "repartidor") { ?>
-            <a href="entregas" class="button btn btn-dark mx-1 my-auto flex-fill">
-                <i class="bi bi-view-list"></i> <span class="d-sm-inline-block d-none">Entregas</span>
-            </a>
+            <?php if ($_SESSION["login"] == "repartidor") { ?>
+                <a href="entregas" class="button btn btn-dark mx-1 my-auto flex-fill">
+                    <i class="bi bi-box-seam"></i> <span class="d-sm-inline-block d-none">Entregas</span>
+                </a>
             <?php } ?>
         </div>
     </nav>
@@ -175,6 +174,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         ?>
     </div>
+
+    <!-- FOOTER -->
+    <ul class="nav nav-tabs mt-2 border-0">
+        <li class="mx-auto">
+            <span class="nav-link active text-bg-dark border-0">QuickTR <span class="badge badge-pill bg-danger">2.1.3</span></span>
+        </li>
+    </ul>
+
     <!-- Toast Container -->
     <div class="toast-container position-fixed bottom-0 end-0 p-3" id="toastContainer"></div>
 </body>
