@@ -196,22 +196,24 @@
     }
 
     function updateStep(id, estado) {
-        $.ajax({
-            url: 'controller/ajax_query.php',
-            type: 'GET',
-            data: {
-                call: 3,
-                id: id,
-                estado: estado
-            },
-            dataType: 'json',
-            success: function(data) {
-                query();
-            },
-            error: function(xhr, status, error) {
-                console.error('AJAX Error: ' + status + ' - ' + error);
-            }
-        });
+        if (confirm('Cambiar estado?')) {
+            $.ajax({
+                url: 'controller/ajax_query.php',
+                type: 'GET',
+                data: {
+                    call: 3,
+                    id: id,
+                    estado: estado
+                },
+                dataType: 'json',
+                success: function(data) {
+                    query();
+                },
+                error: function(xhr, status, error) {
+                    console.error('AJAX Error: ' + status + ' - ' + error);
+                }
+            });
+        }
     }
 
     function displayList(data) {
@@ -251,7 +253,7 @@
             let nombre = item.nombre || "(No hay información)";
             let dayIndex = Math.floor(timeDiff / (1000 * 3600 * 24)) > 4 ? 4 : Math.floor(timeDiff / (1000 * 3600 * 24));
             let colD = item.estado < 4 ? colorDias[dayIndex] : "";
-            let disableLeft = item.estado <= 0 ? true : false;
+            let disableLeft = (item.estado <= 0) || (item.estado == 4) ? true : false;
             let disableRight = item.estado > 2 ? true : false;
             const cardHtml = `
                 <div class="card-header pt-3 text-left d-flex" style="color:white;background-color:${colores[item.estado]};">
@@ -277,7 +279,8 @@
                         <button class="cardBtn ` + (disableLeft ? 'disabled' : '') + `"
                                 onclick="updateStep(${item.id}, ` + (item.estado - 1) + `)"
                                 style="pointer-events: ` + (disableLeft ? 'none' : 'auto') + `;
-                                color: white; background-color:` + (disableLeft ? '' : colores[item.estado - 1]) + `">
+                                color: white; background-color:` + (disableLeft ? '' : colores[item.estado - 1]) + `"
+                                ` + (item.estado==4 ? 'hidden' : '') + `>
                             <i class="bi bi-arrow-left"></i>
                         </button>
             <?php }  ?>
@@ -289,7 +292,8 @@
                         <button class="cardBtn ` + (disableRight ? 'disabled' : '') + `"
                                 onclick="updateStep(${item.id}, ` + (item.estado + 1) + `)"
                                 style="pointer-events: ` + (disableRight ? 'none' : 'auto') + `;
-                                color: white; background-color:` + (disableRight ? '' : colores[item.estado + 1]) + `">
+                                color: white; background-color:` + (disableRight ? '' : colores[item.estado + 1]) + `"
+                                ` + (item.estado==4 ? 'hidden' : '') + `>
                             <i class="bi bi-arrow-right"></i>
                         </button>
             <?php }  ?>

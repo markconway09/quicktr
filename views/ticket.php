@@ -113,7 +113,7 @@ if ($ticket->estado > 0) {
 if ($ticket->estado < 3) {
     $disableRight = false;
 }
-
+if ($ticket->estado != 4) {
 // Left button (state -1)
 echo '
         <a href="list&id=' . $ticket->id . '&estado=' . ($ticket->estado - 1) . '" 
@@ -135,6 +135,7 @@ echo '
                 <i class="bi bi-arrow-right"></i>
             </span>
         </a>';
+}
 // Close the input group
 echo '</div>';
 ?>
