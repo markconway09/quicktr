@@ -86,8 +86,10 @@ switch ($call) {
         }
         break;
     case 4:
-        $stmt = $pdo->prepare("UPDATE recordatorios SET fecha_fin = NOW() WHERE id = :id");
+        $current_time = date("Y-m-d H:i:s");
+        $stmt = $pdo->prepare("UPDATE recordatorios SET fecha_fin = :t WHERE id = :id");
         $stmt->bindParam(':id', $_GET["id"], PDO::PARAM_INT);
+        $stmt->bindParam(':t', $current_time);
         $stmt->execute();
         break;
     case 5:
