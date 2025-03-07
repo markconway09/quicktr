@@ -244,9 +244,6 @@
             let servicio = item.servicio.split(":")[1];
             let estado = item.garantia == 0 ? pasos[item.estado] : "<i class='bi bi-file-text'></i> <a style='text-decoration:none;color:#FFA' href='list&id=" + item.garantia + "'>GARANTÍA <i class='bi bi-arrow-right-short'></i></a>";
             let desc = item.desc || "(No hay información)";
-            if (desc.length > 35) {
-                desc = desc.substring(0, 32) + '...';
-            }
             let nombreDispositivo = item.nombre_dispositivo || "(No hay información)";
             if (nombreDispositivo.length > 35) {
                 nombreDispositivo = nombreDispositivo.substring(0, 32) + '...';
@@ -263,12 +260,12 @@
                     ${estado} | <span style="color:${localColor[item.local == "Barcelona" ? 0 : 1]}">${item.local}</span></h5>
                 </div>
                 <div class="card-body">
-                    <p class="card-text"><i class="bi bi-person-fill"></i> ${nombre}</p>
-                    <p class="card-text"><i class="bi bi-wrench-adjustable"></i> ${servicio}</p>
-                    <p class="card-text"><i class="bi bi-phone-fill"></i> ${nombreDispositivo}</p>
-                    <p class="card-text"><i class="bi bi-file-text-fill"></i> ${desc}</p>
+                    <p class="card-text text-truncate" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><i class="bi bi-person-fill"></i> ${nombre}</p>
+                    <p class="card-text text-truncate" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><i class="bi bi-wrench-adjustable"></i> ${servicio}</p>
+                    <p class="card-text text-truncate" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><i class="bi bi-phone-fill"></i> ${nombreDispositivo}</p>
+                    <p class="card-text text-truncate" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><i class="bi bi-file-text-fill"></i> ${desc}</p>
                     <?php if ($_SESSION["login"] != "tecnico") { ?>
-                    <p class="card-text"><i class="bi bi-currency-exchange"></i> ${item.precio}€ (+ IVA ${item.iva}%) = <b>${item['precio-final']}€</b></p>
+                    <p class="card-text text-truncate" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><i class="bi bi-currency-exchange"></i> ${item.precio}€ (+ IVA ${item.iva}%) = <b>${item['precio-final']}€</b></p>
                     <?php } ?>
                     <div class="mb-3">
                         <div class="progress" role="progressbar" aria-label="Basic example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
