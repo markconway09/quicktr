@@ -178,7 +178,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- FOOTER -->
     <ul class="nav nav-tabs mt-2 border-0">
         <li class="mx-auto">
-            <span class="nav-link active text-bg-dark border-0">QuickTR <span class="badge badge-pill bg-danger">2.1.3</span></span>
+            <span class="nav-link active text-bg-dark border-0">QuickTR <span class="badge badge-pill bg-danger">2.1.4</span></span>
         </li>
     </ul>
 

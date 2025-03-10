@@ -62,19 +62,6 @@ if (!empty($ticket->did)) {
 } else {
     $estado = $ticket->pasosLargo[$ticket->estado];
 }
-$ins = "";
-if ($ticket->insumo_desc != "") {
-    $insumos = explode(";", $ticket->insumo_desc);
-    $precios = explode(";", $ticket->insumo_precio);
-    $ins = "<li class='list-group-item'><b>Insumo:</b></li>";
-    for ($k = 0; $k < count($insumos);) {
-        $ins .= '<li class="list-group-item mx-3"><b>' . $insumos[$k] . '</b> (' . $precios[$k] . '€)';
-        $k++;
-    }
-} else {
-    $ins = '<li class="list-group-item"><b>Insumo:</b> 0';
-}
-$ins .= '</li>';
 $garantia = "";
 if ($ticket->garantia != 0) $garantia = " | <i class='bi bi-file-text'></i> <a style='text-decoration:none;color:#FFA' href='list&id=" . $ticket->garantia . "'>GARANTÍA PARA #" . $ticket->garantia . "</a>";
 echo '<div class="col-12">
@@ -142,6 +129,52 @@ echo '</div>';
 <?php if ((($_SESSION["login"] == "admin" || $_SESSION["login"] == "dependiente")) && $ticket->estado != 4) { ?>
     <!-- BOTON MODAL COBRAR/CERRAR TICKET -->
     <button data-bs-toggle="modal" data-bs-target="#cobrarModal" class="mx-auto cssbuttons-io-button bg-secondary">Entregado/Cobrar<div class="icon"><i class="bi bi-cash text-dark"></i></div></button>
+<?php } ?>
+
+<?php if ((($_SESSION["login"] == "admin" || $_SESSION["login"] == "dependiente")) && $ticket->estado == 3) { ?>
+<div class="container mt-4">
+    <div class="row fs-4">
+        <?php if($ticket->avisos < 4) { ?>
+        <div class="col-1">
+            <div class="d-flex align-items-center justify-content-center">
+                <?php if($ticket->avisos > 0) { ?>
+                    <i class="bi bi-check-circle-fill text-danger"></i>
+                <?php } else { ?>
+                    <i class="bi bi-x-circle"></i>
+                <?php } ?>
+            </div>
+        </div>
+        <div class="col-1">
+            <div class="d-flex align-items-center justify-content-center">
+            <?php if($ticket->avisos > 1) { ?>
+                    <i class="bi bi-check-circle-fill text-danger"></i>
+                <?php } else { ?>
+                    <i class="bi bi-x-circle"></i>
+                <?php } ?>
+            </div>
+        </div>
+        <div class="col-1">
+            <div class="d-flex align-items-center justify-content-center">
+            <?php if($ticket->avisos > 2) { ?>
+                    <i class="bi bi-check-circle-fill text-danger"></i>
+                <?php } else { ?>
+                    <i class="bi bi-x-circle"></i>
+                <?php } ?>
+            </div>
+        </div>
+        <?php } else { ?>
+            <div class="col-lg-1 col-12">
+                <i class="bi bi-check-circle-fill text-danger"></i> <?php echo $ticket->avisos; ?>
+            </div>
+        <?php } ?>
+        <div class="col-9">
+            <form action="" method="post">
+                <input type="hidden" name="id" value="<?php echo $ticket->id; ?>">
+                <button type="submit" name="avisado" value="<?php echo ($ticket->avisos + 1); ?>" class="fileButton">Cliente Avisado</button>
+            </form>
+        </div>
+    </div>
+</div>
 <?php } ?>
 
 <hr>

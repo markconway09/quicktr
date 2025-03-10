@@ -24,8 +24,6 @@ if(isset($_POST["guardar-servicio"]))
     $ticket->direccion = $_POST["direccion"] ?? null;
     $ticket->cp = $_POST["cp"] ?? null;
     $ticket->email = $_POST["email"] ?? null;
-    $ticket->insumo_desc = $_POST["insumo_desc"] ?? null;
-    $ticket->insumo_precio = $_POST["insumo_precio"] ?? null;
     $ticket->metodo = $_POST["metodo"] ?? null;
     $ticket->nombre_dispositivo = $_POST["dispositivo"] ?? null;
     $ticket->precio = $_POST["precio"] ?? null;
@@ -48,6 +46,7 @@ if(isset($_POST["guardar-servicio"]))
     }
     $ticket->estado = 0;
     $ticket->garantia = $_POST["garantia"] ?? 0;
+    $ticket->avisos = $_POST["avisos"] ?? 0;
     if(!$db->isDuplicate($ticket)){
         $id = $db->insertTicket($ticket);
         
@@ -122,6 +121,14 @@ if(isset($_POST["estado"]))
     $ticket->sendReviewEmail();
 
     $db->logChange($_SESSION["nombre"], "Ticket #".$_GET['id']." cerrado", $_GET["id"]);
+}
+
+// AVISO AL CLIENTE ===============================================================================================
+if(isset($_POST["avisado"])){
+    $ticket = $db->fetchId($_GET["id"]);
+    $ticket->avisos = $_POST["avisado"];
+    $db->updateTicket($ticket);
+    $db->logChange($_SESSION["nombre"], "Cliente avisado (".$_POST["avisado"].")", $_GET["id"]);
 }
 
 // EDIT IN PAGE

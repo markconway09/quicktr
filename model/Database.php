@@ -42,7 +42,8 @@ class Database
                 FROM `info_orden` o
                 LEFT JOIN `devolucion` d ON (d.id_orden = o.id)
                 LEFT JOIN `factura` f ON (f.id_orden = o.id)
-                LEFT JOIN `firma` s ON (s.id_orden = o.id)";
+                LEFT JOIN `firma` s ON (s.id_orden = o.id)
+                ORDER BY o.id DESC";
         $stmt = $this->pdo->prepare($q);
         try {
             $stmt->execute();
@@ -56,6 +57,7 @@ class Database
         foreach ($results as $data) {
             $ticket = new Ticket();
             foreach ($data as $key => $value) {
+                $key = str_replace("-", "_", $key);
                 if (property_exists($ticket, $key)) {
                     $ticket->$key = $value;
                 }
@@ -82,8 +84,6 @@ class Database
             descuento = ?,
             iva = ?,
             `precio-final` = ?,
-            insumo_desc = ?,
-            insumo_precio = ?,
             metodo = ?,
             `nombre_dispositivo` = ?,
             `desc` = ?,
@@ -115,8 +115,6 @@ class Database
                 $ticket->descuento,
                 $ticket->iva,
                 $ticket->precio_final,
-                $ticket->insumo_desc,
-                $ticket->insumo_precio,
                 $ticket->metodo,
                 $ticket->nombre_dispositivo,
                 $ticket->desc,
@@ -213,14 +211,14 @@ class Database
     public function fetchInsumos($id = null)
     {
         $pdo = $this->pdo;
-        if($id == null) {
+        if ($id == null) {
             $stmt = $pdo->prepare("SELECT * FROM `insumos` WHERE estado > 0 AND estado < 3 ORDER BY id DESC");
         } else {
             $stmt = $pdo->prepare("SELECT * FROM `insumos` WHERE id_orden = :id");
             $stmt->bindParam(":id", $id);
         }
         $stmt->execute();
-        
+
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
@@ -230,7 +228,7 @@ class Database
         $stmt = $pdo->prepare("SELECT * FROM `insumos` WHERE id = :id");
         $stmt->bindParam(":id", $id_ins);
         $stmt->execute();
-        
+
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
@@ -260,48 +258,64 @@ class Database
     public function updateTicket($ticket)
     {
         $sql = "UPDATE info_orden SET 
-            nombre = ?,
-            documento = ?,
-            email = ?,
-            direccion = ?,
-            cp = ?,
-            telefono = ?,
-            precio = ?,
-            descuento = ?,
-            iva = ?,
-            `precio-final` = ?,
-            insumo_desc = ?,
-            insumo_precio = ?,
-            `nombre_dispositivo` = ?,
-            `desc` = ?,
-            `desc_tecnico` = ?,
-            `estado` = ?,
-            `metodo` = ?,
-            `fecha_pago` = ?
-            WHERE id = ?";
+        nombre = ?,
+        telefono = ?,
+        documento = ?,
+        servicio = ?,
+        email = ?,
+        direccion = ?,
+        cp = ?,
+        fecha_nacimiento = ?,
+        precio = ?,
+        descuento = ?,
+        iva = ?,
+        `precio-final` = ?,
+        metodo = ?,
+        `nombre_dispositivo` = ?,
+        `desc` = ?,
+        `desc_tecnico` = ?,
+        `local` = ?,
+        fecha = ?,
+        fecha_pago = ?,
+        garantia = ?,
+        estado = ?,
+        razon = ?,
+        dept = ?,
+        codigo_socio = ?,
+        codigo_usado = ?,
+        avisos = ?
+        WHERE id = ?";
 
         // Assuming you have a PDO connection
         $stmt = $this->pdo->prepare($sql);
         try {
             $stmt->execute([
                 $ticket->nombre,
+                $ticket->telefono,
                 $ticket->documento,
+                $ticket->servicio,
                 $ticket->email,
                 $ticket->direccion,
                 $ticket->cp,
-                $ticket->telefono,
+                $ticket->fecha_nacimiento,
                 $ticket->precio,
                 $ticket->descuento,
                 $ticket->iva,
                 $ticket->precio_final,
-                $ticket->insumo_desc,
-                $ticket->insumo_precio,
+                $ticket->metodo,
                 $ticket->nombre_dispositivo,
                 $ticket->desc,
                 $ticket->desc_tecnico,
-                $ticket->estado,
-                $ticket->metodo,
+                $ticket->local,
+                $ticket->fecha,
                 $ticket->fecha_pago,
+                $ticket->garantia,
+                $ticket->estado,
+                $ticket->razon,
+                $ticket->dept,
+                $ticket->codigo_socio,
+                $ticket->codigo_usado,
+                $ticket->avisos,
                 $ticket->id
             ]);
         } catch (Exception $e) {

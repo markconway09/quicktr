@@ -22,8 +22,6 @@ class Ticket
     public $descuento;
     public $iva;
     public $precio_final;
-    public $insumo_desc;
-    public $insumo_precio;
     public $metodo;
     public $nombre_dispositivo;
     public $desc;
@@ -37,6 +35,7 @@ class Ticket
     public $dept;
     public $codigo_socio;
     public $codigo_usado;
+    public $avisos;
     public $firma;
 
     public $iconos = ['search', 'person-raised-hand', 'tools', 'check-lg', 'person-fill-check', 'arrow-counterclockwise'];
