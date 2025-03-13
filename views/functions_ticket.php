@@ -31,18 +31,11 @@ if(isset($_POST["guardar-servicio"]))
     $ticket->iva = $_POST["iva"] ?? null;
     $ticket->precio_final = $_POST["precio-final"] ?? null;
     $ticket->fecha = date('Y-m-d');
-    if (isset($_POST["cod_ref"])) if ($_POST["cod_ref"] != "") $ticket->codigo_usado = $_POST["cod_ref"];
 
-    if (isset($_POST["socio"]) && !empty($_POST["nacimiento"])) {
-        $ticket->fecha_nacimiento = $_POST["nacimiento"];
-        $caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-        $ticket->codigo_socio = '';
-        for ($i = 0; $i < 10; $i++) {
-            $ticket->codigo_socio .= $caracteres[random_int(0, strlen($caracteres) - 1)];
-        }
+    if (isset($_POST["recurrente"])) {
+        $ticket->recurrente = $_POST["n_recurrente"] ?? $_POST["nombre"];
     } else {
-        $ticket->fecha_nacimiento = null;
-        $ticket->codigo_socio = null;
+        $ticket->recurrente = null;
     }
     $ticket->estado = 0;
     $ticket->garantia = $_POST["garantia"] ?? 0;
@@ -161,7 +154,7 @@ if (isset($_POST["editar_insumo"]))
         $stmt->execute();
         $k = 1;
         while (isset($_POST["insumo_desc" . $k]) && $_POST["insumo_desc" . $k] != "") {
-            $insumo = new Insumo($_POST["insumo_desc" . $k], $_POST["insumo_precio" . $k], $ticket->local, $_POST["insumo_estado" . $k], $_GET["id"]);
+            $insumo = new Insumo($_POST["insumo_desc" . $k], $_POST["insumo_precio" . $k], $ticket->local, $_POST["insumo_estado" . $k], $_POST["servicio" . $k], $_GET["id"]);
             $db->insertInsumo($insumo);
             $k++;
         }

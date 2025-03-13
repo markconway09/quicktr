@@ -79,7 +79,6 @@ class Database
             email = ?,
             direccion = ?,
             cp = ?,
-            fecha_nacimiento = ?,
             precio = ?,
             descuento = ?,
             iva = ?,
@@ -95,8 +94,7 @@ class Database
             estado = ?,
             razon = ?,
             dept = ?,
-            codigo_socio = ?,
-            codigo_usado = ?";
+            recurrente = ?";
 
 
         $stmt = $this->pdo->prepare($sql);
@@ -110,7 +108,6 @@ class Database
                 $ticket->email,
                 $ticket->direccion,
                 $ticket->cp,
-                $ticket->fecha_nacimiento,
                 $ticket->precio,
                 $ticket->descuento,
                 $ticket->iva,
@@ -126,8 +123,7 @@ class Database
                 $ticket->estado,
                 $ticket->razon,
                 $ticket->dept,
-                $ticket->codigo_socio,
-                $ticket->codigo_usado
+                $ticket->recurrente
             ]);
             return $this->pdo->lastInsertId();
         } catch (Exception $e) {
@@ -212,9 +208,20 @@ class Database
     {
         $pdo = $this->pdo;
         if ($id == null) {
-            $stmt = $pdo->prepare("SELECT * FROM `insumos` WHERE estado > 0 AND estado < 3 ORDER BY id DESC");
+            $stmt = $pdo->prepare("
+            SELECT i.*, p.nombre as proveedor, p.id as id_prov 
+            FROM `insumos` i
+            LEFT JOIN `proveedores_servicios` p ON i.id_servicio = p.id
+            WHERE i.estado > 0 AND i.estado < 3 
+            ORDER BY i.id DESC
+            ");
         } else {
-            $stmt = $pdo->prepare("SELECT * FROM `insumos` WHERE id_orden = :id");
+            $stmt = $pdo->prepare("
+            SELECT i.*, p.nombre as proveedor 
+            FROM `insumos` i
+            LEFT JOIN `proveedores_servicios` p ON i.id_servicio = p.id
+            WHERE i.id_orden = :id
+            ");
             $stmt->bindParam(":id", $id);
         }
         $stmt->execute();
@@ -237,8 +244,8 @@ class Database
         $pdo = $this->pdo;
         // Prepare the SQL statement
         $stmt = $pdo->prepare("
-            INSERT INTO `insumos` (fecha, nombre, precio, local, estado, id_orden)
-            VALUES (:fecha, :nombre, :precio, :loc, :estado, :id_orden)");
+            INSERT INTO `insumos` (fecha, nombre, precio, local, estado, id_orden, id_servicio)
+            VALUES (:fecha, :nombre, :precio, :loc, :estado, :id_orden, :servicio)");
 
         // Bind the parameters from the $ins array
         $stmt->bindParam(":fecha", $ins->fecha);
@@ -247,6 +254,7 @@ class Database
         $stmt->bindParam(":loc", $ins->local);
         $stmt->bindParam(":estado", $ins->estado);
         $stmt->bindParam(":id_orden", $ins->id_orden);
+        $stmt->bindParam(":servicio", $ins->servicio);
 
         try {
             $stmt->execute();
@@ -265,7 +273,6 @@ class Database
         email = ?,
         direccion = ?,
         cp = ?,
-        fecha_nacimiento = ?,
         precio = ?,
         descuento = ?,
         iva = ?,
@@ -281,9 +288,8 @@ class Database
         estado = ?,
         razon = ?,
         dept = ?,
-        codigo_socio = ?,
-        codigo_usado = ?,
-        avisos = ?
+        avisos = ?,
+        recurrente = ?
         WHERE id = ?";
 
         // Assuming you have a PDO connection
@@ -297,7 +303,6 @@ class Database
                 $ticket->email,
                 $ticket->direccion,
                 $ticket->cp,
-                $ticket->fecha_nacimiento,
                 $ticket->precio,
                 $ticket->descuento,
                 $ticket->iva,
@@ -313,9 +318,8 @@ class Database
                 $ticket->estado,
                 $ticket->razon,
                 $ticket->dept,
-                $ticket->codigo_socio,
-                $ticket->codigo_usado,
                 $ticket->avisos,
+                $ticket->recurrente,
                 $ticket->id
             ]);
         } catch (Exception $e) {

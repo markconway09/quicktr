@@ -204,9 +204,8 @@ echo '</div>';
                 </span>
             </p>
             <p class="card-text">
-                <b>Fecha Nacimiento:</b> <?php echo !empty($ticket->fecha_nacimiento) ? $ticket->fecha_nacimiento : "No especificado"; ?>
+                <b>Recurrente:</b> <?php echo !empty($ticket->recurrente) ? $ticket->recurrente : "No recurrente"; ?>
             </p>
-            <p class="card-text"><b>Código:</b> <?php echo !empty($ticket->codigo_socio) ? $ticket->codigo_socio : "No es socio"; ?></p>
         </div>
         <div class="col-md-6 col-12">
             <p class="card-text">
@@ -255,7 +254,6 @@ echo '</div>';
     <div class="col-md-6 col-12">
         <p class="card-text"><b>Local:</b> <?php echo $ticket->local ?></p>
         <p class="card-text"><b>Departamento:</b> <?php echo $ticket->dept ?></p>
-        <p class="card-text"><b>Código Usado:</b> <?php echo $ticket->codigo_usado ?></p>
     </div>
 </div>
 <hr>
@@ -330,7 +328,7 @@ echo '</div>';
         // Check if there are any insumos to display
         if (count($insumos) > 0) {
             echo "<table border='1' class='table table-secondary'>";
-            echo "<thead><tr><th>Nombre</th><th>Precio</th><th class='d-none d-md-table-cell'>Local</th><th class='d-none d-md-table-cell'>Fecha</th><th>Estado</th></tr></thead>";
+            echo "<thead><tr><th>Nombre</th><th>Precio</th><th class='d-none d-md-table-cell'>Local</th><th>Servicio</th><th class='d-none d-md-table-cell'>Fecha</th><th>Estado</th></tr></thead>";
             echo "<tbody>";
 
             // Loop through results and display each row
@@ -339,6 +337,7 @@ echo '</div>';
                 echo "<td style='background:white'>" . htmlspecialchars($row['nombre']) . "</td>";
                 echo "<td style='background:white'>" . htmlspecialchars($row['precio']) . " €</td>";
                 echo "<td style='background:white' class='d-none d-md-table-cell'>" . htmlspecialchars($row['local']) . "</td>";
+                echo "<td style='background:white'>" . htmlspecialchars($row['proveedor']) . "</td>";
                 echo "<td style='background:white' class='d-none d-md-table-cell'><small class='text-muted'>" . htmlspecialchars($row['fecha']) . "</small></td>";
                 if($row["estado"] > 0) {
                     echo "<td style='background:" . $colores[$row["estado"]] . "'>" . $iconos[$row['estado']] ." <span class='d-none d-md-inline'>". $estados[$row['estado']] . "</span></td>";
@@ -585,8 +584,13 @@ echo '</div>';
                                             <input <?php if ($_SESSION["login"] == "tecnico") {
                                                         echo "readonly";
                                                     } ?> class="form-control" placeholder="Precio" type="number" step=.01 name="insumo_precio<?php echo $i + 1; ?>" id="insumo_precio<?php echo $i + 1; ?>" value="<?php echo isset($row["precio"]) ? $row["precio"] : 0; ?>">
-                                            <label for="insumo_precio">Precio</label>
+                                            <label for="insumo_precio<?php echo $i + 1; ?>">Precio</label>
                                             <input type="hidden" name="insumo_estado<?php echo $i + 1; ?>" value="<?php echo $row["estado"]; ?>">
+                                        </div>
+
+                                        <div class="form-floating">
+                                        <input readonly class="form-control" placeholder="Servicio" type="text" name="servicio<?php echo $i + 1; ?>" id="servicio<?php echo $i + 1; ?>" value="<?php echo $row["proveedor"]; ?>">
+                                            <label for="servicio<?php echo $i + 1; ?>">Servicio</label>
                                         </div>
                                     </div>
                                 <?php
@@ -606,6 +610,13 @@ echo '</div>';
                                                     } ?> class="form-control" placeholder="Precio" type="number" step=.01 name="insumo_precio1" id="insumo_precio1">
                                             <label for="insumo_precio">Precio</label>
                                             <input type="hidden" name="insumo_estado1" value="0">
+                                        </div>
+                                        <div class="form-floating">
+                                            <select class="form-control form-select" name="servicio1" id="servicio1">
+                                                <option value="-">Ninguno</option>
+                                                <!-- Options will be populated by AJAX -->
+                                            </select>
+                                            <label for="servicio1">Servicio</label>
                                         </div>
                                     </div>
                                 <?php
@@ -741,8 +752,15 @@ echo '</div>';
                     } ?> class="form-control" placeholder="Precio" type="number" step=.01 name="insumo_precio' + (num + 1) + '" id="insumo_precio' + (num + 1) + '" value=0>' +
             '<label for="insumo_precio">Precio</label>' +
             '<input type="hidden" name="insumo_estado' + (num + 1) + '" value="0">'+
+            '</div>'+
+            '<div class="form-floating">'+
+            '<select class="form-control form-select" name="servicio' + (num + 1) + '" id="servicio' + (num + 1) + '">'+
+                '<option value="-">Ninguno</option>'+
+            '</select>'+
+            '<label for="servicio' + (num + 1) + '">Servicio</label>'+
             '</div>';
         insumo.appendChild(clone);
+        fetchProveedores();
     }
 
     var loadSign = true;
@@ -803,5 +821,31 @@ echo '</div>';
         var final = parseFloat(document.getElementById('precio-final').value);
         let calc = (final / (100 + iva)) * 100;
         document.getElementById('precio').value = calc.toFixed(2);
+    }
+
+    document.querySelector('button[data-bs-target="#insumoModal"]').addEventListener('click', function() {
+        fetchProveedores();
+    });
+
+    function fetchProveedores() {
+        $.ajax({
+            url: 'controller/fetch_proveedores.php',
+            method: 'GET',
+            dataType: 'json',
+            success: function(data) {
+            const selects = document.querySelectorAll('select[name^="servicio"]');
+            selects.forEach(select => {
+                data.forEach(proveedor => {
+                const option = document.createElement('option');
+                option.value = proveedor.id;
+                option.textContent = proveedor.nombre;
+                select.appendChild(option);
+                });
+            });
+            },
+            error: function(error) {
+            console.error('Error fetching proveedores:', error);
+            }
+        });
     }
 </script>

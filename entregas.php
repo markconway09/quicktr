@@ -121,7 +121,7 @@
         // Check if results are not empty
         if (count($results) > 0) {
             echo "<table border='1' class='table table-secondary'>";
-            echo "<thead><tr><th class='d-none d-md-table-cell'>Fecha</th><th>Nombre</th><th>Precio</th><th>Local</th><th class='d-none d-md-table-cell'>ID Orden</th><th colspan=2>Estado</th></tr></thead>";
+            echo "<thead><tr><th class='d-none d-md-table-cell'>Fecha</th><th>Nombre</th><th>Precio</th><th>Local</th><th>Servicio</th><th class='d-none d-md-table-cell'>ID Orden</th><th colspan=2>Estado</th></tr></thead>";
             echo "<tbody>";
 
             // Loop through results and display each row
@@ -131,6 +131,10 @@
                 echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['nombre']) . "</td>";
                 echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['precio']) . " €</td>";
                 echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['local']) . "</td>";
+                echo "<td style='background:" . $colores[$row["estado"]] . "'>" .
+                        "<button type='button' class='btn mb-2' data-bs-toggle='modal' data-bs-target='#proveedoresModal' onclick='fetchProveedor(" . $row['id_prov'] . ")'>
+                            ".htmlspecialchars($row['proveedor'])."
+                        </button></td>";
 
                 if ($row["id_orden"] === null) {
                     echo "<td class='d-none d-md-table-cell' style='background:" . $colores[$row["estado"]] . "'>";
@@ -166,14 +170,14 @@
     
     try {
         $pdo = $db->pdo;
-        $stmt = $pdo->prepare("SELECT * FROM `insumos` WHERE estado = 0 AND id_orden IS NULL ORDER BY id DESC");
+        $stmt = $pdo->prepare("SELECT insumos.*, proveedores_servicios.nombre AS proveedor, proveedores_servicios.id as id_prov FROM `insumos` LEFT JOIN `proveedores_servicios` ON insumos.id_servicio = proveedores_servicios.id WHERE insumos.estado = 0 AND insumos.id_orden IS NULL ORDER BY insumos.id DESC");
         $stmt->execute();
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         // Check if results are not empty
         if (count($results) > 0) {
             echo "<table border='1' class='table table-secondary'>";
-            echo "<thead><tr><th class='d-none d-md-table-cell'>Fecha</th><th>Nombre</th><th>Precio</th><th>Local</th><th class='d-none d-md-table-cell'>ID Orden</th><th colspan=2>Estado</th></tr></thead>";
+            echo "<thead><tr><th class='d-none d-md-table-cell'>Fecha</th><th>Nombre</th><th>Precio</th><th>Local</th><th>Servicio</th><th class='d-none d-md-table-cell'>ID Orden</th><th colspan=2>Estado</th></tr></thead>";
             echo "<tbody>";
 
             // Loop through results and display each row
@@ -183,6 +187,10 @@
                 echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['nombre']) . "</td>";
                 echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['precio']) . " €</td>";
                 echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['local']) . "</td>";
+                echo "<td style='background:" . $colores[$row["estado"]] . "'>" .
+                        "<button type='button' class='btn mb-2' data-bs-toggle='modal' data-bs-target='#proveedoresModal' onclick='fetchProveedor(" . $row['id_prov'] . ")'>
+                            ".htmlspecialchars($row['proveedor'])."
+                        </button></td>";
 
                 if ($row["id_orden"] === null) {
                     echo "<td class='d-none d-md-table-cell' style='background:" . $colores[$row["estado"]] . "'>";
@@ -222,14 +230,14 @@
 
     try {
         $pdo = $db->pdo;
-        $stmt = $pdo->prepare("SELECT * FROM `insumos` WHERE estado > 2 ORDER BY id DESC");
+        $stmt = $pdo->prepare("SELECT insumos.*, proveedores_servicios.nombre AS proveedor, proveedores_servicios.id as id_prov FROM `insumos` LEFT JOIN `proveedores_servicios` ON insumos.id_servicio = proveedores_servicios.id WHERE insumos.estado > 2 ORDER BY insumos.id DESC");
         $stmt->execute();
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         // Check if results are not empty
         if (count($results) > 0) {
             echo "<table border='1' class='table table-secondary'>";
-            echo "<thead><tr><th class='d-none d-md-table-cell'>Fecha</th><th>Nombre</th><th>Precio</th><th>Local</th><th class='d-none d-md-table-cell'>ID Orden</th><th>Estado</th></tr></thead>";
+            echo "<thead><tr><th class='d-none d-md-table-cell'>Fecha</th><th>Nombre</th><th>Precio</th><th>Local</th><th>Servicio</th><th class='d-none d-md-table-cell'>ID Orden</th><th>Estado</th></tr></thead>";
             echo "<tbody>";
 
             // Loop through results and display each row
@@ -239,6 +247,10 @@
                 echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['nombre']) . "</td>";
                 echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['precio']) . " €</td>";
                 echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['local']) . "</td>";
+                echo "<td style='background:" . $colores[$row["estado"]] . "'>" .
+                        "<button type='button' class='btn mb-2' data-bs-toggle='modal' data-bs-target='#proveedoresModal' onclick='fetchProveedor(" . $row['id_prov'] . ")'>
+                            ".htmlspecialchars($row['proveedor'])."
+                        </button></td>";
 
                 if ($row["id_orden"] === null) {
                     echo "<td class='d-none d-md-table-cell' style='background:" . $colores[$row["estado"]] . "'>";
@@ -335,6 +347,21 @@
     </div>
 </div>
 
+<!-- Proveedores Modal -->
+<div class="modal fade" id="proveedoresModal" tabindex="-1" aria-labelledby="proveedoresModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="proveedoresModalLabel">Información</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="proveedorInfo"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
     const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
@@ -345,7 +372,35 @@
         
         // Loop through all matching inputs and set their value
         hiddenInputs.forEach(input => {
-        input.value = id;
+            input.value = id;
+        });
+    }
+
+    function fetchProveedor(id) {
+        $.ajax({
+            url: `controller/fetch_proveedores.php?id=${id}`,
+            method: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                let info = '';
+                if (data.error) {
+                    info = `<div class="alert alert-danger">${data.error}</div>`;
+                } else {
+                    info = `<div class="list-group">`;
+                    data.forEach(item => {
+                        info += `<div class="list-group-item">
+                                    <h5 class="mb-1">${item.nombre}</h5>
+                                    <p class="mb-1">Teléfono: ${item.telefono}</p>
+                                    <p class="mb-1">Dirección: ${item.direccion}</p>
+                                 </div>`;
+                    });
+                    info += `</div>`;
+                }
+                $('#proveedorInfo').html(info);
+            },
+            error: function() {
+                $('#proveedorInfo').html(`<p class="text-danger">Error fetching data</p>`);
+            }
         });
     }
 </script>

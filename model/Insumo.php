@@ -7,9 +7,10 @@ class Insumo
     public $precio;
     public $local;
     public $estado;
+    public $servicio;
     public $id_orden;
 
-    function __construct(string $nombre, int $precio, string $local, int $estado, int $id_orden)
+    function __construct(string $nombre, int $precio, string $local, int $estado, string $servicio, int $id_orden)
     {
         $this->id = null;
         $this->nombre = $nombre;
@@ -17,6 +18,7 @@ class Insumo
         $this->precio = $precio;
         $this->local = $local;
         $this->estado = $estado;
+        $this->servicio = $servicio;
         $this->id_orden = $id_orden;
     }
 }

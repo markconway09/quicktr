@@ -17,7 +17,6 @@ class Ticket
     public $email;
     public $direccion;
     public $cp;
-    public $fecha_nacimiento;
     public $precio;
     public $descuento;
     public $iva;
@@ -33,9 +32,8 @@ class Ticket
     public $estado;
     public $razon;
     public $dept;
-    public $codigo_socio;
-    public $codigo_usado;
     public $avisos;
+    public $recurrente;
     public $firma;
 
     public $iconos = ['search', 'person-raised-hand', 'tools', 'check-lg', 'person-fill-check', 'arrow-counterclockwise'];
@@ -55,11 +53,6 @@ class Ticket
         } else {
             $ser1 = "Servicio";
             $ser2 = "";
-        }
-        if ($this->codigo_socio) {
-            $socio = "<p><strong>CÓDIGO DE SOCIO:</strong> " . $this->codigo_socio . "</p>";
-        } else {
-            $socio = null;
         }
         if($this->local == "Barcelona") {
             $d1 = "Carrer d'Entença, 117";
@@ -130,7 +123,6 @@ class Ticket
                                 <p><strong>Tipo de servicio:</strong> ' . $ser1 . '</p>
                                 <p><strong>Servicio Reportado:</strong> ' . $ser2 . '</p>
                                 <p><strong>Descripción:</strong> ' . $this->desc . '</p>
-                                ' . $socio . '
                                 </div>
                             </div>
                             <div style="padding: 30px; background-color: #f9f9f9;">  

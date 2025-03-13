@@ -13,7 +13,7 @@ if(isset($_GET["form"])){
 ?>
 
 <div class="row">
-    <div class="col-12 col-lg-4 col-md-6 mb-3">
+    <div class="col-12 col-lg-6 mb-3">
         <?php if($rellenar) : ?>
             <input type="hidden" value="<?php echo $servicio[0];?>" id="tipo_servicio">
         <?php endif ?>
@@ -32,7 +32,7 @@ if(isset($_GET["form"])){
             <label for="servicio">Tipo de Servicio</label>
         </div>
     </div>
-    <div class="col-12 col-lg-4 col-md-6 mb-3">
+    <div class="col-12 col-lg-6 mb-3">
         <div class="form-floating">
             <?php if($rellenar && isset($servicio[1])) : ?>
                 <input type="text" class="form-control" value="<?php echo $servicio[1];?>" id="servicio2" name="servicio2">
@@ -46,16 +46,6 @@ if(isset($_GET["form"])){
             <?php endif ?>
         </div>
     </div>
-    <?php if(!$rellenar) : ?>
-    <div class="col-12 col-lg-4 mb-3">
-        <div class="form-floating" style="z-index: 10;">
-            <!-- The select select_code that Choices.js will enhance -->
-            <select id="cod_ref" class="form-select" name="cod_ref">
-                <option value="">Código de referencia</option> <!-- Placeholder option -->
-            </select>
-        </div>
-    </div>
-    <?php endif ?>
 </div>
 <div class="row mb-3">
     <?php if(!$rellenar): ?>

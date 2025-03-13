@@ -1,13 +1,13 @@
 <?php
 // LOGICA POR SI SE TIENE QUE RELLENAR ALGUNOS CAMPOS
-if(isset($_GET["id"])){
+if (isset($_GET["id"])) {
     $db = new Database();
-    $datos=$db->fetchId($_GET["id"]);
+    $datos = $db->fetchId($_GET["id"]);
     $servicio = explode(": ", $datos->servicio);
 }
 $rellenar = false;
-if(isset($_GET["form"])){
-    if($_GET["form"] == "garantia") $rellenar = true;
+if (isset($_GET["form"])) {
+    if ($_GET["form"] == "garantia") $rellenar = true;
 }
 
 ?>
@@ -23,20 +23,18 @@ if(isset($_GET["form"])){
     <div class="col-12 col-md-6 mb-3">
         <div class="form-floating">
             <input class="form-control" placeholder="Nombre" type="text" name="nombre" id="nombre"
-                <?php if($rellenar) : ?>
-                    value="<?php echo $datos->nombre;?>"
-                <?php endif ?>
-            >
+                <?php if ($rellenar) : ?>
+                value="<?php echo $datos->nombre; ?>"
+                <?php endif ?>>
             <label for="nombre">Nombre</label>
         </div>
     </div>
     <div class="col-12 col-lg-4 col-md-6 mb-3">
         <div class="form-floating">
             <input class="form-control" placeholder="DNI/NIF/NIE" type="text" name="doc" id="doc"
-                <?php if($rellenar) : ?>
-                    value="<?php echo $datos->documento;?>"
-                <?php endif ?>
-            >
+                <?php if ($rellenar) : ?>
+                value="<?php echo $datos->documento; ?>"
+                <?php endif ?>>
             <label for="doc">DNI/NIF/NIE</label>
         </div>
     </div>
@@ -44,13 +42,13 @@ if(isset($_GET["form"])){
 <div class="row">
     <div class="col-12 col-md-5 mb-3">
         <div class="input-group">
-            <?php if($rellenar) : ?>
+            <?php if ($rellenar) : ?>
                 <div class="form-floating">
-                    <input class="form-control" placeholder="Teléfono" type="tel" name="tel" id="tel" value="<?php echo $datos->telefono;?>">
+                    <input class="form-control" placeholder="Teléfono" type="tel" name="tel" id="tel" value="<?php echo $datos->telefono; ?>">
                     <label for="tel">Teléfono</label>
                 </div>
             <?php endif ?>
-            <?php if(!$rellenar) : ?>
+            <?php if (!$rellenar) : ?>
                 <div class="form-floating w-25">
                     <?php
                     include 'views/countrycodes.php';
@@ -67,10 +65,9 @@ if(isset($_GET["form"])){
     <div class="col-12 col-md-7 mb-3">
         <div class="form-floating">
             <input class="form-control" placeholder="Email" type="email" name="email" id="email"
-                <?php if($rellenar) : ?>
-                    value="<?php echo $datos->email;?>"
-                <?php endif ?>
-            >
+                <?php if ($rellenar) : ?>
+                value="<?php echo $datos->email; ?>"
+                <?php endif ?>>
             <label for="email">Email</label>
         </div>
     </div>
@@ -80,20 +77,20 @@ if(isset($_GET["form"])){
         <div class="form-floating">
             <select class="form-control form-select" name="local" id="local">
                 <?php
-                if (!is_null($_SESSION["login"])&&$_SESSION["login"]!="admin") {
+                if (!is_null($_SESSION["login"]) && $_SESSION["login"] != "admin") {
                 ?>
                     <option value="<?php echo $_SESSION["local"]; ?>"><?php echo $_SESSION["local"]; ?></option>
                 <?php
                 } else {
                 ?>
-                <?php if($rellenar) : ?>
-                    <option value="Barcelona" <?php if($datos->local == "Barcelona") echo "selected"; ?>>Barcelona</option>
-                    <option value="Mataró" <?php if($datos->local == "Mataró") echo "selected"; ?>>Mataró</option>
-                <?php endif ?>
-                <?php if(!$rellenar) : ?>
-                    <option value="Barcelona">Barcelona</option>
-                    <option value="Mataró">Mataró</option>
-                <?php endif ?>
+                    <?php if ($rellenar) : ?>
+                        <option value="Barcelona" <?php if ($datos->local == "Barcelona") echo "selected"; ?>>Barcelona</option>
+                        <option value="Mataró" <?php if ($datos->local == "Mataró") echo "selected"; ?>>Mataró</option>
+                    <?php endif ?>
+                    <?php if (!$rellenar) : ?>
+                        <option value="Barcelona">Barcelona</option>
+                        <option value="Mataró">Mataró</option>
+                    <?php endif ?>
                 <?php
                 }
                 ?>
@@ -132,27 +129,27 @@ if(isset($_GET["form"])){
 </div>
 
 <div class="row">
-    <label for="socio" class="text-light mb-1 w-25">Registrar Socio</label>
-    <div class="col-12">
+    <div class="col-12 col-lg-6">
         <label class="switch">
-            <input type="checkbox" onchange="registroSocio()" name="socio" id="socio">
+            <input type="checkbox" onchange="registroRecurrente()" name="recurrente" id="recurrente">
             <span class="slider"></span>
         </label>
+        <label for="recurrente" class="text-light mb-1 w-25">Cliente Recurrente</label>
     </div>
 </div>
 <div class="row">
-    <div class="col-12 col-lg-3 my-3 d-none" id="regSocio">
+    <div class="col-12 col-lg-3 my-3 d-none" id="regRec">
         <div class="form-floating">
-            <input class="form-control" placeholder="Fecha de nacimiento" type="date" name="nacimiento" id="nacimiento">
-            <label for="nacimiento">Fecha de nacimiento</label>
+            <input class="form-control" placeholder="Tipo" type="text" name="n_recurrente" id="n_recurrente">
+            <label for="n_recurrente">Nombre</label>
         </div>
     </div>
 </div>
 
 <script>
     // REGISTRO SOCIO
-    function registroSocio() {
-        let s = $("#regSocio");
+    function registroRecurrente() {
+        let s = $("#regRec");
         if (s.hasClass("d-none")) {
             s.removeClass("d-none");
             s.removeAttr("required");
@@ -163,7 +160,7 @@ if(isset($_GET["form"])){
         }
     }
 
-    function selectCliente(id){
+    function selectCliente(id) {
         var nombre = $("#nombre");
         var doc = $("#doc");
         var tel = $("#tel");
@@ -172,11 +169,13 @@ if(isset($_GET["form"])){
         $.ajax({
             url: 'controller/ajax_query.php', // The PHP file that returns data
             type: 'GET', // Method of the request
-            data: { call: 0 },
+            data: {
+                call: 0
+            },
             dataType: 'json', // Expected data type (JSON)
             success: function(data) {
                 data.forEach(function(item) {
-                    if(id == item["id"]){
+                    if (id == item["id"]) {
                         cliente = item;
                     }
                 });
@@ -210,11 +209,13 @@ if(isset($_GET["form"])){
         $.ajax({
             url: 'controller/ajax_query.php', // The PHP file that returns data
             type: 'GET', // Method of the request
-            data: { call: 0 },
+            data: {
+                call: 0
+            },
             dataType: 'json', // Expected data type (JSON)
             success: function(data) {
                 data.forEach(function(item) {
-                    if(item["nombre"] != "" && item["nombre"] != "-"){
+                    if (item["nombre"] != "" && item["nombre"] != "-") {
                         availableItems.push(item["nombre"]);
                         availableId.push(item["id"]);
                     }

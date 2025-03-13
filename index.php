@@ -124,14 +124,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </li>
                         <li><a class="dropdown-item text-light" href="user-admin"><i class="bi bi-people"></i> Usuarios</a></li>
                         <li><a class="dropdown-item text-light" href="imageManager"><i class="bi bi-image"></i> Gestionar Fotos</a></li>
-                        <li><a class="dropdown-item text-light" href="referencias"><i class="bi bi-upc-scan"></i> Códigos</a></li>
+                        <li><a class="dropdown-item text-light" href="errores"><i class="bi bi-exclamation-octagon"></i> Errores</a></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
                         <li><a class="dropdown-item text-light" href="totalventas"><i class="bi bi-calculator"></i> Total Ventas</a></li>
                         <li><a class="dropdown-item text-light" href="infoClientes"><i class="bi bi-person-up"></i> Exportar Clientes</a></li>
                         <li><a class="dropdown-item text-light" href="infoOrdenes"><i class="bi bi-database-up"></i> Exportar Ordenes</a></li>
-                        <li><a class="dropdown-item text-light" href="errores"><i class="bi bi-exclamation-octagon"></i> Errores</a></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
@@ -178,7 +177,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- FOOTER -->
     <ul class="nav nav-tabs mt-2 border-0">
         <li class="mx-auto">
-            <span class="nav-link active text-bg-dark border-0">QuickTR <span class="badge badge-pill bg-danger">2.1.4</span></span>
+            <span class="nav-link active text-bg-dark border-0">QuickTR <span class="badge badge-pill bg-danger">2.2.0</span></span>
         </li>
     </ul>
 
@@ -195,7 +194,6 @@ include_once "views/mostrar_mensaje.php";
         fetchMessage();
     });
 </script>
-<!-- END RECORDATORIOS -->
 
 <!-- Bootstrap JS Bundle -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

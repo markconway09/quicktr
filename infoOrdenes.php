@@ -12,7 +12,6 @@
         $ticket->email = $_POST['email'] ?? null;
         $ticket->direccion = $_POST['direccion'] ?? null;
         $ticket->cp = $_POST['cp'] ?? null;
-        $ticket->fecha_nacimiento = (!empty($_POST['fecha_nacimiento'])) ? $_POST['fecha_nacimiento'] : null;
         $ticket->precio = $_POST['precio'] ?? null;
         $ticket->descuento = $_POST['descuento'] ?? null;
         $ticket->iva = $_POST['iva'] ?? null;
@@ -27,8 +26,7 @@
         $ticket->estado = $_POST['estado'] ?? null;
         $ticket->razon = $_POST['razon'] ?? null;
         $ticket->dept = $_POST['dept'] ?? null;
-        $ticket->codigo_socio = $_POST['codigo_socio'] ?? null;
-        $ticket->codigo_usado = $_POST['codigo_usado'] ?? null;
+        $ticket->recurrente = $_POST['recurrente'] ?? null;
         $ticket->avisos = $_POST['avisos'] ?? null;
 
         $db->updateTicket($ticket);
@@ -105,12 +103,12 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label for="fecha_nacimiento" class="form-label">Fecha de Nacimiento</label>
-                                    <input type="date" class="form-control text-bg-dark" id="fecha_nacimiento" name="fecha_nacimiento" value="<?php echo $ticket->fecha_nacimiento; ?>">
-                                </div>
-                                <div class="col-md-6 mb-3">
                                     <label for="precio" class="form-label">Precio</label>
                                     <input type="text" class="form-control text-bg-dark" id="precio" name="precio" value="<?php echo $ticket->precio; ?>">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="recurrente" class="form-label">Recurrente</label>
+                                    <input type="text" class="form-control text-bg-dark" id="recurrente" name="recurrente" value="<?php echo $ticket->recurrente; ?>">
                                 </div>
                             </div>
                             <div class="row">
@@ -181,16 +179,6 @@
                                 <div class="col-md-6 mb-3">
                                     <label for="dept" class="form-label">Departamento</label>
                                     <input type="text" class="form-control text-bg-dark" id="dept" name="dept" value="<?php echo $ticket->dept; ?>">
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="codigo_socio" class="form-label">Código de Socio</label>
-                                    <input type="text" class="form-control text-bg-dark" id="codigo_socio" name="codigo_socio" value="<?php echo $ticket->codigo_socio; ?>">
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="codigo_usado" class="form-label">Código Usado</label>
-                                    <input type="text" class="form-control text-bg-dark" id="codigo_usado" name="codigo_usado" value="<?php echo $ticket->codigo_usado; ?>">
                                 </div>
                             </div>
                         </form>
