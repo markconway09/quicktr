@@ -123,6 +123,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <hr class="dropdown-divider">
                         </li>
                         <li><a class="dropdown-item text-light" href="user-admin"><i class="bi bi-people"></i> Usuarios</a></li>
+                        <li><a class="dropdown-item text-light" href="proveedores"><i class="bi bi-person-raised-hand"></i> Proveedores</a></li>
                         <li><a class="dropdown-item text-light" href="imageManager"><i class="bi bi-image"></i> Gestionar Fotos</a></li>
                         <li><a class="dropdown-item text-light" href="errores"><i class="bi bi-exclamation-octagon"></i> Errores</a></li>
                         <li>

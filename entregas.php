@@ -6,13 +6,13 @@
     <!-- FORMULARIO -->
     <form action="" method="POST">
         <div class="row">
-            <div class="col-md-4 col-12 mb-1">
+            <div class="col-md-3 col-12 mb-1">
                 <div class="form-floating">
                     <input class="form-control" placeholder="Nombre" type="text" id="nombre" name="nombre" required>
                     <label for="nombre" class="text-dark">Nombre</label>
                 </div>
             </div>
-            <div class="col-md-4 col-12 mb-1">
+            <div class="col-md-3 col-12 mb-1">
                 <div class="form-floating">
                     <select class="form-control" id="a" name="a" required>
                         <option value="" disabled selected>-Seleccionar Destino-</option>
@@ -24,10 +24,19 @@
                     <label for="a" class="text-dark">Local</label>
                 </div>
             </div>
-            <div class="col-md-4 col-12 mb-1">
+            <div class="col-md-3 col-12 mb-1">
                 <div class="form-floating">
                     <input class="form-control" placeholder="Precio" type="text" id="precio" name="precio" required>
                     <label for="precio" class="text-dark">Precio</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-12 mb-1">
+                <div class="form-floating">
+                    <select class="form-control form-select" name="servicio" id="servicio">
+                        <option value="-">Ninguno</option>
+                        <!-- Options will be populated by AJAX -->
+                    </select>
+                    <label for="servicio1">Servicio</label>
                 </div>
             </div>
         </div>
@@ -47,11 +56,12 @@
         $fecha = date("Y-m-d");
         $db = new Database();
         $pdo = $db->pdo;
-        $stmt = $pdo->prepare("INSERT INTO insumos VALUES (null, :fecha, :nombre, :precio, :loc, 1, null)");
+        $stmt = $pdo->prepare("INSERT INTO insumos VALUES (null, :fecha, :nombre, :precio, :loc, 1, null, :serv)");
         $stmt->bindParam(':nombre', $_POST["nombre"]);
         $stmt->bindParam(':precio', $_POST["precio"]);
         $stmt->bindParam(':loc', $_POST["a"]);
         $stmt->bindParam(':fecha', $fecha);
+        $stmt->bindParam(':serv', $_POST["servicio"]);
         try {
             $stmt->execute();
         } catch (PDOException $e) {
@@ -92,25 +102,25 @@
         }
     }
     // END CHANGE
-    
+
     // AGREGAR ID ASSOCIADO
-        if (isset($_POST["id_orden"])) {
-            $id = $_POST["id"];
-            $id_orden = $_POST["id_orden"];
-            $db = new Database();
-            $pdo = $db->pdo;
-            $stmt = $pdo->prepare("UPDATE insumos SET id_orden = :id_orden WHERE id = :id");
-            $stmt->bindParam(':id', $id);
-            $stmt->bindParam(':id_orden', $id_orden);
-            try {
-                $stmt->execute();
-            } catch (PDOException $e) {
-                logError($e->getMessage());
-            }
+    if (isset($_POST["id_orden"])) {
+        $id = $_POST["id"];
+        $id_orden = $_POST["id_orden"];
+        $db = new Database();
+        $pdo = $db->pdo;
+        $stmt = $pdo->prepare("UPDATE insumos SET id_orden = :id_orden WHERE id = :id");
+        $stmt->bindParam(':id', $id);
+        $stmt->bindParam(':id_orden', $id_orden);
+        try {
+            $stmt->execute();
+        } catch (PDOException $e) {
+            logError($e->getMessage());
         }
+    }
     // END ID
 
-    $estados = ["Sin estado, sin ID","PENDIENTE", "EN CAMINO", "ENTREGADO"];
+    $estados = ["Sin estado, sin ID", "PENDIENTE", "EN CAMINO", "ENTREGADO"];
     $iconos = ["", "<i class='bi bi-hourglass-bottom'></i>", "<i class='bi bi-person-walking'></i>", "<i class='bi bi-check-lg'></i>"];
     $colores = ["", "#ed7279", "#f0de92", "#8bfa82"];
 
@@ -132,22 +142,22 @@
                 echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['precio']) . " €</td>";
                 echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['local']) . "</td>";
                 echo "<td style='background:" . $colores[$row["estado"]] . "'>" .
-                        "<button type='button' class='btn mb-2' data-bs-toggle='modal' data-bs-target='#proveedoresModal' onclick='fetchProveedor(" . $row['id_prov'] . ")'>
-                            ".htmlspecialchars($row['proveedor'])."
+                    "<button type='button' class='btn mb-2' data-bs-toggle='modal' data-bs-target='#proveedoresModal' onclick='fetchProveedor(" . $row['id_prov'] . ")'>
+                            " . htmlspecialchars($row['proveedor']) . "
                         </button></td>";
 
                 if ($row["id_orden"] === null) {
                     echo "<td class='d-none d-md-table-cell' style='background:" . $colores[$row["estado"]] . "'>";
-                    ?>
+    ?>
                     <button type="button" class="btn btn-primary"
-                            data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="setId(<?php echo $row['id']; ?>)">
+                        data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="setId(<?php echo $row['id']; ?>)">
                         <i class="bi bi-link" data-bs-toggle="tooltip" data-bs-title="Asociar Ticket"></i>
                     </button>
-                    <?php
+                <?php
                     echo "</td>";
                 } else echo "<td class='d-none d-md-table-cell' style='background:" . $colores[$row["estado"]] . "'>" .
-                                ($row['id_orden'] == 0?"-":"<a href='list&id=".$row["id_orden"]."'>".$row['id_orden']."</a>") .
-                            "</td>";
+                    ($row['id_orden'] == 0 ? "-" : "<a href='list&id=" . $row["id_orden"] . "'>" . $row['id_orden'] . "</a>") .
+                    "</td>";
 
                 echo "<td style='background:" . $colores[$row["estado"]] . "'>" . $iconos[$row["estado"]] . " <span class='d-none d-md-inline'>" . $estados[$row['estado']] . "</span></td>";
                 echo "<td style='background:" . $colores[$row["estado"]] . "'>";
@@ -167,7 +177,7 @@
     } catch (PDOException $e) {
         logError($e->getMessage());
     }
-    
+
     try {
         $pdo = $db->pdo;
         $stmt = $pdo->prepare("SELECT insumos.*, proveedores_servicios.nombre AS proveedor, proveedores_servicios.id as id_prov FROM `insumos` LEFT JOIN `proveedores_servicios` ON insumos.id_servicio = proveedores_servicios.id WHERE insumos.estado = 0 AND insumos.id_orden IS NULL ORDER BY insumos.id DESC");
@@ -188,22 +198,22 @@
                 echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['precio']) . " €</td>";
                 echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['local']) . "</td>";
                 echo "<td style='background:" . $colores[$row["estado"]] . "'>" .
-                        "<button type='button' class='btn mb-2' data-bs-toggle='modal' data-bs-target='#proveedoresModal' onclick='fetchProveedor(" . $row['id_prov'] . ")'>
-                            ".htmlspecialchars($row['proveedor'])."
+                    "<button type='button' class='btn mb-2' data-bs-toggle='modal' data-bs-target='#proveedoresModal' onclick='fetchProveedor(" . $row['id_prov'] . ")'>
+                            " . htmlspecialchars($row['proveedor']) . "
                         </button></td>";
 
                 if ($row["id_orden"] === null) {
                     echo "<td class='d-none d-md-table-cell' style='background:" . $colores[$row["estado"]] . "'>";
-                    ?>
+                ?>
                     <button type="button" class="btn btn-primary"
-                            data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="setId(<?php echo $row['id']; ?>)">
+                        data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="setId(<?php echo $row['id']; ?>)">
                         <i class="bi bi-link" data-bs-toggle="tooltip" data-bs-title="Asociar Ticket"></i>
                     </button>
-                    <?php
+    <?php
                     echo "</td>";
                 } else echo "<td class='d-none d-md-table-cell' style='background:" . $colores[$row["estado"]] . "'>" .
-                                ($row['id_orden'] == 0?"-":"<a href='list&id=".$row["id_orden"]."'>".$row['id_orden']."</a>") .
-                            "</td>";
+                    ($row['id_orden'] == 0 ? "-" : "<a href='list&id=" . $row["id_orden"] . "'>" . $row['id_orden'] . "</a>") .
+                    "</td>";
 
                 echo "<td style='background:" . $colores[$row["estado"]] . "'>" . $iconos[$row["estado"]] . " <span class='d-none d-md-inline'>" . $estados[$row['estado']] . "</span></td>";
                 echo "<td style='background:" . $colores[$row["estado"]] . "'>";
@@ -211,7 +221,7 @@
                 echo "<input type='hidden' name='id' value='" . $row['id'] . "'>";
                 echo "<input type='hidden' name='estado' value='" . $row['estado'] . "'>";
                 echo "<div class='btn-group'>";
-                echo "<button type='submit' name='menos_estado' class='btn btn-primary' ".($row["estado"]==0?"disabled":"")."><i class='bi bi-chevron-left'></i></button>&nbsp;";
+                echo "<button type='submit' name='menos_estado' class='btn btn-primary' " . ($row["estado"] == 0 ? "disabled" : "") . "><i class='bi bi-chevron-left'></i></button>&nbsp;";
                 echo "<button type='submit' name='mas_estado' class='btn btn-primary'><i class='bi bi-chevron-right'></i></button>";
                 echo "</div>";
                 echo "</form>";
@@ -248,22 +258,22 @@
                 echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['precio']) . " €</td>";
                 echo "<td style='background:" . $colores[$row["estado"]] . "'>" . htmlspecialchars($row['local']) . "</td>";
                 echo "<td style='background:" . $colores[$row["estado"]] . "'>" .
-                        "<button type='button' class='btn mb-2' data-bs-toggle='modal' data-bs-target='#proveedoresModal' onclick='fetchProveedor(" . $row['id_prov'] . ")'>
-                            ".htmlspecialchars($row['proveedor'])."
+                    "<button type='button' class='btn mb-2' data-bs-toggle='modal' data-bs-target='#proveedoresModal' onclick='fetchProveedor(" . $row['id_prov'] . ")'>
+                            " . htmlspecialchars($row['proveedor']) . "
                         </button></td>";
 
                 if ($row["id_orden"] === null) {
                     echo "<td class='d-none d-md-table-cell' style='background:" . $colores[$row["estado"]] . "'>";
-                    ?>
+    ?>
                     <button type="button" class="btn btn-primary"
-                            data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="setId(<?php echo $row['id']; ?>)">
+                        data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="setId(<?php echo $row['id']; ?>)">
                         <i class="bi bi-link" data-bs-toggle="tooltip" data-bs-title="Asociar Ticket"></i>
                     </button>
-                    <?php
+    <?php
                     echo "</td>";
                 } else echo "<td class='d-none d-md-table-cell' style='background:" . $colores[$row["estado"]] . "'>" .
-                                ($row['id_orden'] == 0?"-":"<a href='list&id=".$row["id_orden"]."'>".$row['id_orden']."</a>") .
-                            "</td>";
+                    ($row['id_orden'] == 0 ? "-" : "<a href='list&id=" . $row["id_orden"] . "'>" . $row['id_orden'] . "</a>") .
+                    "</td>";
 
                 echo "<td style='background:" . $colores[$row["estado"]] . "'>" . $iconos[$row["estado"]] . " <span class='d-none d-md-inline'>" . $estados[$row['estado']] . "</span></td>";
                 echo "</tr>";
@@ -329,7 +339,7 @@
                             echo '<td>
                                             <form method="post" action="" style="display:inline;">
                                                 <input type="hidden" name="id" class="hiddenIdInput">
-                                                <input type="hidden" name="id_orden" value="'.$row["id"].'">
+                                                <input type="hidden" name="id_orden" value="' . $row["id"] . '">
                                                 <button type="submit" class="btn btn-primary"><i class="bi bi-check2-square"></i></button>
                                             </form>
                                         </td>';
@@ -369,7 +379,7 @@
     function setId(id) {
         // Select all hidden inputs with the class "hiddenIdInput"
         const hiddenInputs = document.querySelectorAll('.hiddenIdInput');
-        
+
         // Loop through all matching inputs and set their value
         hiddenInputs.forEach(input => {
             input.value = id;
@@ -400,6 +410,31 @@
             },
             error: function() {
                 $('#proveedorInfo').html(`<p class="text-danger">Error fetching data</p>`);
+            }
+        });
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        fetchProveedores();
+    });
+
+    function fetchProveedores() {
+        $.ajax({
+            url: 'controller/fetch_proveedores.php',
+            method: 'GET',
+            dataType: 'json',
+            success: function(data) {
+            const selects = document.querySelectorAll('select[name^="servicio"]');
+            selects.forEach(select => {
+                data.forEach(proveedor => {
+                const option = document.createElement('option');
+                option.value = proveedor.id;
+                option.textContent = proveedor.nombre;
+                select.appendChild(option);
+                });
+            });
+            },
+            error: function(error) {
+            console.error('Error fetching proveedores:', error);
             }
         });
     }
