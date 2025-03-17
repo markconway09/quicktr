@@ -6,7 +6,7 @@ function logError($errorMessage, $logFile = 'error_log.txt') {
     $sanitizedMessage = htmlspecialchars($errorMessage, ENT_QUOTES, 'UTF-8');
 
     // Prepare the log entry with timestamp
-    $logEntry = "[" . date("Y-m-d H:i:s") . "] " . $sanitizedMessage . PHP_EOL;
+    $logEntry = "[" . date("Y-m-d H:i:s") . "] [" . $_SESSION["nombre"] . "] " . $sanitizedMessage . PHP_EOL;
 
     // Write the log entry to the specified file
     file_put_contents($logFile, $logEntry, FILE_APPEND | LOCK_EX);
@@ -44,18 +44,18 @@ function totalVentas($d=0, $m, $y, $local=0){
     $pdo = $db->pdo;
     if($d == 0){
         if($local === 0){
-            $stmt = $pdo->prepare("SELECT *, o.id as id, f.id as fid, d.id as did FROM `info_orden` o left JOIN `factura` f ON (f.id_orden = o.id) left JOIN `devolucion` d ON (o.id = d.id_orden) WHERE MONTH(`fecha`) = :m AND YEAR(`fecha`) = :y");
+            $stmt = $pdo->prepare("SELECT *, o.id as id, f.id as fid, d.id as did, DATE(fecha_pago) as fecha_pago FROM `info_orden` o left JOIN `factura` f ON (f.id_orden = o.id) left JOIN `devolucion` d ON (o.id = d.id_orden) WHERE MONTH(`fecha`) = :m AND YEAR(`fecha`) = :y");
         } else {
-            $stmt = $pdo->prepare("SELECT *, o.id as id, f.id as fid, d.id as did FROM `info_orden` o left JOIN `factura` f ON (f.id_orden = o.id) left JOIN `devolucion` d ON (o.id = d.id_orden) WHERE MONTH(`fecha`) = :m AND YEAR(`fecha`) = :y AND `local` = :loc");
+            $stmt = $pdo->prepare("SELECT *, o.id as id, f.id as fid, d.id as did, DATE(fecha_pago) as fecha_pago FROM `info_orden` o left JOIN `factura` f ON (f.id_orden = o.id) left JOIN `devolucion` d ON (o.id = d.id_orden) WHERE MONTH(`fecha`) = :m AND YEAR(`fecha`) = :y AND `local` = :loc");
             $stmt->bindParam(':loc', $local);
         }
         $stmt->bindParam(':m', $m);
         $stmt->bindParam(':y', $y);
     } else {
         if($local === 0){
-            $stmt = $pdo->prepare("SELECT *, o.id as id, f.id as fid, d.id as did FROM `info_orden` o left JOIN `factura` f ON (f.id_orden = o.id) left JOIN `devolucion` d ON (o.id = d.id_orden) WHERE DAY(`fecha`) = :d AND MONTH(`fecha`) = :m AND YEAR(`fecha`) = :y");
+            $stmt = $pdo->prepare("SELECT *, o.id as id, f.id as fid, d.id as did, DATE(fecha_pago) as fecha_pago FROM `info_orden` o left JOIN `factura` f ON (f.id_orden = o.id) left JOIN `devolucion` d ON (o.id = d.id_orden) WHERE DAY(`fecha`) = :d AND MONTH(`fecha`) = :m AND YEAR(`fecha`) = :y");
         } else {
-            $stmt = $pdo->prepare("SELECT *, o.id as id, f.id as fid, d.id as did FROM `info_orden` o left JOIN `factura` f ON (f.id_orden = o.id) left JOIN `devolucion` d ON (o.id = d.id_orden) WHERE DAY(`fecha`) = :d AND MONTH(`fecha`) = :m AND YEAR(`fecha`) = :y AND `local` = :loc");
+            $stmt = $pdo->prepare("SELECT *, o.id as id, f.id as fid, d.id as did, DATE(fecha_pago) as fecha_pago FROM `info_orden` o left JOIN `factura` f ON (f.id_orden = o.id) left JOIN `devolucion` d ON (o.id = d.id_orden) WHERE DAY(`fecha`) = :d AND MONTH(`fecha`) = :m AND YEAR(`fecha`) = :y AND `local` = :loc");
             $stmt->bindParam(':loc', $local);
         }
         $stmt->bindParam(':d', $d);

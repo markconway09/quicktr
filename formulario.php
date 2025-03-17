@@ -1,6 +1,6 @@
 <?php
 // LOGICA PARA DECIDIR QUÉ FORMULARIO MOSTRAR
-    $title = '<h1 class="display-5 text-light text-center mb-4">FORMULARIO</h1>';
+    $title = '<h1 class="display-5 text-light text-center mb-4">Cliente</h1>';
     $hidden = '';
     if(isset($_GET["id"])) $backbtn = '<a href="list&id='. $_GET["id"] .'" class="btn btn-secondary">Volver</a>';
 
@@ -35,8 +35,9 @@
     echo $before;
     include 'views/registro_cliente.php';
 ?>
-    <hr class="text-light pb-3">
+    <hr class="text-light">
 <?php
+    echo '<h1 class="display-5 text-light text-center mb-4">Servicio</h1>';
     include 'views/registro_servicio.php';
     echo $after;
 ?>

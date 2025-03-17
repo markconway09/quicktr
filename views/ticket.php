@@ -254,6 +254,20 @@ echo '</div>';
     <div class="col-md-6 col-12">
         <p class="card-text"><b>Local:</b> <?php echo $ticket->local ?></p>
         <p class="card-text"><b>Departamento:</b> <?php echo $ticket->dept ?></p>
+        <form action="" method="post">
+            <p class="card-text"><b>Pagado:</b>
+                <span>
+                    <?php echo $ticket->pagado ? $ticket->pagado : 0 ?>€
+                    <button class="btn p-0" onclick="editPago(this.parentElement, '<?php echo $ticket->pagado; ?>', 'pagado')"><i class="bi bi-pencil-square"></i></button>
+                </span>
+            </p>
+            <div class="row mt-4 d-none" id="guardarPagoBtn">
+                <div class="col-4 text-center">
+                    <input type="hidden" name="id" value="<?php echo $ticket->id; ?>">
+                    <input type="submit" name="guardarPago" class="btn btn-primary" value="Guardar Cambios">
+                </div>
+            </div>
+        </form>
     </div>
 </div>
 <hr>
@@ -262,9 +276,7 @@ echo '</div>';
 <div class="row">
     <h3 class="display-4 mb-4">Servicio</h3>
     <div class="col-md-6 col-12">
-        <?php $ser = explode(": ", $ticket->servicio); ?>
-        <p class="card-text"><b>Tipo de servicio:</b> <?php echo $ser[0]; ?></p>
-        <p class="card-text"><b>Servicio:</b> <?php echo $ser[1]; ?></p>
+        <p class="card-text"><b>Servicio:</b> <?php echo $ticket->servicio; ?></p>
         <p class="card-text"><b>Dispositivo:</b> <?php echo $ticket->nombre_dispositivo ?></p>
         <p class="card-text"><b>Descripción:</b> <?php echo $ticket->desc; ?></p>
         <p class="card-text"><b>Descripción Técnico:</b> <?php echo !empty($ticket->desc_tecnico) ? $ticket->desc_tecnico : "Sin descripción" ?></p>
@@ -280,7 +292,22 @@ echo '</div>';
             } ?>
         </button>
 <!-- END CONDICION PARA REPARTIDOR -->
-<?php } ?>
+<?php } 
+
+if($ticket->partes) {
+?>
+<br>
+<p class="card-text"><b>Partes:</b></p>
+<?php
+    $partes = $db->fetchPartes(explode(", ", $ticket->partes));
+    $costeParte = explode(", ", $ticket->costes_partes);
+    foreach ($partes as $key => $parte) {
+        $coste = $costeParte[$key];
+        echo "<p class='card-text'><b>-</b> " . $parte["nombre"] . " ($coste)</p>";
+    }
+}
+
+?>
     </div>
     
 <?php if ($_SESSION["login"] != "repartidor") { ?>
@@ -652,15 +679,27 @@ echo '</div>';
                     <input type="hidden" name="id" value="<?php echo $ticket->id ?>">
                     <p>
                         <label for="fecha_pago">Fecha de pago</label>
-                        <input type="date" name="fecha_pago" id="fecha_pago" class="form-control" value="<?php echo date("Y-m-d") ?>">
+                        <input type="datetime-local" name="fecha_pago" id="fecha_pago" class="form-control" value="<?php echo date("Y-m-d\TH:i"); ?>">
                     </p>
                     <p>
                         <label for="fotoFinal">Foto final</label>
                         <input type="file" id="fotoFinal" accept="image/*" name="images[]" capture="environment" multiple class="form-control" required>
                     </p>
+                    <div class="input-group mb-3">
+                        <div class="form-floating">
+                            <input disabled type="number" name="precio" id="precio" class="form-control" value="<?php echo ($ticket->precio_final ?? 0); ?>">
+                            <label for="precio">Precio</label>
+                        </div>
+                        <div class="form-floating">
+                            <input disabled type="number" name="pagado" id="pagado" class="form-control" value="<?php echo ($ticket->pagado ?? 0); ?>">
+                            <label for="pagado">Pagado</label>
+                        </div>
+                    </div>
                     <p>
-                        <label for="precio">Precio final</label>
-                        <input disabled type="number" name="precio" id="precio" class="form-control" value="<?php echo $ticket->precio_final; ?>">
+                        <div class="form-floating">
+                            <input disabled type="number" name="a_pagar" id="a_pagar" class="form-control" value="<?php echo ($ticket->precio_final - $ticket->pagado ?? 0); ?>">
+                            <label for="a_pagar">A pagar</label>
+                        </div>
                     </p>
                     <!-- METODO DE PAGO -->
                     <div class="radio-buttons-container">
@@ -681,7 +720,7 @@ echo '</div>';
                             </label>
                         </div>
                     </div>
-                    <button class="cssbuttons-io-button bg-secondary mx-auto" type="submit" name="estado" value="4">Entregado/Cobrar<div class="icon"><i class="bi bi-cash text-dark"></i></div></button>
+                    <button class="cssbuttons-io-button bg-secondary mx-auto mt-2" type="submit" name="estado" value="4">Entregado/Cobrar<div class="icon"><i class="bi bi-cash text-dark"></i></div></button>
                 </form>
             </div>
         </div>
@@ -804,6 +843,11 @@ echo '</div>';
         var btn = document.getElementById("guardarCambiosBtn");
         btn.classList = "row mt-4";
     }
+    function editPago(parent, data, name) {
+        parent.innerHTML = "<input type='text' name='" + name + "' value='" + data + "'>";
+        var btn = document.getElementById("guardarPagoBtn");
+        btn.classList = "row mt-4";
+    }
     // CÁLCULOS IVA
     function findTotal() {
         var precio = parseFloat(document.getElementById('precio').value);
@@ -835,6 +879,7 @@ echo '</div>';
             success: function(data) {
             const selects = document.querySelectorAll('select[name^="servicio"]');
             selects.forEach(select => {
+                select.innerHTML = '<option value="-">Ninguno</option>';
                 data.forEach(proveedor => {
                 const option = document.createElement('option');
                 option.value = proveedor.id;

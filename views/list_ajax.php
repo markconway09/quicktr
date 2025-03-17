@@ -242,8 +242,6 @@
             const card = document.createElement('div');
             card.className = "card text-bg-light";
             card.style = "padding:0; border: none;";
-            let tipo = item.servicio.split(":")[0];
-            let servicio = item.servicio.split(":")[1];
             let estado = item.garantia == 0 ? pasos[item.estado] : "<i class='bi bi-file-text'></i> <a style='text-decoration:none;color:#FFA' href='list&id=" + item.garantia + "'>GARANTÍA <i class='bi bi-arrow-right-short'></i></a>";
             let desc = item.desc || "(No hay información)";
             let nombreDispositivo = item.nombre_dispositivo || "(No hay información)";
@@ -258,16 +256,18 @@
             const cardHtml = `
                 <div class="card-header pt-3 text-left d-flex" style="color:white;background-color:${colores[item.estado]};">
                     <i style="padding: 0 15px 0 5px; font-size: 30px" class="bi bi-${iconos[item.estado]}"></i>    
-                    <h5>${tipo} # ${item.id}<br>
+                    <h5>`+ item.servicio.split(':')[0] +` # ${item.id}<br>
                     ${estado} | <span style="color:${localColor[item.local == "Barcelona" ? 0 : 1]}">${item.local}</span></h5>
                 </div>
                 <div class="card-body">
                     <p class="card-text text-truncate" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><i class="bi bi-person-fill"></i> ${nombre}</p>
-                    <p class="card-text text-truncate" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><i class="bi bi-wrench-adjustable"></i> ${servicio}</p>
+                    <p class="card-text text-truncate" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><i class="bi bi-wrench-adjustable"></i> ${item.servicio}</p>
                     <p class="card-text text-truncate" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><i class="bi bi-phone-fill"></i> ${nombreDispositivo}</p>
                     <p class="card-text text-truncate" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><i class="bi bi-file-text-fill"></i> ${desc}</p>
                     <?php if ($_SESSION["login"] != "tecnico") { ?>
-                    <p class="card-text text-truncate" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><i class="bi bi-currency-exchange"></i> ${item.precio}€ (+ IVA ${item.iva}%) = <b>${item['precio-final']}€</b></p>
+                    <p class="card-text text-truncate" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        <i class="bi bi-currency-exchange"> Precio: <b>${item['precio-final']}€</b>`+(item['pagado']? ` · Pagado: <b>`+item['pagado']+`€</b>` : ``)+`</i>
+                    </p>
                     <?php } ?>
                     <div class="mb-3">
                         <div class="progress" role="progressbar" aria-label="Basic example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
@@ -280,7 +280,7 @@
                                 onclick="updateStep(${item.id}, ` + (item.estado - 1) + `)"
                                 style="pointer-events: ` + (disableLeft ? 'none' : 'auto') + `;
                                 color: white; background-color:` + (disableLeft ? '' : colores[item.estado - 1]) + `"
-                                ` + (item.estado==4 ? 'hidden' : '') + `>
+                                ` + ((item.estado==4 || item.estado==5) ? 'hidden' : '') + `>
                             <i class="bi bi-arrow-left"></i>
                         </button>
             <?php }  ?>
@@ -293,7 +293,7 @@
                                 onclick="updateStep(${item.id}, ` + (item.estado + 1) + `)"
                                 style="pointer-events: ` + (disableRight ? 'none' : 'auto') + `;
                                 color: white; background-color:` + (disableRight ? '' : colores[item.estado + 1]) + `"
-                                ` + (item.estado==4 ? 'hidden' : '') + `>
+                                ` + ((item.estado==4 || item.estado==5) ? 'hidden' : '') + `>
                             <i class="bi bi-arrow-right"></i>
                         </button>
             <?php }  ?>

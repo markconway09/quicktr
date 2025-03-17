@@ -68,6 +68,19 @@ class Database
         return $tickets;
     }
 
+    public function fetchPartes($partes) {
+        $result = [];
+        foreach ($partes as $parte) {
+            $q = "SELECT * FROM d_parte WHERE id = :id";
+            $stmt = $this->pdo->prepare($q);
+            $stmt->bindParam(':id', $parte, PDO::PARAM_INT);
+            $stmt->execute();
+            $data = $stmt->fetch(PDO::FETCH_ASSOC);
+            $result[] = $data;
+        }
+        return $result;
+    }
+
     public function insertTicket(Ticket $ticket)
     {
         $sql = "INSERT INTO info_orden SET 
@@ -76,6 +89,8 @@ class Database
             telefono = ?,
             documento = ?,
             servicio = ?,
+            partes = ?,
+            costes_partes = ?,
             email = ?,
             direccion = ?,
             cp = ?,
@@ -83,6 +98,7 @@ class Database
             descuento = ?,
             iva = ?,
             `precio-final` = ?,
+            pagado = ?,
             metodo = ?,
             `nombre_dispositivo` = ?,
             `desc` = ?,
@@ -105,6 +121,8 @@ class Database
                 $ticket->telefono,
                 $ticket->documento,
                 $ticket->servicio,
+                $ticket->partes,
+                $ticket->costes_partes,
                 $ticket->email,
                 $ticket->direccion,
                 $ticket->cp,
@@ -112,6 +130,7 @@ class Database
                 $ticket->descuento,
                 $ticket->iva,
                 $ticket->precio_final,
+                $ticket->pagado,
                 $ticket->metodo,
                 $ticket->nombre_dispositivo,
                 $ticket->desc,
@@ -137,7 +156,7 @@ class Database
         $stmt = $pdo->prepare("
             SELECT nombre, nombre_dispositivo 
             FROM info_orden 
-            WHERE fecha = :fecha AND nombre = :nombre AND nombre_dispositivo = :disp
+            WHERE DATE(fecha) = DATE(:fecha) AND nombre = :nombre AND nombre_dispositivo = :disp
         ");
         $stmt->bindParam(':fecha', $ticket->fecha);
         $stmt->bindParam(':nombre', $ticket->nombre);
@@ -270,6 +289,8 @@ class Database
         telefono = ?,
         documento = ?,
         servicio = ?,
+        partes = ?,
+        costes_partes = ?,
         email = ?,
         direccion = ?,
         cp = ?,
@@ -277,6 +298,7 @@ class Database
         descuento = ?,
         iva = ?,
         `precio-final` = ?,
+        `pagado` = ?,
         metodo = ?,
         `nombre_dispositivo` = ?,
         `desc` = ?,
@@ -300,6 +322,8 @@ class Database
                 $ticket->telefono,
                 $ticket->documento,
                 $ticket->servicio,
+                $ticket->partes,
+                $ticket->costes_partes,
                 $ticket->email,
                 $ticket->direccion,
                 $ticket->cp,
@@ -307,6 +331,7 @@ class Database
                 $ticket->descuento,
                 $ticket->iva,
                 $ticket->precio_final,
+                $ticket->pagado,
                 $ticket->metodo,
                 $ticket->nombre_dispositivo,
                 $ticket->desc,

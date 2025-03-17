@@ -64,7 +64,7 @@ if(isset($_POST["gastosTotal"])) totalGastos($date[1],$date[0]);
                         <button type="submit" class="btn btn-danger mt-2" name="tesM">Mataró</button>
                     </form>
                 </div>
-                <div class="col-12 col-md-4 mx-auto">
+                <!-- <div class="col-12 col-md-4 mx-auto">
                     <form action="totalventas.php" target="_blank" method="post">
                         <label for="gastos">Reporte Gastos</label>
                         <input type="month" name="gastos" id="gastos" class="form-control" value="<?php echo date('Y-m'); ?>">
@@ -72,6 +72,6 @@ if(isset($_POST["gastosTotal"])) totalGastos($date[1],$date[0]);
                         <button type="submit" class="btn btn-danger mt-2" name="gastosM">Mataró</button>
                         <button type="submit" class="btn btn-success mt-2" name="gastosTotal">Total <i class="bi bi-arrow-right"></i></button>
                     </form>
-                </div>
+                </div> -->
             </div>
         </div>

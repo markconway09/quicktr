@@ -13,8 +13,7 @@ if(isset($_POST["guardar-servicio"]))
     } else {
         if (isset($_POST["tel"])) $ticket->telefono = $_POST["tel"];
     }
-    if (!empty($_POST["servicio"]) && isset($_POST["servicio2"])) $ticket->servicio = $_POST["servicio"] . ": " . $_POST["servicio2"];
-    else $ticket->servicio = $_POST["servicio"];
+    $ticket->servicio = $_POST["deviceType"] ?? null;
     $ticket->documento = $_POST["doc"] ?? null;
     $ticket->local = $_POST["local"] ?? null;
     $ticket->razon = $_POST["razon"] ?? null;
@@ -25,13 +24,32 @@ if(isset($_POST["guardar-servicio"]))
     $ticket->cp = $_POST["cp"] ?? null;
     $ticket->email = $_POST["email"] ?? null;
     $ticket->metodo = $_POST["metodo"] ?? null;
-    $ticket->nombre_dispositivo = $_POST["dispositivo"] ?? null;
+    if(!empty($_POST["otroDispositivo"])) {
+        $ticket->nombre_dispositivo = $_POST["otroDispositivo"];
+    } else {
+        $ticket->nombre_dispositivo = $_POST["deviceName"] ?? null;
+    }
     $ticket->precio = $_POST["precio"] ?? null;
     $ticket->descuento = $_POST["descuento"] ?? null;
     $ticket->iva = $_POST["iva"] ?? null;
     $ticket->precio_final = $_POST["precio-final"] ?? null;
-    $ticket->fecha = date('Y-m-d');
-
+    $ticket->pagado = $_POST["pagado"] ?? null;
+    $ticket->fecha = date("Y-m-d\TH:i");
+    
+    if(isset($_POST["deviceServices"])){
+        $partes = implode(", ", $_POST["deviceServices"]);
+        $ticket->partes = $partes;
+    } else {
+        $ticket->partes = null;
+    }
+    
+    if(isset($_POST["deviceServiceCosts"])){
+        $costes_partes = implode(", ", $_POST["deviceServiceCosts"]);
+        $ticket->costes_partes = $costes_partes;
+    } else {
+        $ticket->costes_partes = null;
+    }
+    
     if (isset($_POST["recurrente"])) {
         $ticket->recurrente = $_POST["n_recurrente"] ?? $_POST["nombre"];
     } else {
@@ -51,7 +69,7 @@ if(isset($_POST["guardar-servicio"]))
     
         // ENVIAR CORREO AL TERMINAR
         $ticket = $db->fetchId($id);
-        $ticket->sendEmail();
+        if($ticket) $ticket->sendEmail();
         
         $db->logChange($_SESSION["nombre"], "Nuevo ticket (#$id)", $id);
     }
@@ -109,7 +127,7 @@ if(isset($_POST["estado"]))
     if(isset($_FILES['images'])) $db->insertPhotos($ticket->id, $_FILES['images'], "Final");
     $ticket->estado = $_POST["estado"];
     $ticket->metodo = $_POST["metodo"] ?? null;
-    $ticket->fecha_pago = $_POST["fecha_pago"] ?? date("Y-m-d");
+    $ticket->fecha_pago = $_POST["fecha_pago"] ?? date("Y-m-d\TH:i");
     $db->updateTicket($ticket);
     $ticket->sendReviewEmail();
 
@@ -137,6 +155,16 @@ if (isset($_POST["guardarCliente"]))
     if (isset($_POST["telefono"])) $ticket->telefono = $_POST["telefono"];
     $db->updateTicket($ticket);
     $db->logChange($_SESSION["nombre"], "Cambio de datos cliente", $id);
+    echo '<meta http-equiv="refresh" content="0"/>';
+}
+// EDIT PAGADO
+if(isset($_POST["guardarPago"]))
+{
+    $id = $_POST["id"];
+    $ticket = $db->fetchId($id);
+    $ticket->pagado = $_POST["pagado"];
+    $db->updateTicket($ticket);
+    $db->logChange($_SESSION["nombre"], "Cambio de cantidad pagada", $id);
     echo '<meta http-equiv="refresh" content="0"/>';
 }
 // EDIT SERVICIO

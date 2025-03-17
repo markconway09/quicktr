@@ -14,6 +14,8 @@ class Ticket
     public $telefono;
     public $documento;
     public $servicio;
+    public $partes;
+    public $costes_partes;
     public $email;
     public $direccion;
     public $cp;
@@ -21,6 +23,7 @@ class Ticket
     public $descuento;
     public $iva;
     public $precio_final;
+    public $pagado;
     public $metodo;
     public $nombre_dispositivo;
     public $desc;
@@ -46,14 +49,7 @@ class Ticket
     public function sendEmail()
     {
         require_once "controller/fpdf186/fpdf.php";
-        if ($this->servicio) {
-            $ser = explode(": ", $this->servicio);
-            $ser1 = $ser[0];
-            $ser2 = $ser[1];
-        } else {
-            $ser1 = "Servicio";
-            $ser2 = "";
-        }
+
         if($this->local == "Barcelona") {
             $d1 = "Carrer d'Entença, 117";
             $d2 = "Local-1, 08015, Barcelona";
@@ -91,7 +87,7 @@ class Ticket
     
             //Content
             $mail->isHTML(true);
-            $mail->Subject = 'Quick Tech Repair «' . ucfirst($ser1) . '»';
+            $mail->Subject = 'Quick Tech Repair «' . ucfirst($this->servicio) . '»';
             $mail->AddEmbeddedImage('temp/LogoCorreo.png', 'logo_qtr');
             $mail->Body    = '
                     <body>
@@ -108,7 +104,7 @@ class Ticket
                                 <p><strong>Fecha:</strong> ' . $this->fecha . '</p>
                             </div>
                             <div>
-                                <h1 style="text-align: center; color: #0056b3;">' . ucfirst($ser1) . ' # ' . $this->id . ' - ' . $ser2 . '</h1>
+                                <h1 style="text-align: center; color: #0056b3;">' . ucfirst($this->servicio) . ' # ' . $this->id . '</h1>
                             </div> 
                             <div style="padding: 30px">
                                 <div style="flex: 1; min-width: 200px;">
@@ -120,8 +116,7 @@ class Ticket
                                 </div>
                                 <div>
                                 <h2>Detalles del Servicio</h2>
-                                <p><strong>Tipo de servicio:</strong> ' . $ser1 . '</p>
-                                <p><strong>Servicio Reportado:</strong> ' . $ser2 . '</p>
+                                <p><strong>Servicio:</strong> ' . $this->servicio . '</p>
                                 <p><strong>Descripción:</strong> ' . $this->desc . '</p>
                                 </div>
                             </div>
@@ -235,14 +230,6 @@ class Ticket
 
     public function sendReviewEmail()
     {
-        //---------------RECOGER DATOS---------------//
-        if (!empty($this->servicio)) {
-            $ser = explode(": ", $this->servicio);
-            $ser1 = $ser[0];
-        } else {
-            $ser1 = "Servicio";
-        }
-
         // ENVIAR CORREO
         $mail = new PHPMailer(true);
         $mail->CharSet = "UTF-8";
@@ -265,7 +252,7 @@ class Ticket
 
             //Content
             $mail->isHTML(true);
-            $mail->Subject = '¡Gracias por confiar en nosotros! «' . ucfirst($ser1) . '»';
+            $mail->Subject = '¡Gracias por confiar en nosotros! «' . ucfirst($this->servicio) . '»';
             $mail->AddEmbeddedImage('temp/estrellas.png', 'estrellas');
             $mail->Body    = '
                 <body style="font-family: Arial, sans-serif; background-color: #f9f9f9; color: #333; margin: 10; padding: 10;">
@@ -337,7 +324,7 @@ class Ticket
         $pdf->Cell($width, 5, 'QUICK T&R, S.L.');
         $pdf->Ln(8);
         $pdf->SetFont('Arial', 'B', 8);
-        if (isset($this->did)) {
+        if ($this->estado == 5) {
             $pdf->Cell($width, 5, iconv('UTF-8', 'windows-1252', 'DEVOLUCIÓN # ' . $id), 0, 1);
         } else {
             $pdf->Cell($width, 5, 'TICKET DE SERVICIO # ' . $id, 0, 1);
@@ -383,7 +370,7 @@ class Ticket
         $pdf->Cell($width / 4, 5, 'Dispositivo', 0, 0);
         $pdf->Cell($width / 1.5, 5, $this->nombre_dispositivo, 1, 1);
         $pdf->Ln(1);
-        $pdf->Cell($width / 4, 5, 'Precio Aprox.', 0, 0);
+        $pdf->Cell($width / 4, 5, 'Precio', 0, 0);
         $pdf->Cell($width / 1.5, 5, iconv('UTF-8', 'windows-1252', $this->precio . " €"), 1, 1);
         $pdf->Ln(1);
         if ($this->descuento > 0) {
@@ -394,11 +381,11 @@ class Ticket
         $pdf->Cell($width / 4, 5, 'IVA', 0, 0);
         $pdf->Cell($width / 1.5, 5, $this->iva . '%', 1, 1);
         $pdf->Ln(1);
-        if (isset($this->did)) {
+        if ($this->estado == 5) {
             $pdf->Cell($width / 4, 5, iconv('UTF-8', 'windows-1252', 'Devolución'), 0, 0);
             $pdf->Cell($width / 1.5, 5, iconv('UTF-8', 'windows-1252', "-" . $this->precio_final . " €"), 1, 1);
         } else {
-            $pdf->Cell($width / 4, 5, 'Precio Sgdo.', 0, 0);
+            $pdf->Cell($width / 4, 5, 'Precio Final', 0, 0);
             $pdf->Cell($width / 1.5, 5, iconv('UTF-8', 'windows-1252', $this->precio_final . " €"), 1, 1);
         }
         $pdf->Ln(1);
@@ -410,12 +397,9 @@ class Ticket
         }
     
         $pdf->Ln(5);
-        $str = '¡¡¡¡¡NO PIERDAS TU TICKET
-        PARA RECLAMAR!!!!!
-            De acuerdo a nuestras politicas de
-            privacidad acepto las condiciones de
-            servicio descritas en el correo electronico
-            enviado con este ticket.';
+        $str = 'Cualquier incidencia en su reparación informar al dependiente de tienda con su numero de ticket  o al +34 606 46 59 79 o email info@quicktr.es
+                Pasados 25 días de la NO RECOGIDA o FALTA DE PAGO del equipo entregado, quedara a favor como indemnización a Quick T&R sl,
+                por favor no olvidar recoger su equipo y/o abonar saldo pendiente.';
         $str = iconv('UTF-8', 'windows-1252', $str);
         $pdf->MultiCell($width, 5, $str, null, 'C');
     
@@ -458,6 +442,7 @@ class Ticket
 
     public function generateInvoice()
     {
+        $db = new Database();
         require_once "controller/fpdf186/fpdf.php";
         // DIRECCIÓN
         $direccion = 'CL P.J. Maragall Num 1 16, 28020 Madrid, Madrid';
@@ -545,24 +530,37 @@ class Ticket
 
         $pdf->Ln(30);
 
-        $pdf->Cell($width / 1.2, 5, iconv('UTF-8', 'windows-1252', 'Descripción'), 1, 1);
-        if ($this->desc_tecnico != "") $pdf->MultiCell($width / 1.2, 5, iconv('UTF-8', 'windows-1252', $this->desc_tecnico), 1, 1);
-        else $pdf->MultiCell($width / 1.2, 5, iconv('UTF-8', 'windows-1252', $this->desc), 1, 1);
+        if($this->partes) {
+            $pdf->Cell($width / 2.3, 5, iconv('UTF-8', 'windows-1252', 'Descripción'), 1, 0);
+            $pdf->Cell($width / 10, 5, iconv('UTF-8', 'windows-1252', 'IVA'), 1, 0);
+            $pdf->Cell($width / 10, 5, iconv('UTF-8', 'windows-1252', 'P.U.'), 1, 0);
+            $pdf->Cell($width / 10, 5, iconv('UTF-8', 'windows-1252', 'Cant.'), 1, 0);
+            $pdf->Cell($width / 10, 5, iconv('UTF-8', 'windows-1252', 'Base Imp.'), 1, 1);
+            foreach($db->fetchPartes(explode(", ", $this->partes)) as $key => $parte) {
+                $costeParte = explode(", ", $this->costes_partes)[$key];
+                $pdf->Cell($width / 2.3, 5, iconv('UTF-8', 'windows-1252', $parte['nombre']), 1, 0);
+                $pdf->Cell($width / 10, 5, iconv('UTF-8', 'windows-1252', $this->iva . "%"), 1, 0);
+                $pdf->Cell($width / 10, 5, iconv('UTF-8', 'windows-1252', $costeParte . " €"), 1, 0);
+                $pdf->Cell($width / 10, 5, iconv('UTF-8', 'windows-1252', 1), 1, 0);
+                $pdf->Cell($width / 10, 5, iconv('UTF-8', 'windows-1252', $costeParte . " €"), 1, 1);
+            }
+        } else {
+            $pdf->Cell($width / 1.2, 5, iconv('UTF-8', 'windows-1252', 'Descripción'), 1, 1);
+            if ($this->desc_tecnico != "") $pdf->MultiCell($width, 5, iconv('UTF-8', 'windows-1252', $this->desc_tecnico), 1, 0);
+            else $pdf->MultiCell($width / 1.2, 5, iconv('UTF-8', 'windows-1252', $this->desc), 1, 0);
+            $pdf->Cell($width / 10, 5, iconv('UTF-8', 'windows-1252', 'IVA'), 1, 0);
+            $pdf->Cell($width / 10, 5, iconv('UTF-8', 'windows-1252', 'P.U.'), 1, 0);
+            $pdf->Cell($width / 10, 5, iconv('UTF-8', 'windows-1252', 'Cant.'), 1, 0);
+            $pdf->Cell($width / 10, 5, iconv('UTF-8', 'windows-1252', 'Base Imp.'), 1, 1);
+            $pdf->Cell($width / 10, 5, iconv('UTF-8', 'windows-1252', $this->iva . "%"), 1, 0);
+            $pdf->Cell($width / 10, 5, iconv('UTF-8', 'windows-1252', $this->precio . " €"), 1, 0);
+            $pdf->Cell($width / 10, 5, iconv('UTF-8', 'windows-1252', 1), 1, 0);
+            $pdf->Cell($width / 10, 5, iconv('UTF-8', 'windows-1252', $this->precio . " €"), 1, 1);
+        }
 
-        $pdf->Ln(2);
-        
-        $pdf->Cell($width / 10, 5, iconv('UTF-8', 'windows-1252', 'IVA'), 1, 0);
-        $pdf->Cell($width / 10, 5, iconv('UTF-8', 'windows-1252', 'P.U.'), 1, 0);
-        $pdf->Cell($width / 10, 5, iconv('UTF-8', 'windows-1252', 'Cant.'), 1, 0);
-        $pdf->Cell($width / 10, 5, iconv('UTF-8', 'windows-1252', 'Base Imp.'), 1, 1);
-
-        $pdf->Cell($width / 10, 5, iconv('UTF-8', 'windows-1252', $this->iva . "%"), 1, 0);
-        $pdf->Cell($width / 10, 5, iconv('UTF-8', 'windows-1252',  $this->precio . " €"), 1, 0);
-        $pdf->Cell($width / 10, 5, iconv('UTF-8', 'windows-1252', 1), 1, 0);
-        $pdf->Cell($width / 10, 5, iconv('UTF-8', 'windows-1252',  $this->precio . " €"), 1, 1);
         $iva = round(($this->precio * $this->iva) / 100, 2);
 
-        $pdf->Ln(2);
+        $pdf->Ln(10);
 
         $pdf->Cell($width / 6, 5, iconv('UTF-8', 'windows-1252',  "Total (Base Imp.): "), 1, 0);
         $pdf->Cell($width / 6, 5, iconv('UTF-8', 'windows-1252',  "Total IVA: "), 1, 0);

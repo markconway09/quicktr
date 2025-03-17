@@ -132,6 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <li><a class="dropdown-item text-light" href="totalventas"><i class="bi bi-calculator"></i> Total Ventas</a></li>
                         <li><a class="dropdown-item text-light" href="infoClientes"><i class="bi bi-person-up"></i> Exportar Clientes</a></li>
                         <li><a class="dropdown-item text-light" href="infoOrdenes"><i class="bi bi-database-up"></i> Exportar Ordenes</a></li>
+                        <!-- <li><a class="dropdown-item text-light" href="subirDispositivos"><i class="bi bi-phone"></i> Importar Dispositivos</a></li> -->
                         <li>
                             <hr class="dropdown-divider">
                         </li>
@@ -149,7 +150,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </ul>
             </div>
             <?php if ($_SESSION["login"] != "tecnico" && $_SESSION["login"] != "repartidor") { ?>
-                <a href="formulario" class="button btn btn-dark mx-1 my-auto flex-fill">
+                <a href="." class="button btn btn-dark mx-1 my-auto flex-fill">
                     <i class="bi bi-pencil-square"></i> <span class="d-sm-inline-block d-none">Formulario</span>
                 </a>
             <?php } ?>
@@ -178,7 +179,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- FOOTER -->
     <ul class="nav nav-tabs mt-2 border-0">
         <li class="mx-auto">
-            <span class="nav-link active text-bg-dark border-0">QuickTR <span class="badge badge-pill bg-danger">2.2.0</span></span>
+            <span class="nav-link active text-bg-dark border-0">QuickTR <span class="badge badge-pill bg-danger">2.3.0</span></span>
         </li>
     </ul>
 

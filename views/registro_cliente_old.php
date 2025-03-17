@@ -13,14 +13,14 @@ if (isset($_GET["form"])) {
 ?>
 
 <div class="row">
-    <div class="col-12 col-lg-3 mb-3">
+    <div class="col-12 col-lg-2 mb-3">
         <div class="form-floating" style="z-index: 10;">
             <select onchange="selectCliente(this.value)" id="cliente_select" class="form-select" name="cliente_select">
                 <option value="">Buscar cliente...</option>
             </select>
         </div>
     </div>
-    <div class="col-12 col-lg-5 mb-3">
+    <div class="col-12 col-md-6 mb-3">
         <div class="form-floating">
             <input class="form-control" placeholder="Nombre" type="text" name="nombre" id="nombre"
                 <?php if ($rellenar) : ?>
@@ -29,7 +29,7 @@ if (isset($_GET["form"])) {
             <label for="nombre">Nombre</label>
         </div>
     </div>
-    <div class="col-12 col-lg-4 mb-3">
+    <div class="col-12 col-lg-4 col-md-6 mb-3">
         <div class="form-floating">
             <input class="form-control" placeholder="DNI/NIF/NIE" type="text" name="doc" id="doc"
                 <?php if ($rellenar) : ?>
@@ -40,7 +40,7 @@ if (isset($_GET["form"])) {
     </div>
 </div>
 <div class="row">
-    <div class="col-12 col-lg-6 mb-3">
+    <div class="col-12 col-md-5 mb-3">
         <div class="input-group">
             <?php if ($rellenar) : ?>
                 <div class="form-floating">
@@ -62,7 +62,7 @@ if (isset($_GET["form"])) {
             <?php endif ?>
         </div>
     </div>
-    <div class="col-12 col-lg-6 mb-3">
+    <div class="col-12 col-md-7 mb-3">
         <div class="form-floating">
             <input class="form-control" placeholder="Email" type="email" name="email" id="email"
                 <?php if ($rellenar) : ?>
@@ -73,7 +73,7 @@ if (isset($_GET["form"])) {
     </div>
 </div>
 <div class="row">
-    <div class="col-12 col-lg-4 mb-3">
+    <div class="col-12 col-md-3 mb-3">
         <div class="form-floating">
             <select class="form-control form-select" name="local" id="local">
                 <?php
@@ -98,7 +98,7 @@ if (isset($_GET["form"])) {
             <label for="local">Local</label>
         </div>
     </div>
-    <div class="col-12 col-lg-4 mb-3">
+    <div class="col-12 col-md-5 mb-3">
         <div class="form-floating">
             <select class="form-control form-select" name="razon" id="razon">
                 <option value="Sin especificar" selected>-Selecciona una opción-</option>
@@ -116,7 +116,7 @@ if (isset($_GET["form"])) {
             <label for="razon">Como nos encontró</label>
         </div>
     </div>
-    <div class="col-12 col-lg-4 mb-3">
+    <div class="col-12 col-md-4 mb-3">
         <div class="form-floating">
             <select class="form-control form-select" name="dept" id="dept">
                 <option value="Hardware">Hardware</option>
@@ -146,26 +146,8 @@ if (isset($_GET["form"])) {
     </div>
 </div>
 
-<div class="row" hidden>
-    <label for="socio" class="text-light mb-1 w-25">Registrar Socio</label>
-    <div class="col-12">
-        <label class="switch">
-            <input type="checkbox" onchange="registroSocio()" name="socio" id="socio">
-            <span class="slider"></span>
-        </label>
-    </div>
-</div>
-<div class="row" hidden>
-    <div class="col-12 col-lg-3 my-3 d-none" id="regSocio">
-        <div class="form-floating">
-            <input class="form-control" placeholder="Fecha de nacimiento" type="date" name="nacimiento" id="nacimiento">
-            <label for="nacimiento">Fecha de nacimiento</label>
-        </div>
-    </div>
-</div>
-
 <script>
-    // RECURRENTE
+    // REGISTRO SOCIO
     function registroRecurrente() {
         let s = $("#regRec");
         if (s.hasClass("d-none")) {

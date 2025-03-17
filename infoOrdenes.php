@@ -154,7 +154,7 @@
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="fecha_pago" class="form-label">Fecha Pago</label>
-                                    <input type="date" class="form-control text-bg-dark" id="fecha_pago" name="fecha_pago" value="<?php echo $ticket->fecha_pago; ?>">
+                                    <input type="datetime-local" class="form-control text-bg-dark" id="fecha_pago" name="fecha_pago" value="<?php echo $ticket->fecha_pago; ?>">
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="avisos" class="form-label">Avisos</label>

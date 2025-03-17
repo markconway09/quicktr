@@ -23,15 +23,14 @@ switch ($call) {
         break;
     case 2:
         // LISTADO
-        $q = "SELECT *, i.id as id, d.id as did, DATE_FORMAT(fecha, '%d/%m/%Y') as fecha, fecha as `date` 
-        FROM info_orden i
-        LEFT JOIN devolucion d ON (i.id = d.id_orden)";
+        $q = "SELECT *, DATE_FORMAT(fecha, '%d/%m/%Y') as fecha, fecha as `date` 
+        FROM info_orden";
 
         $wheres = [];
 
         if (!empty($_GET["search"])) {
             $params = $_GET["search"];
-            $wheres[] = "(`nombre_dispositivo` LIKE :search OR i.id LIKE :search OR
+            $wheres[] = "(`nombre_dispositivo` LIKE :search OR id LIKE :search OR
                         `nombre` LIKE :search OR `servicio` LIKE :search)";
         }
 
@@ -51,7 +50,7 @@ switch ($call) {
             $q .= " WHERE " . implode(" AND ", $wheres);
         }
 
-        $q .= " ORDER BY i.id DESC";
+        $q .= " ORDER BY id DESC";
         if(isset($_GET["limit"])) $q .= " LIMIT :limit";
 
         $stmt = $pdo->prepare($q);
