@@ -224,7 +224,7 @@
         let rowContainer = null; // Initialize a row container
 
         data.forEach((item, index) => {
-            let pastDate = new Date(item.date);
+            let pastDate = new Date(item.date.split(' ')[0]);
             let now = new Date();
             let timeDiff = now - pastDate;
             let daysPassed = Math.floor(timeDiff / (1000 * 3600 * 24));
