@@ -164,10 +164,10 @@ if (isset($_GET["form"])) {
     }
 
     function updatePriceFromCheckbox(cost) {
-        var precio = parseFloat(document.getElementById('precio').value);
+        var precio = parseFloat(document.getElementById('precio-final').value);
         precio += cost;
-        document.getElementById('precio').value = precio.toFixed(2);
-        findTotal();
+        document.getElementById('precio-final').value = precio.toFixed(2);
+        findPrecio();
     }
 
     function updatePagado(cost) {
