@@ -27,6 +27,7 @@ switch ($call) {
         FROM info_orden";
 
         $wheres = [];
+        $wheres[] = "`estado` != 6";
 
         if (!empty($_GET["search"])) {
             $params = $_GET["search"];
