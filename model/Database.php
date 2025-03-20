@@ -154,22 +154,23 @@ class Database
     {
         $pdo = $this->pdo;
         $stmt = $pdo->prepare("
-            SELECT nombre, nombre_dispositivo 
+            SELECT * 
             FROM info_orden 
             WHERE DATE(fecha) = DATE(:fecha) AND nombre = :nombre AND nombre_dispositivo = :disp
         ");
-        $stmt->bindParam(':fecha', $ticket->fecha);
+        $fecha = date("Y-m-d", strtotime($ticket->fecha));
+        $stmt->bindParam(':fecha', $fecha);
         $stmt->bindParam(':nombre', $ticket->nombre);
         $stmt->bindParam(':disp', $ticket->nombre_dispositivo);
 
         try {
             $stmt->execute();
-            // Fetch the first matching record
-            return $stmt->fetch(PDO::FETCH_ASSOC);
+            // Return true if a record is found, false otherwise
+            return $stmt->fetch(PDO::FETCH_ASSOC) !== false;
         } catch (PDOException $e) {
-            // Log or handle the error appropriately
-            logError($e->getMessage());
-            return false;
+            // Log the error with additional context if necessary
+            logError("Error checking for duplicate ticket: " . $e->getMessage());
+            return false; // Return false in case of an error
         }
     }
 
