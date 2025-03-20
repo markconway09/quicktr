@@ -480,7 +480,7 @@ class Ticket
         if (isset($this->did)) {
             $pdf->Cell($width / 2, 5, iconv('UTF-8', 'windows-1252', 'DEVOLUCIÓN # ' . $id), 0, 1);
         } else {
-            $pdf->Cell($width / 2, 5, 'FACTURA DE VENTA # ' . $id, 0, 1);
+            $pdf->Cell($width / 2, 5, 'PRESUPUESTO # ' . $id, 0, 1);
         }
         $pdf->SetFont('Arial', '', 8);
         $pdf->Cell($width / 2, 5, 'QUICK T&R, S.L.', 0, 1);
