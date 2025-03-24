@@ -1,66 +1,77 @@
 <?php
-// subirModelos.php
+// importModelos.php
 
 require_once "../model/Database.php";
 
-// Database connection
-$db =  new Database();
-$pdo = $db->pdo;
+// Check if a file was uploaded
+if (isset($_FILES['csv_file']) && $_FILES['csv_file']['error'] === UPLOAD_ERR_OK) {
+    $fileTmpPath = $_FILES['csv_file']['tmp_name'];
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file'])) {
-    $file = $_FILES['file']['tmp_name'];
-    $handle = fopen($file, "r");
+    // Open the uploaded CSV file
+    if (($handle = fopen($fileTmpPath, 'r')) !== false) {
+        // Database connection
+        $db = new Database();
+        $pdo = $db->pdo;
 
-    if ($handle !== FALSE) {
-        while (($data = fgetcsv($handle)) !== FALSE) {
+        // Skip the header row
+        fgetcsv($handle);
 
-            $marca = $data[0];
-            $tipo = $data[1];
-            $modelo = $data[2];
-            $submodelo = $data[3];
-            $parte = $data[4];
-            $original = $data[5];
-            $compatible = $data[6];
-            $incel = $data[7];
-            if($marca == "") continue;
-            if($marca == "Column1") continue;
+        // Prepare the SQL statement for inserting or updating data in d_modelo
+        $stmt = $pdo->prepare("
+            INSERT INTO d_modelo (nombre_marca, nombre_tipo, modelo, submodelo)
+            VALUES (:Marca, :Tipo, :Modelo, :Submodelo)
+            ON DUPLICATE KEY UPDATE
+                nombre_marca = VALUES(nombre_marca),
+                nombre_tipo = VALUES(nombre_tipo),
+                submodelo = VALUES(submodelo)
+        ");
 
-            // Check if the modelo already exists
-            $stmt = $pdo->prepare("SELECT id FROM d_modelo WHERE submodelo = ?");
-            $stmt->execute([$submodelo]);
-            $modelo_row = $stmt->fetch(PDO::FETCH_ASSOC);
+        // Prepare the SQL statement for inserting or updating data in d_parte
+        $stmtParte = $pdo->prepare("
+            INSERT INTO d_parte (id_modelo, nombre, original, compatible, incel)
+            VALUES (:id_modelo, :Parte, :Original, :Compatible, :Incel)
+            ON DUPLICATE KEY UPDATE
+                nombre = VALUES(nombre),
+                original = VALUES(original),
+                compatible = VALUES(compatible),
+                incel = VALUES(incel)
+        ");
 
-            if ($modelo_row) {
-                $id_modelo = $modelo_row['id'];
-                // Update the existing record in d_modelo
-                $stmt = $pdo->prepare("UPDATE d_modelo SET nombre_marca = ?, nombre_tipo = ?, modelo = ? WHERE id = ?");
-                $stmt->execute([$marca, $tipo, $modelo, $id_modelo]);
-            } else {
-                // Insert into the first table
-                $stmt = $pdo->prepare("INSERT INTO d_modelo (nombre_marca, nombre_tipo, modelo, submodelo) VALUES (?, ?, ?, ?)");
-                $stmt->execute([$marca, $tipo, $modelo, $submodelo]);
-                $id_modelo = $pdo->lastInsertId();
-            }
+        // Process each row in the CSV file
+        while (($d = fgetcsv($handle, 1000, ',')) !== false) {
+            // Insert or update into d_modelo table
+            $data = explode(",", $d[0]);
+            
+            if($data[0] == 'Marca') continue;
+            if($data[0] == '') continue;
+            if($data[0] == null) continue;
 
-            // Check if the parte already exists
-            $stmt = $pdo->prepare("SELECT id FROM d_parte WHERE nombre = ? AND id_modelo = ?");
-            $stmt->execute([$parte, $id_modelo]);
-            $parte_row = $stmt->fetch(PDO::FETCH_ASSOC);
+            $stmt->execute([
+                ':Marca' => $data[0],
+                ':Tipo' => $data[1],
+                ':Modelo' => $data[2],
+                ':Submodelo' => $data[3],
+            ]);
 
-            if ($parte_row) {
-                // Update the existing record in d_parte
-                $stmt = $pdo->prepare("UPDATE d_parte SET original = ?, compatible = ?, incel = ? WHERE id = ?");
-                $stmt->execute([$original, $compatible, $incel, $parte_row['id']]);
-            } else {
-                // Insert into the second table
-                $stmt = $pdo->prepare("INSERT INTO d_parte (nombre, original, compatible, incel, id_modelo) VALUES (?, ?, ?, ?, ?)");
-                $stmt->execute([$parte, $original, $compatible, $incel, $id_modelo]);
-            }
+            // Get the last inserted ID for d_modelo
+            $idModelo = $pdo->lastInsertId();
+
+            // Insert or update into d_parte table
+            $stmtParte->execute([
+                ':id_modelo' => $idModelo,
+                ':Parte' => $data[4],
+                ':Original' => $data[5],
+                ':Compatible' => $data[6],
+                ':Incel' => $data[7],
+            ]);
         }
+
         fclose($handle);
-        exit;
+        echo "CSV file imported successfully.";
     } else {
         echo "Error opening the file.";
     }
+} else {
+    echo "No file uploaded or an error occurred.";
 }
 ?>

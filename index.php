@@ -13,7 +13,7 @@ if (isset($_POST["login"])) {
     $stmt->bindParam(':user', $_POST["user"]);
     $stmt->execute();
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    if (isset($row["username"]) == 1) {
+    if (isset($row["username"])) {
         $hash = $row["password"];
         $pass = $_POST["pass"];
         $verify = password_verify($pass, $hash);
@@ -21,6 +21,14 @@ if (isset($_POST["login"])) {
             $_SESSION["nombre"] = $row["username"];
             $_SESSION["login"] = $row["tipo"];
             $_SESSION["local"] = $row["local"] != null ? $row["local"] : null;
+            // Set cookies if "Recuérdame" is checked
+            if (isset($_POST["remember"])) {
+                setcookie("username", $_POST["user"], time() + (7 * 24 * 60 * 60), "/");
+                setcookie("password", $_POST["pass"], time() + (7 * 24 * 60 * 60), "/");
+            } else {
+                setcookie("username", "", time() - 3600, "/");
+                setcookie("password", "", time() - 3600, "/");
+            }
         } else {
             echo '<script>alert("Contraseña incorrecta")</script>';
         }
@@ -132,7 +140,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <li><a class="dropdown-item text-light" href="totalventas"><i class="bi bi-calculator"></i> Total Ventas</a></li>
                         <li><a class="dropdown-item text-light" href="infoClientes"><i class="bi bi-person-up"></i> Exportar Clientes</a></li>
                         <li><a class="dropdown-item text-light" href="infoOrdenes"><i class="bi bi-database-up"></i> Exportar Ordenes</a></li>
-                        <!-- <li><a class="dropdown-item text-light" href="subirDispositivos"><i class="bi bi-phone"></i> Importar Dispositivos</a></li> -->
+                        <li><a class="dropdown-item text-light" href="gestionDispositivos"><i class="bi bi-phone"></i> Gestionar Dispositivos</a></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
@@ -179,7 +187,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- FOOTER -->
     <ul class="nav nav-tabs mt-2 border-0">
         <li class="mx-auto">
-            <span class="nav-link active text-bg-dark border-0">QuickTR <span class="badge badge-pill bg-danger">2.3.0</span></span>
+            <span class="nav-link active text-bg-dark border-0">QuickTR <span class="badge badge-pill bg-danger">2.3.1</span></span>
         </li>
     </ul>
 
