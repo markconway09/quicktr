@@ -266,7 +266,7 @@
                     <p class="card-text text-truncate" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><i class="bi bi-file-text-fill"></i> ${desc}</p>
                     <?php if ($_SESSION["login"] != "tecnico") { ?>
                     <p class="card-text text-truncate" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                        <i class="bi bi-currency-exchange"> Precio: <b>${item['precio-final']}€</b>`+(item['pagado']? ` · Pagado: <b>`+item['pagado']+`€</b>` : ``)+`</i>
+                        <i class="bi bi-currency-exchange"> Precio: <b>${item['precio-final']}€</b>`+((item['pagado'] && item['estado']<4)? ` · Pagado: <b>`+item['pagado']+`€</b>` : ``)+`</i>
                     </p>
                     <?php } ?>
                     <div class="mb-3">
