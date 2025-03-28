@@ -3,9 +3,9 @@ class Database
 {
     public $pdo;
     private $_host = "localhost";
-    private $_dbname = "quicktrc_formulario";
-    private $_user = "uvzcmq8ynnon4";
-    private $_pass = "quicktr2024";
+    private $_dbname = "quicktr";
+    private $_user = "root";
+    private $_pass = "";
 
     public function __construct()
     {
