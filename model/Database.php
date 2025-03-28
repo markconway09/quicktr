@@ -68,6 +68,7 @@ class Database
         return $tickets;
     }
 
+    // OUTDATED DELETE SOON
     public function fetchPartes($partes) {
         $result = [];
         foreach ($partes as $parte) {

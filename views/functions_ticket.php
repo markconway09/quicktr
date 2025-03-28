@@ -24,11 +24,8 @@ if(isset($_POST["guardar-servicio"]))
     $ticket->cp = $_POST["cp"] ?? null;
     $ticket->email = $_POST["email"] ?? null;
     $ticket->metodo = $_POST["metodo"] ?? null;
-    if(!empty($_POST["otroDispositivo"])) {
-        $ticket->nombre_dispositivo = $_POST["otroDispositivo"];
-    } else {
-        $ticket->nombre_dispositivo = $_POST["deviceName"] ?? null;
-    }
+    if(!empty($_POST["modelo_select"])) $ticket->nombre_dispositivo = $_POST["modelo_select"] ?? null;
+    else $ticket->nombre_dispositivo = $_POST["otroDispositivo"] ?? null;
     $ticket->precio = $_POST["precio"] ?? null;
     $ticket->descuento = $_POST["descuento"] ?? null;
     $ticket->iva = $_POST["iva"] ?? null;
@@ -36,16 +33,27 @@ if(isset($_POST["guardar-servicio"]))
     $ticket->pagado = $_POST["pagado"] ?? null;
     $ticket->fecha = date("Y-m-d\TH:i");
     
-    if(isset($_POST["deviceServices"])){
-        $partes = implode(", ", $_POST["deviceServices"]);
+    if(isset($_POST["parts"])){
+        $partes = implode(", ", $_POST["parts"]);
         $ticket->partes = $partes;
     } else {
         $ticket->partes = null;
     }
     
-    if(isset($_POST["deviceServiceCosts"])){
-        $costes_partes = implode(", ", $_POST["deviceServiceCosts"]);
-        $ticket->costes_partes = $costes_partes;
+    if(isset($_POST["deviceServiceCosts"]) && is_array($_POST["deviceServiceCosts"])){
+        asort($_POST["deviceServiceCosts"], SORT_NUMERIC);
+        $deviceServiceCosts = [];
+        foreach ($_POST["deviceServiceCosts"] as $key) {
+            if (isset($_POST["prices"][$key]) && is_numeric($_POST["prices"][$key])) {
+                $deviceServiceCosts[] = $_POST["prices"][$key];
+            }
+        }
+        if (!empty($deviceServiceCosts)) {
+            $costes_partes = implode(", ", $deviceServiceCosts);
+            $ticket->costes_partes = $costes_partes;
+        } else {
+            $ticket->costes_partes = null;
+        }
     } else {
         $ticket->costes_partes = null;
     }

@@ -163,11 +163,33 @@ if (isset($_GET["form"])) {
         xhr.send("valueLocal=" + encodeURIComponent(selectedValue));
     }
 
-    function updatePriceFromCheckbox(cost) {
+    function updatePriceFromCheckbox(checkbox, cost, index) {
         var precio = parseFloat(document.getElementById('precio-final').value);
-        precio += cost;
+        if (!checkbox.checked) {
+            precio -= cost;
+            removeHiddenCostInput(checkbox.id.split('_')[1]);
+        } else {
+            precio += cost;
+            addHiddenCostInput(checkbox.id.split('_')[1], index);
+        }
         document.getElementById('precio-final').value = precio.toFixed(2);
         findPrecio();
+    }
+
+    function addHiddenCostInput(id, index) {
+        let hiddenInput = document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.name = 'deviceServiceCosts[]';
+        hiddenInput.id = 'cost_' + id;
+        hiddenInput.value = index;
+        document.querySelector('form').appendChild(hiddenInput);
+    }
+
+    function removeHiddenCostInput(id) {
+        let hiddenInput = document.getElementById('cost_' + id);
+        if (hiddenInput) {
+            hiddenInput.remove();
+        }
     }
 
     function updatePagado(cost) {

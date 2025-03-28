@@ -7,7 +7,7 @@ function fetchData() {
                     showToast(data.notification);
                 }
             })
-            .catch(error => console.error('Error fetching data:', error));
+            .catch(error => console.info('Error fetching data:', error));
     }
     function showToast(message) {
         var toastContainer = document.getElementById('toastContainer');

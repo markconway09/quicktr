@@ -299,14 +299,22 @@ if($ticket->partes) {
 <br>
 <p class="card-text"><b>Partes:</b></p>
 <?php
-    $partes = $db->fetchPartes(explode(", ", $ticket->partes));
-    $costeParte = explode(", ", $ticket->costes_partes);
-    foreach ($partes as $key => $parte) {
-        $coste = $costeParte[$key];
-        echo "<p class='card-text'><b>-</b> " . $parte["nombre"] . " ($coste)</p>";
+    if (is_numeric(explode(", ", $ticket->partes)[0])) {
+        $partes = $db->fetchPartes(explode(", ", $ticket->partes));
+        $costeParte = explode(", ", $ticket->costes_partes);
+        foreach ($partes as $key => $parte) {
+            $coste = $costeParte[$key];
+            echo "<p class='card-text'><b>-</b> " . $parte["nombre"] . " ($coste)</p>";
+        }
+    } else {
+        $partes = explode(", ", $ticket->partes);
+        $costeParte = explode(", ", $ticket->costes_partes);
+        foreach ($partes as $key => $parte) {
+            $coste = $costeParte[$key];
+            echo "<p class='card-text'><b>-</b> " . $parte . " ($coste)</p>";
+        }
     }
 }
-
 ?>
     </div>
     
