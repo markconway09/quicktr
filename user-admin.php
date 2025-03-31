@@ -73,8 +73,12 @@ try {
             <select class="flex-fill" name="tipo" id="tipo">
                 <option value="dependiente">Dependiente</option>
                 <option value="tecnico">Técnico</option>
-                <option value="repartidor">Repartidor</option>
-                <option value="admin">Admin</option>
+                <!-- <option value="repartidor">Repartidor</option> -->
+                <option value="administrativo">Administrativo</option>
+                <option value="jefetecnico">Jefe Tecnico</option>
+                <option value="administrador">Administrador</option>
+                <option value="director">Director</option>
+                <option value="superadmin">Superadmin</option>
             </select>
             <input type="submit" name="insertuser" class="fileButton" value="Añadir usuario">
         </div>
