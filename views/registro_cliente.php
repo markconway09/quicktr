@@ -77,7 +77,7 @@ if (isset($_GET["form"])) {
         <div class="form-floating">
             <select class="form-control form-select" name="local" id="local">
                 <?php
-                if (!is_null($_SESSION["login"]) && $_SESSION["login"] != "admin") {
+                if (isUser(["dependiente"])) {
                 ?>
                     <option value="<?php echo $_SESSION["local"]; ?>"><?php echo $_SESSION["local"]; ?></option>
                 <?php

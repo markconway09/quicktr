@@ -1,11 +1,11 @@
 <?php
+if (session_status() == PHP_SESSION_NONE) session_start();
 // IMPORT FUNCTIONS
 require_once "controller/functions.php";
 require_once "model/Ticket.php";
 require_once "model/Insumo.php";
 require_once "model/Database.php";
 
-if (session_status() == PHP_SESSION_NONE) session_start();
 if (isset($_POST["login"])) {
     $db = new Database();
     $pdo = $db->pdo;
@@ -123,7 +123,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </button>
                 <ul class="dropdown-menu text-bg-dark">
                     <!-- ADMIN MENU -->
-                    <?php if ($_SESSION["login"] == "admin") { ?>
+                    <?php if (isUser(["superadmin", "administrador", "jefetecnico", "director", "administrativo"])) { ?>
                         <li><a class="dropdown-item text-light" href="recordatorios"><i class="bi bi-megaphone"></i></i> Recordatorios</a></li>
                         <li><a class="dropdown-item text-light" href="entregas"><i class="bi bi-box-seam"></i> Entregas</a></li>
                         <li><a class="dropdown-item text-light" href="historial"><i class="bi bi-clock-history"></i> Historial</a></li>
@@ -157,7 +157,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </li>
                 </ul>
             </div>
-            <?php if ($_SESSION["login"] != "tecnico" && $_SESSION["login"] != "repartidor") { ?>
+            <?php if (isNotUser(["tecnico", "repartidor"])) { ?>
                 <a href="." class="button btn btn-dark mx-1 my-auto flex-fill">
                     <i class="bi bi-pencil-square"></i> <span class="d-sm-inline-block d-none">Formulario</span>
                 </a>
@@ -165,7 +165,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <a href="list" class="button btn btn-dark mx-1 my-auto flex-fill">
                 <i class="bi bi-columns-gap"></i> <span class="d-sm-inline-block d-none">Lista</span>
             </a>
-            <?php if ($_SESSION["login"] == "repartidor") { ?>
+            <?php if (isUser(["repartidor"])) { ?>
                 <a href="entregas" class="button btn btn-dark mx-1 my-auto flex-fill">
                     <i class="bi bi-box-seam"></i> <span class="d-sm-inline-block d-none">Entregas</span>
                 </a>

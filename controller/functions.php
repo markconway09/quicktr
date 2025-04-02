@@ -12,6 +12,15 @@ function logError($errorMessage, $logFile = 'error_log.txt') {
     file_put_contents($logFile, $logEntry, FILE_APPEND | LOCK_EX);
 }
 
+function isUser($perms) {
+    $login = $_SESSION["login"];
+    return in_array($login, $perms);
+}
+function isNotUser($perms) {
+    $login = $_SESSION["login"];
+    return !in_array($login, $perms);
+}
+
 function checkDuplicate($nombre, $disp, $fecha) {
     $db = new Database();
     $pdo = $db->pdo;

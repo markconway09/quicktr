@@ -12,7 +12,7 @@
                     </div>
                 </div>
                 <!-- LOCALES -->
-                <?php if ($_SESSION["login"] == "tecnico" || $_SESSION["login"] == "admin") { ?>
+                <?php if (isNotUser(["dependiente"])) { ?>
                     <div class="radio-inputs mx-auto col-12 col-lg-4 my-2">
                         <label class="radio">
                             <input name="local" type="radio" onchange="updateSession(this.value)" value="Todo" <?php echo $_SESSION["local"] == null ? 'checked' : '' ?>>
@@ -264,7 +264,7 @@
                     <p class="card-text text-truncate" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><i class="bi bi-wrench-adjustable"></i> ${item.servicio}</p>
                     <p class="card-text text-truncate" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><i class="bi bi-phone-fill"></i> ${nombreDispositivo}</p>
                     <p class="card-text text-truncate" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><i class="bi bi-file-text-fill"></i> ${desc}</p>
-                    <?php if ($_SESSION["login"] != "tecnico") { ?>
+                    <?php if (isNotUser(["tecnico"])) { ?>
                     <p class="card-text text-truncate" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                         <i class="bi bi-currency-exchange"> Precio: <b>${item['precio-final']}€</b>`+((item['pagado'] && item['estado']<4)? ` · Pagado: <b>`+item['pagado']+`€</b>` : ``)+`</i>
                     </p>
@@ -275,7 +275,7 @@
                         </div>
                     </div>
                     <div class="cardIcons">
-            <?php if ($_SESSION["login"] != "repartidor") { ?>
+            <?php if (isNotUser(["tecnico"])) { ?>
                         <button class="cardBtn ` + (disableLeft ? 'disabled' : '') + `"
                                 onclick="updateStep(${item.id}, ` + (item.estado - 1) + `)"
                                 style="pointer-events: ` + (disableLeft ? 'none' : 'auto') + `;
@@ -288,7 +288,7 @@
                                 style="color:white;background-color:#25BED4">
                             <i class="bi bi-info-circle"></i>
                         </a>
-            <?php if ($_SESSION["login"] != "repartidor") { ?>
+            <?php if (isNotUser(["repartidor"])) { ?>
                         <button class="cardBtn ` + (disableRight ? 'disabled' : '') + `"
                                 onclick="updateStep(${item.id}, ` + (item.estado + 1) + `)"
                                 style="pointer-events: ` + (disableRight ? 'none' : 'auto') + `;

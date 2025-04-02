@@ -46,7 +46,7 @@ else $ticket = $db->fetchId($id);
             <i class="bi bi-arrow-counterclockwise"></i> <span class="d-none d-sm-inline">Devolución</span>
         </a>
     <?php } ?>
-    <?php if ($_SESSION["login"] == "admin") { ?>
+    <?php if (isUser(["superadmin", "administrativo", "administrador", "director"])) { ?>
         <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#historialModal">
             <i class="bi bi-clock-history"></i> <span class="d-none d-sm-inline">Historial</span>
         </button>
@@ -87,7 +87,7 @@ $percentage = ($estado / $totalStates) * 100;
 </div>
 <br>
 <!-- CONDICION PARA REPARTIDOR -->
-<?php if ($_SESSION["login"] != "repartidor") { ?>
+<?php if (isNotUser(["repartidor"])) { ?>
 <?php
 echo '<div id="cardStepBtns" class="input-group px-2 mx-auto mb-2">';
 $disableLeft = true;
@@ -186,21 +186,27 @@ echo '</div>';
                 <b>Nombre:</b>
                 <span>
                     <?php echo !empty($ticket->nombre) ? $ticket->nombre : "No especificado"; ?>
-                    <button class="btn p-0" onclick="editField(this.parentElement, '<?php echo $ticket->nombre; ?>', 'nombre')"><i class="bi bi-pencil-square"></i></button>
+                    <?php if (isUser(["superadmin", "dependiente", "administrativo"])) { ?>
+                        <button class="btn p-0" onclick="editField(this.parentElement, '<?php echo $ticket->nombre; ?>', 'nombre')"><i class="bi bi-pencil-square"></i></button>
+                    <?php } ?>
                 </span>
             </p>
             <p class="card-text">
                 <b>Documento:</b>
                 <span>
                     <?php echo !empty($ticket->documento) ? $ticket->documento : "No especificado"; ?>
-                    <button class="btn p-0" onclick="editField(this.parentElement, '<?php echo $ticket->documento; ?>', 'documento')"><i class="bi bi-pencil-square"></i></button>
+                    <?php if (isUser(["superadmin", "dependiente", "administrativo"])) { ?>
+                        <button class="btn p-0" onclick="editField(this.parentElement, '<?php echo $ticket->documento; ?>', 'documento')"><i class="bi bi-pencil-square"></i></button>
+                    <?php } ?>
                 </span>
             </p>
             <p class="card-text">
                 <b>Email:</b>
                 <span>
                     <?php echo !empty($ticket->email) ? $ticket->email : "No especificado"; ?>
-                    <button class="btn p-0" onclick="editField(this.parentElement, '<?php echo $ticket->email; ?>', 'email')"><i class="bi bi-pencil-square"></i></button>
+                    <?php if (isUser(["superadmin", "dependiente", "administrativo"])) { ?>
+                        <button class="btn p-0" onclick="editField(this.parentElement, '<?php echo $ticket->email; ?>', 'email')"><i class="bi bi-pencil-square"></i></button>
+                    <?php } ?>
                 </span>
             </p>
             <p class="card-text">
@@ -212,14 +218,18 @@ echo '</div>';
                 <b>Dirección:</b>
                 <span>
                     <?php echo !empty($ticket->direccion) ? $ticket->direccion : "No especificado"; ?>
-                    <button class="btn p-0" onclick="editField(this.parentElement, '<?php echo $ticket->direccion; ?>', 'direccion')"><i class="bi bi-pencil-square"></i></button>
+                    <?php if (isUser(["superadmin", "dependiente", "administrativo"])) { ?>
+                        <button class="btn p-0" onclick="editField(this.parentElement, '<?php echo $ticket->direccion; ?>', 'direccion')"><i class="bi bi-pencil-square"></i></button>
+                    <?php } ?>
                 </span>
             </p>
             <p class="card-text">
                 <b>Código Postal:</b>
                 <span>
                     <?php echo !empty($ticket->cp) ? $ticket->cp : "No especificado"; ?>
-                    <button class="btn p-0" onclick="editField(this.parentElement, '<?php echo $ticket->cp; ?>', 'cp')"><i class="bi bi-pencil-square"></i></button>
+                    <?php if (isUser(["superadmin", "dependiente", "administrativo"])) { ?>
+                        <button class="btn p-0" onclick="editField(this.parentElement, '<?php echo $ticket->cp; ?>', 'cp')"><i class="bi bi-pencil-square"></i></button>
+                    <?php } ?>
                 </span>
             </p>
             <p class="card-text">
@@ -229,7 +239,9 @@ echo '</div>';
                     <?php } else {
                         echo "No especificado";
                     } ?>
-                    <button class="btn p-0" onclick="editField(this.parentElement, '<?php echo $ticket->telefono; ?>', 'telefono')"><i class="bi bi-pencil-square"></i></button>
+                    <?php if (isUser(["superadmin", "dependiente", "administrativo"])) { ?>
+                        <button class="btn p-0" onclick="editField(this.parentElement, '<?php echo $ticket->telefono; ?>', 'telefono')"><i class="bi bi-pencil-square"></i></button>
+                    <?php } ?>
                 </span>
             </p>
             <p class="card-text"><b>Cómo nos encontró:</b> <?php echo $ticket->razon ?></p>
@@ -283,9 +295,9 @@ echo '</div>';
         <br>
         
 <!-- CONDICION REPARTIDOR -->
-<?php if ($_SESSION["login"] != "repartidor") { ?>
+<?php if (isNotUser(["repartidor"])) { ?>
         <button type="button" class="fileButton" data-bs-toggle="modal" data-bs-target="#insumoModal">
-            <?php if ($_SESSION["login"] == "admin" || $_SESSION["login"] == "tecnico") {
+            <?php if (isUser(["tecnico", "superadmin", "jefetecnico"])) {
                 echo 'Editar insumo y descripción técnico';
             } else {
                 echo 'Editar descripción';
@@ -318,7 +330,7 @@ if($ticket->partes) {
 ?>
     </div>
     
-<?php if ($_SESSION["login"] != "repartidor") { ?>
+<?php if (isNotUser(["repartidor"])) { ?>
     <div class="col-md-6 col-12">
         <b>Firma:</b><br>
         <?php if (!empty($ticket->firma)): ?>
@@ -345,7 +357,7 @@ if($ticket->partes) {
 <?php } ?>
 </div>
 
-<?php if ($_SESSION["login"] != "tecnico") { ?>
+<?php if (isNotUser(["tecnico"])) { ?>
     <hr>
     <div class="row">
         <span class="fs-4 mb-2">Insumo(s)</span>
@@ -395,7 +407,7 @@ if($ticket->partes) {
         ?>
     </div>
 <!-- CONDICION REPARTIDOR -->
-<?php if ($_SESSION["login"] != "repartidor") { ?>
+<?php if (isNotUser(["repartidor"])) { ?>
     <hr>
     <form action="" method="POST">
         <div class="row">
@@ -441,7 +453,7 @@ if($ticket->partes) {
 <?php } ?>
 <hr>
 <!-- CONDICION REPARTIDOR -->
-<?php if ($_SESSION["login"] != "repartidor") { ?>
+<?php if (isNotUser(["repartidor"])) { ?>
 <div class="row">
     <div class="col-12 mb-3">
         <button type="button" class="fileButton" data-bs-toggle="modal" data-bs-target="#fotos">
@@ -590,7 +602,7 @@ if($ticket->partes) {
                             </div>
                         </div>
                     </div>
-                    <?php if ($_SESSION["login"] != "dependiente"): ?>
+                    <?php if (isNotUser(["dependiente"])): ?>
                         <div class="row">
                             <h2 class="display-5">Técnico</h2>
                         </div>
@@ -616,7 +628,7 @@ if($ticket->partes) {
                                         </div>
 
                                         <div class="form-floating">
-                                            <input <?php if ($_SESSION["login"] == "tecnico") {
+                                            <input <?php if (isUser(["tecnico"])) {
                                                         echo "readonly";
                                                     } ?> class="form-control" placeholder="Precio" type="number" step=.01 name="insumo_precio<?php echo $i + 1; ?>" id="insumo_precio<?php echo $i + 1; ?>" value="<?php echo isset($row["precio"]) ? $row["precio"] : 0; ?>">
                                             <label for="insumo_precio<?php echo $i + 1; ?>">Precio</label>
@@ -640,7 +652,7 @@ if($ticket->partes) {
                                         </div>
 
                                         <div class="form-floating">
-                                            <input <?php if ($_SESSION["login"] == "tecnico") {
+                                            <input <?php if (isUser(["tecnico"])) {
                                                         echo "readonly";
                                                     } ?> class="form-control" placeholder="Precio" type="number" step=.01 name="insumo_precio1" id="insumo_precio1">
                                             <label for="insumo_precio">Precio</label>
@@ -794,7 +806,7 @@ if($ticket->partes) {
             '<label for="insumo_desc">Descripción</label>' +
             '</div>' +
             '<div class="form-floating">' +
-            '<input <?php if ($_SESSION["login"] == "tecnico") {
+            '<input <?php if (isUser(["tecnico"])) {
                         echo "readonly";
                     } ?> class="form-control" placeholder="Precio" type="number" step=.01 name="insumo_precio' + (num + 1) + '" id="insumo_precio' + (num + 1) + '" value=0>' +
             '<label for="insumo_precio">Precio</label>' +

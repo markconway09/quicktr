@@ -78,7 +78,7 @@ try {
                 <option value="jefetecnico">Jefe Tecnico</option>
                 <option value="administrador">Administrador</option>
                 <option value="director">Director</option>
-                <option value="superadmin">Superadmin</option>
+                <!-- <option value="superadmin">Superadmin</option> -->
             </select>
             <input type="submit" name="insertuser" class="fileButton" value="Añadir usuario">
         </div>
@@ -101,11 +101,15 @@ try {
                 <th scope="row"><?php echo $row["id"]; ?></th>
                 <td><?php echo $row["username"]; ?></td>
                 <td>
+                    <?php
+                    if(isUser(["superadmin"])){
+                    ?>
                     <button
                         type="button" class="btn btn-secondary change-password-btn"
                         data-bs-toggle="modal" data-bs-target="#passwordModal" data-user-id="<?php echo $row["id"] ?>">
                         Cambiar
                     </button>
+                    <?php } ?>
                 </td>
                 <td><?php echo $row["local"]; ?></td>
                 <td><?php echo ucfirst($row["tipo"]); ?></td>
