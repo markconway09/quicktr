@@ -109,11 +109,23 @@ if(isset($_GET["deshacer"])){
 // GUARDAR FOTOS ===============================================================================================
 if(isset($_POST["guardar-fotos"])){
     $ticket = $db->fetchId($_POST["id"]);
+    // UPDATE DESCRIPTION
     $ticket->desc = $_POST["desc"];
     $db->updateTicket($ticket);
+    // UPDATE PHOTOS
     if(isset($_FILES['images'])) $db->insertPhotos($_POST["id"], $_FILES['images']);
     $db->logChange($_SESSION["nombre"], "Foto(s) Subida(s)", $_POST["id"]);
 }
+
+// GUARDAR PDF ===============================================================================================
+if(isset($_POST["guardar-pdf"])){
+    $ticket = $db->fetchId($_POST["id"]);
+    // UPDATE PDF
+    if(isset($_FILES['pdf'])) $db->insertPDF($_POST["id"], $_FILES['pdf']);
+    $db->logChange($_SESSION["nombre"], "PDF Subido", $_POST["id"]);
+}
+
+// GUARDAR FIRMA ===============================================================================================
 if (isset($_POST["guardar-firma"])) {
     if(isset($_POST["sign"])) $db->insertSignature($_POST["id"], $_POST['sign']);
     $db->logChange($_SESSION["nombre"], "Firma Subida", $_POST["id"]);

@@ -1,4 +1,5 @@
 temp
-firmas
-fotos
+firmas/*
+fotos/*
+reportes/*
 error_log.txt

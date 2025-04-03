@@ -457,8 +457,8 @@ if($ticket->partes) {
 <div class="row">
     <div class="col-12 mb-3">
         <button type="button" class="fileButton" data-bs-toggle="modal" data-bs-target="#fotos">
-            <i class="bi bi-images" style="font-size: large;"></i>
-            Añadir fotos
+            <i class="bi bi-camera" style="font-size: large;"></i>
+            Subir fotos
         </button>
     </div>
 </div>
@@ -494,6 +494,41 @@ if($ticket->partes) {
         ?>
     </div>
 </div>
+<div class="row">
+    <div class="col-12 mt-3">
+        <button type="button" class="fileButton" data-bs-toggle="modal" data-bs-target="#pdfModal">
+            <i class="bi bi-file-earmark-pdf" style="font-size: large;"></i>
+            Subir Reporte
+        </button>
+    </div>
+</div>
+<div class="row mt-4">
+    <div class="reportes p-2 rounded border" style="background-color: #efefef;">
+        <?php
+        $reportes = $pdo->prepare("SELECT * FROM `reportes` WHERE id_orden = :id ORDER BY id DESC");
+        $reportes->bindParam(':id', $_GET["id"]);
+        try {
+            $reportes->execute();
+        } catch (PDOException $e) {
+            echo $e->getMessage();
+        }
+        $rowCount = $reportes->rowCount();
+        if ($rowCount > 0) {
+            while ($reporte = $reportes->fetch(PDO::FETCH_ASSOC)) {
+                echo '
+                <div class="reporte-item mb-3">
+                    <p><strong>Fecha:</strong> ' . htmlspecialchars($reporte["fecha"]) . '</p>
+                    <p><strong>Archivo:</strong> <a href="reportes/' . htmlspecialchars($reporte["archivo"]) . '" target="_blank">' . htmlspecialchars($reporte["archivo"]) . '</a></p>
+                    <hr>
+                </div>
+                ';
+            }
+        } else {
+            echo "<p>No hay reportes disponibles.</p>";
+        }
+        ?>
+    </div>
+</div>
 
 <!-- /////////////////////////////////////////////// -->
 
@@ -510,6 +545,7 @@ if($ticket->partes) {
                     <div class="row px-5 mb-3">
                         <div class="col-12">
                             <input type="hidden" name="id" value="<?php echo $ticket->id; ?>">
+                            <label for="imageUpload" class="form-label">Subir Imágenes</label>
                             <input type="file" id="imageUpload" accept="image/*" name="images[]" multiple class="form-control form-control-lg">
                             <br>
                             <div class="form-floating">
@@ -520,6 +556,32 @@ if($ticket->partes) {
                     </div>
                     <div class="row mb-3">
                         <input type="submit" name="guardar-fotos" class="btn btn-success btn-lg col-5 mx-auto" value="Enviar">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- PDF -->
+<div class="modal fade" id="pdfModal" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="pdfModalLabel">SUBIR ARCHIVO PDF</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="" method="POST" enctype="multipart/form-data">
+                    <div class="row px-5 mb-3">
+                        <div class="col-12">
+                            <input type="hidden" name="id" value="<?php echo $ticket->id; ?>">
+                            <label for="pdfUpload" class="form-label">Subir Archivo PDF</label>
+                            <input type="file" id="pdfUpload" accept="application/pdf" name="pdf" class="form-control form-control-lg">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <input type="submit" name="guardar-pdf" class="btn btn-success btn-lg col-5 mx-auto" value="Enviar">
                     </div>
                 </form>
             </div>

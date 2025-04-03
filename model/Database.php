@@ -225,6 +225,27 @@ class Database
         }
     }
 
+    public function insertPDF($id, $pdf)
+    {
+        $folderPath = "reportes/";
+        $fileTmpPath = $_FILES['pdf']['tmp_name'];
+        $filename = uniqid() . ".pdf";
+        $file = $folderPath . $filename;
+        $fecha = date("Y-m-d");
+        // file_put_contents($file, $pdf);
+        move_uploaded_file($fileTmpPath, $file);
+        $pdo = $this->pdo;
+        $stmt = $pdo->prepare("INSERT INTO reportes (id_orden, fecha, archivo) VALUES (:id, :fecha, :archivo)");
+        $stmt->bindParam(':id', $id);
+        $stmt->bindParam(':archivo', $filename);
+        $stmt->bindParam(':fecha', $fecha);
+        try {
+            $stmt->execute();
+        } catch (PDOException $e) {
+            logError($e->getMessage());
+        }
+    }
+
     public function fetchInsumos($id = null)
     {
         $pdo = $this->pdo;
