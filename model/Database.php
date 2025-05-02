@@ -229,7 +229,7 @@ class Database
     {
         $folderPath = "reportes/";
         $fileTmpPath = $_FILES['pdf']['tmp_name'];
-        $filename = uniqid() . ".pdf";
+        $filename = "Quick Tech Repair - Reporte N" . date("YmdHis") . ".pdf";
         $file = $folderPath . $filename;
         $fecha = date("Y-m-d");
         // file_put_contents($file, $pdf);

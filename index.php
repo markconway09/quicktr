@@ -125,7 +125,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <!-- ADMIN MENU -->
                     <?php if (isUser(["superadmin", "administrador", "jefetecnico", "director", "administrativo"])) { ?>
                         <li><a class="dropdown-item text-light" href="recordatorios"><i class="bi bi-megaphone"></i></i> Recordatorios</a></li>
-                        <li><a class="dropdown-item text-light" href="entregas"><i class="bi bi-box-seam"></i> Entregas</a></li>
+                        <li><a class="dropdown-item text-light" href="entregas"><i class="bi bi-box-seam"></i> Requerimientos</a></li>
                         <li><a class="dropdown-item text-light" href="historial"><i class="bi bi-clock-history"></i> Historial</a></li>
                         <li>
                             <hr class="dropdown-divider">
