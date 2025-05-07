@@ -180,6 +180,43 @@ echo '</div>';
 <hr>
 <form action="" method="POST">
     <div class="row">
+        <h3 class="display-4 mb-4">Detalles del servicio</h3>
+        <div class="col-md-6 col-12">
+            <p class="card-text"><b>Fecha de entrada:</b> <?php echo $ticket->fecha ?></p>
+            <p class="card-text"><b>Fecha de pago:</b> <?php echo !empty($ticket->fecha_pago) ? $ticket->fecha_pago : "No pagado"; ?></p>
+            <p class="card-text"><b>Método de pago:</b> <?php echo !empty($ticket->metodo) ? $ticket->metodo : "No pagado"; ?></p>
+        </div>
+        <div class="col-md-6 col-12">
+            <p class="card-text"><b>Local:</b> <?php echo $ticket->local ?></p>
+            <p class="card-text"><b>Departamento:</b> <?php echo $ticket->dept ?></p>
+            <form action="" method="post">
+                <p class="card-text"><b>Pagado:</b>
+                    <span>
+                        <?php echo $ticket->pagado ? $ticket->pagado : 0 ?>€
+                        <button class="btn p-0" onclick="editPago(this.parentElement, '<?php echo $ticket->pagado; ?>', 'pagado')"><i class="bi bi-pencil-square"></i></button>
+                    </span>
+                </p>
+                <div class="row mt-4 d-none" id="guardarPagoBtn">
+                    <div class="col-4 text-center">
+                        <input type="hidden" name="id" value="<?php echo $ticket->id; ?>">
+                        <input type="submit" name="guardarPago" class="btn btn-primary" value="Guardar Cambios">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 col-12">
+            <p class="card-text"><b>Servicio:</b> <?php echo $ticket->servicio ?></p>
+            <p class="card-text"><b>Fallo Reportado:</b></p>
+        </div>
+        <div class="col-md-6 col-12">
+            <p class="card-text"><b>Dispositivo:</b> <?php echo $ticket->nombre_dispositivo ?></p>
+            <p class="card-text"><b>PIN/Contraseña:</b></p>
+        </div>
+    </div>
+    <hr>
+    <div class="row">
         <h3 class="display-4 mb-4">Datos Cliente</h3>
         <div class="col-md-6 col-12">
             <p class="card-text">
@@ -255,33 +292,6 @@ echo '</div>';
     </div>
 
 </form>
-<hr>
-<div class="row">
-    <h3 class="display-4 mb-4">Detalles</h3>
-    <div class="col-md-6 col-12">
-        <p class="card-text"><b>Fecha de entrada:</b> <?php echo $ticket->fecha ?></p>
-        <p class="card-text"><b>Fecha de pago:</b> <?php echo !empty($ticket->fecha_pago) ? $ticket->fecha_pago : "No pagado"; ?></p>
-        <p class="card-text"><b>Método de pago:</b> <?php echo !empty($ticket->metodo) ? $ticket->metodo : "No pagado"; ?></p>
-    </div>
-    <div class="col-md-6 col-12">
-        <p class="card-text"><b>Local:</b> <?php echo $ticket->local ?></p>
-        <p class="card-text"><b>Departamento:</b> <?php echo $ticket->dept ?></p>
-        <form action="" method="post">
-            <p class="card-text"><b>Pagado:</b>
-                <span>
-                    <?php echo $ticket->pagado ? $ticket->pagado : 0 ?>€
-                    <button class="btn p-0" onclick="editPago(this.parentElement, '<?php echo $ticket->pagado; ?>', 'pagado')"><i class="bi bi-pencil-square"></i></button>
-                </span>
-            </p>
-            <div class="row mt-4 d-none" id="guardarPagoBtn">
-                <div class="col-4 text-center">
-                    <input type="hidden" name="id" value="<?php echo $ticket->id; ?>">
-                    <input type="submit" name="guardarPago" class="btn btn-primary" value="Guardar Cambios">
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
 <hr>
 <!-- END CONDICION PARA REPARTIDOR -->
 <?php } ?>
